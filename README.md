@@ -12,9 +12,6 @@ cd sicopv-backend
 
 # SiCoPV / AFYP — Sistema de Control y Seguimiento de Mantenimiento 🚀
 
-Aquí tienes la **descripción del proyecto basada directamente en la documentación de tu archivo** (`AFYP / SiCoPV - TSR Saltillo`), acompañada por el **desglose completo de herramientas y tecnologías** que estamos utilizando en toda la solución.
-
----
 
 # 📋 AFYP — Atención hacia Fallas Futuras Y Presentes
 
