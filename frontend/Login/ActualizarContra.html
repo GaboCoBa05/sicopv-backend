@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Actualizar contraseña</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #e9eef0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.ventana {
+    width: 450px;
+    max-width: 100%;
+    background: #06454a;
+    color: white;
+    padding: 45px 36px 35px;
+    border-radius: 10px;
+    box-shadow: 0 12px 25px #0003;
+}
+
+h1 {
+    text-align: center;
+    font-size: 27px;
+    font-weight: 400;
+    letter-spacing: 5px;
+    line-height: 1.4;
+    margin-bottom: 35px;
+}
+
+.campo {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+input {
+    width: 100%;
+    padding: 15px;
+    background: #f5f0e8;
+    border: 1px solid #d8d8d8;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #06454a;
+    outline: none;
+}
+
+input:focus {
+    border: 2px solid #a8ddcb;
+}
+
+.password {
+    position: relative;
+}
+
+.password input {
+    padding-right: 75px;
+}
+
+.ver {
+    position: absolute;
+    right: 12px;
+    top: 13px;
+    background: transparent;
+    border: none;
+    color: #06454a;
+    cursor: pointer;
+}
+
+.boton {
+    width: 100%;
+    padding: 18px;
+    margin-top: 12px;
+    background: #a8ddcb;
+    color: #06454a;
+    border: none;
+    border-radius: 5px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boton:hover {
+    background: #8dceb8;
+}
+
+.mensaje {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 15px;
+    min-height: 20px;
+}
+
+.volver {
+    display: block;
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #91b5b2;
+    color: white;
+    text-decoration: none;
+}
+
+.volver:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .ventana {
+        padding: 35px 22px;
+    }
+
+    h1 {
+        font-size: 22px;
+        letter-spacing: 3px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<main class="ventana">
+
+    <h1>ACTUALIZAR<br>CONTRASEÑA</h1>
+
+    <form id="formRecuperar">
+
+        <!-- USUARIO -->
+        <div class="campo">
+            <label for="usuario">Usuario</label>
+            <input
+                type="text"
+                id="usuario"
+                placeholder="Usuario"
+                autocomplete="username"
+                required>
+        </div>
+
+        <!-- TELÉFONO -->
+        <div class="campo">
+            <label for="telefono">
+                Número de teléfono
+            </label>
+            <input
+                type="tel"
+                id="telefono"
+                placeholder="Número de teléfono"
+                maxlength="10"
+                inputmode="numeric"
+                required>
+        </div>
+
+        <!-- CÓDIGO -->
+        <div class="campo">
+            <label for="codigo">
+                Código de verificación
+            </label>
+            <input
+                type="text"
+                id="codigo"
+                placeholder="Código de verificación"
+                autocomplete="one-time-code"
+                required>
+        </div>
+
+        <!-- NUEVA CONTRASEÑA -->
+        <div class="campo">
+            <label for="nueva">
+                Nueva contraseña
+            </label>
+
+            <div class="password">
+                <input
+                    type="password"
+                    id="nueva"
+                    placeholder="Nueva contraseña"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required>
+
+                <button type="button"
+                        class="ver"
+                        onclick="mostrar('nueva', this)">
+                    Ver
+                </button>
+            </div>
+        </div>
+
+        <!-- CONFIRMAR CONTRASEÑA -->
+        <div class="campo">
+            <label for="confirmar">
+                Confirmar nueva contraseña
+            </label>
+
+            <div class="password">
+                <input
+                    type="password"
+                    id="confirmar"
+                    placeholder="Confirmar contraseña"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required>
+
+                <button type="button"
+                        class="ver"
+                        onclick="mostrar('confirmar', this)">
+                    Ver
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="boton">
+            ACTUALIZAR CONTRASEÑA
+        </button>
+
+        <p id="mensaje" class="mensaje" role="status"></p>
+
+    </form>
+
+    <!-- REGRESAR A LOGIN -->
+    <a href="login.html" class="volver">
+        ← Volver a iniciar sesión
+    </a>
+
+</main>
+
+<script>
+function mostrar(id, boton) {
+    const campo = document.getElementById(id);
+
+    if (campo.type === "password") {
+        campo.type = "text";
+        boton.textContent = "Ocultar";
+    } else {
+        campo.type = "password";
+        boton.textContent = "Ver";
+    }
+}
+
+document.getElementById("formRecuperar")
+.addEventListener("submit", function(evento) {
+    evento.preventDefault();
+
+    const usuario =
+        document.getElementById("usuario").value.trim();
+
+    const telefono =
+        document.getElementById("telefono").value.trim();
+
+    const codigo =
+        document.getElementById("codigo").value.trim();
+
+    const nueva =
+        document.getElementById("nueva").value;
+
+    const confirmar =
+        document.getElementById("confirmar").value;
+
+    const mensaje =
+        document.getElementById("mensaje");
+
+    mensaje.style.color = "#ffdddd";
+
+    if (!usuario || !telefono || !codigo ||
+        !nueva || !confirmar) {
+        mensaje.textContent = "Completa todos los campos.";
+        return;
+    }
+
+    if (!/^[0-9]{10}$/.test(telefono)) {
+        mensaje.textContent =
+            "El teléfono debe tener 10 dígitos.";
+        return;
+    }
+
+    if (nueva.length < 8) {
+        mensaje.textContent =
+            "La contraseña debe tener al menos 8 caracteres.";
+        return;
+    }
+
+    if (nueva !== confirmar) {
+        mensaje.textContent =
+            "Las contraseñas no coinciden.";
+        return;
+    }
+
+    mensaje.style.color = "#a8ddcb";
+    mensaje.textContent =
+        "Datos válidos. Falta verificar el código y actualizar la contraseña en el servidor.";
+
+    // Cuando FastAPI confirme la actualización:
+    // window.location.href = "login.html";
+});
+</script>
+
+</body>
+</html>

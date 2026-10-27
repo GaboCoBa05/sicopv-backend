@@ -1,0 +1,755 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte de falla</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f6f8f8;
+    color: #073f57;
+}
+
+.barra {
+    height: 60px;
+    background: #0b4b4e;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+}
+
+.barra-izquierda {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.barra h2 {
+    font-size: 25px;
+}
+
+.controles {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.controles button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.icono {
+    width: 27px;
+    height: 27px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+
+.icono-grande {
+    width: 65px;
+    height: 65px;
+}
+
+.contenedor {
+    margin: 20px 22px;
+    border: 1px solid #cad7dc;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fbfcfc;
+}
+
+.encabezado {
+    background: #0b4b4e;
+    color: white;
+    padding: 20px 35px;
+    display: flex;
+    align-items: center;
+    gap: 35px;
+}
+
+.encabezado h1 {
+    font-size: 34px;
+    margin-bottom: 8px;
+}
+
+.encabezado p {
+    font-size: 19px;
+}
+
+.contenido {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 20px;
+    padding: 20px 25px;
+}
+
+.columna {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.panel {
+    background: #eaf4f1;
+    border: 1px solid #d7e9e5;
+    border-radius: 16px;
+    padding: 20px 24px;
+}
+
+.panel h3 {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 22px;
+    color: #07475a;
+    margin-bottom: 18px;
+}
+
+.panel-qr {
+    background: #e2effc;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.texto-qr {
+    flex: 1;
+}
+
+.texto-qr h3 {
+    margin-bottom: 6px;
+}
+
+.texto-qr p {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.boton-qr {
+    background: #07526a;
+    color: white;
+    border: none;
+    border-radius: 9px;
+    padding: 18px 25px;
+    font-size: 19px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.boton-qr:hover {
+    background: #086b86;
+}
+
+.dos-campos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.campo {
+    margin-bottom: 2px;
+}
+
+label {
+    display: block;
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 9px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 17px 18px;
+    border: 1px solid #b7c9d8;
+    border-radius: 9px;
+    background: #fcfcfe;
+    color: #073f57;
+    font-family: Arial, sans-serif;
+    font-size: 17px;
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #0b7a87;
+    box-shadow: 0 0 0 2px #0b7a8722;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.descripcion textarea {
+    min-height: 125px;
+}
+
+.panel-fotos {
+    flex: 1;
+    min-height: 350px;
+    border: 2px dashed #9dc8d1;
+    border-radius: 15px;
+    background: #e5f3f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 25px;
+    cursor: pointer;
+    gap: 15px;
+}
+
+.panel-fotos:hover {
+    background: #d9eee9;
+}
+
+.panel-fotos h3 {
+    font-size: 23px;
+}
+
+.panel-fotos p {
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+.panel-fotos input {
+    display: none;
+}
+
+.vista-fotos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 100%;
+}
+
+.vista-fotos img {
+    width: 85px;
+    height: 85px;
+    object-fit: cover;
+    border-radius: 7px;
+    border: 1px solid #a4c9c4;
+}
+
+.adicional textarea {
+    min-height: 135px;
+}
+
+.boton-enviar {
+    width: 100%;
+    background: #0b4b4e;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 24px;
+    font-size: 23px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.boton-enviar:hover {
+    background: #086369;
+}
+
+.mensaje {
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    min-height: 20px;
+}
+
+@media (max-width: 950px) {
+    .contenido {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-fotos {
+        min-height: 230px;
+    }
+}
+
+@media (max-width: 600px) {
+    .contenedor {
+        margin: 10px;
+    }
+
+    .encabezado {
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .encabezado h1 {
+        font-size: 25px;
+    }
+
+    .encabezado p {
+        font-size: 14px;
+    }
+
+    .contenido {
+        padding: 12px;
+    }
+
+    .panel {
+        padding: 17px;
+    }
+
+    .panel-qr {
+        flex-wrap: wrap;
+    }
+
+    .dos-campos {
+        grid-template-columns: 1fr;
+    }
+
+    .boton-qr {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ICONOS SVG -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     style="display:none">
+
+    <symbol id="config" viewBox="0 0 24 24">
+        <path d="M10 2h4l.7 2.4 2 .9 2.2-1.1 2.8 2.8-1.1 2.2.9 2L24 12l-2.5.8-.9 2 1.1 2.2-2.8 2.8-2.2-1.1-2 .9L14 22h-4l-.7-2.4-2-.9-2.2 1.1-2.8-2.8 1.1-2.2-.9-2L0 12l2.5-.8.9-2-1.1-2.2 2.8-2.8 2.2 1.1 2-.9z"/>
+        <circle cx="12" cy="12" r="3"/>
+    </symbol>
+
+    <symbol id="archivo" viewBox="0 0 24 24">
+        <path d="M5 2h10l5 5v15H5z"/>
+        <path d="M15 2v6h5M8 12h9M8 16h9"/>
+    </symbol>
+
+    <symbol id="qr" viewBox="0 0 24 24">
+        <path d="M3 8V3h5M16 3h5v5M3 16v5h5M16 21h5v-5"/>
+        <rect x="7" y="7" width="4" height="4"/>
+        <rect x="14" y="7" width="3" height="3"/>
+        <path d="M7 15h3v3H7zM14 14h2M18 14v4M14 18h2"/>
+    </symbol>
+
+    <symbol id="maquina" viewBox="0 0 24 24">
+        <rect x="3" y="7" width="18" height="14" rx="2"/>
+        <path d="M8 7V4h8v3M7 12h4M7 16h10M16 12h1"/>
+    </symbol>
+
+    <symbol id="llave" viewBox="0 0 24 24">
+        <path d="M21 6a6 6 0 0 1-8 7L5 21l-3-3 8-8a6 6 0 0 1 7-8l-4 4 5 5z"/>
+    </symbol>
+
+    <symbol id="camara" viewBox="0 0 24 24">
+        <path d="M3 7h4l2-3h6l2 3h4v13H3z"/>
+        <circle cx="12" cy="13" r="4"/>
+    </symbol>
+
+    <symbol id="mensaje" viewBox="0 0 24 24">
+        <path d="M4 4h16v13H9l-5 4z"/>
+        <path d="M8 9h8M8 13h6"/>
+    </symbol>
+
+    <symbol id="enviar" viewBox="0 0 24 24">
+        <path d="M22 2L11 13"/>
+        <path d="M22 2L15 22l-4-9-9-4z"/>
+    </symbol>
+</svg>
+
+<!-- BARRA SUPERIOR -->
+<header class="barra">
+
+    <div class="barra-izquierda">
+        <svg class="icono" style="width:36px;height:36px">
+            <use href="#config"></use>
+        </svg>
+        <h2>FALLAS</h2>
+    </div>
+
+    <div class="controles">
+        <button type="button"
+                onclick="minimizar()"
+                title="Minimizar">−</button>
+
+        <button type="button"
+                onclick="pantallaCompleta()"
+                title="Pantalla completa">□</button>
+
+        <button type="button"
+                onclick="volver()"
+                title="Cerrar y volver">×</button>
+    </div>
+
+</header>
+
+<main class="contenedor">
+
+    <!-- TÍTULO DEL FORMULARIO -->
+    <section class="encabezado">
+
+        <svg class="icono icono-grande">
+            <use href="#archivo"></use>
+        </svg>
+
+        <div>
+            <h1>Reporte de falla</h1>
+            <p>
+                Completa la información para registrar
+                la falla de la máquina.
+            </p>
+        </div>
+
+    </section>
+
+    <form id="formFalla">
+
+        <div class="contenido">
+
+            <!-- COLUMNA IZQUIERDA -->
+            <div class="columna">
+
+                <!-- LECTURA QR -->
+                <section class="panel panel-qr">
+
+                    <svg class="icono icono-grande">
+                        <use href="#qr"></use>
+                    </svg>
+
+                    <div class="texto-qr">
+                        <h3>Lectura de código QR</h3>
+                        <p>
+                            Escanea el código QR de la máquina
+                            para llenar automáticamente el
+                            nombre y la ubicación.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="boton-qr"
+                        onclick="leerQR()">
+                        Leer QR
+                    </button>
+
+                </section>
+
+                <!-- NOMBRE Y UBICACIÓN -->
+                <section class="panel">
+
+                    <h3>
+                        <svg class="icono">
+                            <use href="#maquina"></use>
+                        </svg>
+                        Nombre y ubicación de la máquina
+                    </h3>
+
+                    <div class="dos-campos">
+
+                        <div class="campo">
+                            <label for="nombre">
+                                Nombre de la máquina
+                            </label>
+
+                            <input
+                                type="text"
+                                id="nombre"
+                                placeholder="Ej. Motor principal"
+                                required>
+                        </div>
+
+                        <div class="campo">
+                            <label for="ubicacion">
+                                Ubicación
+                            </label>
+
+                            <input
+                                type="text"
+                                id="ubicacion"
+                                placeholder="Ej. Línea 1 - Área A"
+                                required>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- TIPO DE FALLA -->
+                <section class="panel">
+
+                    <h3>
+                        <svg class="icono">
+                            <use href="#llave"></use>
+                        </svg>
+                        Tipo de falla
+                    </h3>
+
+                    <div class="campo">
+                        <label for="tipo">
+                            Tipo de falla
+                        </label>
+
+                        <select id="tipo" required>
+                            <option value="">
+                                Selecciona un tipo de falla
+                            </option>
+                            <option value="Mecánica">
+                                Mecánica
+                            </option>
+                            <option value="Eléctrica">
+                                Eléctrica
+                            </option>
+                            <option value="Hidráulica">
+                                Hidráulica
+                            </option>
+                            <option value="Neumática">
+                                Neumática
+                            </option>
+                            <option value="Electrónica">
+                                Electrónica
+                            </option>
+                            <option value="Otra">
+                                Otra
+                            </option>
+                        </select>
+                    </div>
+
+                </section>
+
+                <!-- DESCRIPCIÓN -->
+                <section class="panel descripcion">
+
+                    <h3>
+                        <svg class="icono">
+                            <use href="#archivo"></use>
+                        </svg>
+                        Descripción
+                    </h3>
+
+                    <div class="campo">
+                        <label for="descripcion">
+                            Descripción de la falla
+                        </label>
+
+                        <textarea
+                            id="descripcion"
+                            placeholder="Describe la falla en detalle..."
+                            required></textarea>
+                    </div>
+
+                </section>
+
+            </div>
+
+            <!-- COLUMNA DERECHA -->
+            <div class="columna">
+
+                <!-- FOTOGRAFÍAS -->
+                <label class="panel-fotos" for="fotos">
+
+                    <svg class="icono"
+                         style="width:90px;height:90px">
+                        <use href="#camara"></use>
+                    </svg>
+
+                    <h3>Agregar foto(s)</h3>
+
+                    <p>
+                        Haz clic para subir imágenes<br>
+                        de la falla (opcional)
+                    </p>
+
+                    <input
+                        type="file"
+                        id="fotos"
+                        accept="image/*"
+                        multiple
+                        onchange="mostrarFotos(event)">
+
+                    <div id="vistaFotos" class="vista-fotos"></div>
+
+                </label>
+
+                <!-- DESCRIPCIÓN ADICIONAL -->
+                <section class="panel adicional">
+
+                    <h3>
+                        <svg class="icono">
+                            <use href="#mensaje"></use>
+                        </svg>
+                        Descripción adicional
+                        <span style="font-weight:normal;font-size:16px">
+                            (opcional)
+                        </span>
+                    </h3>
+
+                    <textarea
+                        id="adicional"
+                        placeholder="Ej. Número de serie, observaciones, etc."></textarea>
+
+                </section>
+
+                <!-- ENVIAR -->
+                <button type="submit" class="boton-enviar">
+
+                    <svg class="icono"
+                         style="width:35px;height:35px">
+                        <use href="#enviar"></use>
+                    </svg>
+
+                    Enviar reporte
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <p id="estado" class="mensaje" role="status"></p>
+
+    </form>
+
+</main>
+
+<script>
+// REGRESAR AL MENÚ PRINCIPAL
+function volver() {
+    window.location.href = "seleccion.html";
+}
+
+// PANTALLA COMPLETA
+async function pantallaCompleta() {
+    try {
+        if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+        } else {
+            await document.exitFullscreen();
+        }
+    } catch (error) {
+        alert("No se pudo cambiar a pantalla completa.");
+    }
+}
+
+// LOS NAVEGADORES NO PERMITEN MINIMIZAR
+// UNA VENTANA NORMAL DESDE JAVASCRIPT.
+function minimizar() {
+    alert("La minimización requiere una aplicación de escritorio.");
+}
+
+// LECTURA QR DE PRUEBA
+function leerQR() {
+    const dato = prompt(
+        "Introduce el contenido QR de prueba:\n" +
+        "Nombre de máquina|Ubicación\n\n" +
+        "Ejemplo:\nMotor principal|Línea 1 - Área A"
+    );
+
+    if (dato === null) return;
+
+    const partes = dato.split("|");
+
+    if (partes.length !== 2 ||
+        !partes[0].trim() ||
+        !partes[1].trim()) {
+        alert("Formato incorrecto. Usa Nombre|Ubicación");
+        return;
+    }
+
+    document.getElementById("nombre").value =
+        partes[0].trim();
+
+    document.getElementById("ubicacion").value =
+        partes[1].trim();
+}
+
+// PREVISUALIZAR FOTOGRAFÍAS
+function mostrarFotos(evento) {
+    const archivos = evento.target.files;
+    const contenedor = document.getElementById("vistaFotos");
+
+    contenedor.innerHTML = "";
+
+    for (const archivo of archivos) {
+        if (!archivo.type.startsWith("image/")) continue;
+
+        const imagen = document.createElement("img");
+        const url = URL.createObjectURL(archivo);
+
+        imagen.src = url;
+        imagen.alt = "Fotografía de la falla";
+
+        imagen.onload = function() {
+            URL.revokeObjectURL(url);
+        };
+
+        contenedor.appendChild(imagen);
+    }
+}
+
+// VALIDAR EL REPORTE
+document.getElementById("formFalla")
+.addEventListener("submit", function(evento) {
+    evento.preventDefault();
+
+    const nombre =
+        document.getElementById("nombre").value.trim();
+
+    const ubicacion =
+        document.getElementById("ubicacion").value.trim();
+
+    const tipo =
+        document.getElementById("tipo").value;
+
+    const descripcion =
+        document.getElementById("descripcion").value.trim();
+
+    const estado =
+        document.getElementById("estado");
+
+    if (!nombre || !ubicacion || !tipo || !descripcion) {
+        estado.style.color = "#a22222";
+        estado.textContent =
+            "Completa todos los campos obligatorios.";
+        return;
+    }
+
+    estado.style.color = "#0b6b55";
+    estado.textContent =
+        "Formulario validado. Falta conectar el servidor para guardar el reporte.";
+
+    // Aquí se enviará el formulario a FastAPI
+    // utilizando FormData y fetch().
+});
+</script>
+
+</body>
+</html>

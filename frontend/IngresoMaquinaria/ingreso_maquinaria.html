@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ingreso Maquinaria</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#faf9f6;color:#06454a;min-height:100vh}
+.barra{height:50px;background:#06454a;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.barra-izquierda{display:flex;align-items:center;gap:22px}
+.barra h2{font-size:22px}
+.inicio{color:white;text-decoration:none;font-size:32px}
+.usuario{font-size:13px;font-weight:bold}
+.contenedor{width:740px;max-width:calc(100% - 30px);margin:15px auto;border:1px solid #e3e1dc;border-radius:8px;padding:20px 25px 26px}
+.encabezado{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.encabezado h1{font-size:24px}
+.cerrar{display:flex;align-items:center;gap:7px;color:#06454a;font-size:12px;font-weight:bold;text-decoration:none}
+.cerrar span{font-size:28px;color:#e12525}
+.formulario{width:550px;max-width:100%;margin:auto}
+.campo{margin-bottom:13px}
+label{display:block;font-size:15px;font-weight:bold;margin-bottom:5px}
+.entrada{position:relative}
+.icono{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:23px;height:23px;color:#075362;fill:currentColor;pointer-events:none}
+.entrada input,.entrada select,.entrada textarea{width:100%;border:1px solid #d0d0cd;border-radius:5px;background:#faf9f6;padding:0 14px 0 42px;color:#06454a;font:14px Arial,sans-serif;outline:none}
+.entrada input,.entrada select{height:43px}
+.entrada textarea{min-height:55px;padding-top:12px;resize:vertical}
+.entrada:has(textarea) .icono{top:15px;transform:none}
+.entrada input:focus,.entrada select:focus,.entrada textarea:focus{border-color:#08747a}
+.boton{display:block;width:240px;max-width:100%;margin:15px auto 0;padding:13px;border:none;border-radius:5px;background:#07545b;color:white;font-size:14px;font-weight:bold;cursor:pointer}
+.boton:hover{background:#08737a}
+.fondo-modal{position:fixed;inset:0;background:rgba(0,0,0,.52);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
+.fondo-modal.activo{display:flex}
+.modal{width:350px;max-width:100%;background:white;border-radius:8px;padding:25px;position:relative}
+.modal-cerrar{position:absolute;right:12px;top:7px;font-size:30px;color:#e12525;border:0;background:none;cursor:pointer}
+.modal-contenido{display:flex;align-items:center;justify-content:center;gap:30px;margin:12px 0 25px}
+.alerta{width:48px;height:48px;border-radius:50%;background:#f52c2c;color:white;font-size:36px;font-weight:bold;display:flex;align-items:center;justify-content:center}
+.modal-texto{font-size:15px;font-weight:bold}
+.modal-boton{width:100%;background:#a7d8c4;color:#06454a;border:0;border-radius:5px;padding:13px;font-weight:bold;font-size:15px;cursor:pointer}
+@media(max-width:600px){.barra h2{font-size:16px}.encabezado h1{font-size:19px}.contenedor{padding:18px 15px}}
+</style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+<symbol id="codigo-barras" viewBox="0 0 24 24">
+<path d="M2 4v16M5 4v16M8 4v16M11 4v16M14 4v16M17 4v16M20 4v16M22 4v16" stroke="currentColor" stroke-width="1.5"/>
+</symbol>
+<symbol id="engranaje" viewBox="0 0 24 24">
+<path d="M10 2h4l1 3 2 1 3-1 2 4-2 2v2l2 2-2 4-3-1-2 1-1 3h-4l-1-3-2-1-3 1-2-4 2-2v-2L2 9l2-4 3 1 2-1z"/>
+<circle cx="12" cy="12" r="3" fill="#faf9f6"/>
+</symbol>
+<symbol id="ubicacion-icono" viewBox="0 0 24 24">
+<path d="M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8z"/>
+<circle cx="12" cy="10" r="3" fill="#faf9f6"/>
+</symbol>
+<symbol id="documento" viewBox="0 0 24 24">
+<path d="M5 2h10l5 5v15H5z"/>
+<path d="M14 2v6h6M8 12h9M8 16h9" stroke="#faf9f6" stroke-width="1.5" fill="none"/>
+</symbol>
+</svg>
+
+<header class="barra">
+<div class="barra-izquierda">
+<a href="../FallaEquipo/seleccion.html" class="inicio">⌂</a>
+<h2>INGRESO MAQUINARIA</h2>
+</div>
+<div class="usuario">♟ USUARIO</div>
+</header>
+
+<main class="contenedor">
+<div class="encabezado">
+<h1>INGRESO MAQUINARIA</h1>
+<a href="../FallaEquipo/seleccion.html" class="cerrar">
+<span>×</span>CERRAR
+</a>
+</div>
+
+<form id="formMaquinaria" class="formulario">
+<div class="campo">
+<label for="serie">Número de serie</label>
+<div class="entrada">
+<svg class="icono"><use href="#codigo-barras"/></svg>
+<input id="serie" type="text" placeholder="Ingrese número de serie..." maxlength="100" required>
+</div>
+</div>
+
+<div class="campo">
+<label for="nombre">Nombre de la maquinaria</label>
+<div class="entrada">
+<svg class="icono"><use href="#engranaje"/></svg>
+<input id="nombre" type="text" placeholder="Ingrese nombre de la maquinaria..." maxlength="100" required>
+</div>
+</div>
+
+<div class="campo">
+<label for="ubicacion">Ubicación/Área</label>
+<div class="entrada">
+<svg class="icono"><use href="#ubicacion-icono"/></svg>
+<select id="ubicacion" required>
+<option value="">Seleccione ubicación/área...</option>
+<option>Producción</option>
+<option>Mantenimiento</option>
+<option>Calidad</option>
+<option>Almacén</option>
+<option>Línea 1 - Área A</option>
+<option>Línea 2 - Área B</option>
+</select>
+</div>
+</div>
+
+<div class="campo">
+<label for="descripcion">Descripción (función)</label>
+<div class="entrada">
+<svg class="icono"><use href="#documento"/></svg>
+<textarea id="descripcion" placeholder="Ingrese descripción de la función..." maxlength="500" required></textarea>
+</div>
+</div>
+
+<button type="submit" class="boton">REGISTRAR EQUIPO</button>
+</form>
+</main>
+
+<div class="fondo-modal" id="fondoModal">
+<div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="textoError">
+<button type="button" class="modal-cerrar" onclick="cerrarError()">×</button>
+<div class="modal-contenido">
+<div class="alerta">!</div>
+<div class="modal-texto" id="textoError">Registro duplicado</div>
+</div>
+<button type="button" class="modal-boton" onclick="cerrarError()">CERRAR</button>
+</div>
+</div>
+
+<script>
+const formulario = document.getElementById("formMaquinaria");
+const modal = document.getElementById("fondoModal");
+
+function normalizar(texto) {
+    return String(texto || "").trim().toLowerCase();
+}
+
+formulario.addEventListener("submit", function(evento) {
+    evento.preventDefault();
+
+    if (!formulario.reportValidity()) return;
+
+    const equipo = {
+        serie: document.getElementById("serie").value.trim(),
+        nombre: document.getElementById("nombre").value.trim(),
+        ubicacion: document.getElementById("ubicacion").value,
+        descripcion: document.getElementById("descripcion").value.trim()
+    };
+
+    if (!equipo.serie || !equipo.nombre ||
+        !equipo.ubicacion || !equipo.descripcion) {
+        alert("Completa todos los campos.");
+        return;
+    }
+
+    let equipos = [];
+
+    try {
+        equipos = JSON.parse(
+            localStorage.getItem("equiposMaquinaria") || "[]"
+        );
+        if (!Array.isArray(equipos)) equipos = [];
+    } catch (error) {
+        equipos = [];
+    }
+
+    const duplicado = equipos.some(item =>
+        normalizar(item.serie) === normalizar(equipo.serie) ||
+        (
+            normalizar(item.nombre) === normalizar(equipo.nombre) &&
+            normalizar(item.ubicacion) === normalizar(equipo.ubicacion)
+        )
+    );
+
+    if (duplicado) {
+        modal.classList.add("activo");
+        return;
+    }
+
+    try {
+        sessionStorage.setItem("equipoQR", JSON.stringify(equipo));
+
+        equipos.push(equipo);
+        localStorage.setItem(
+            "equiposMaquinaria",
+            JSON.stringify(equipos)
+        );
+
+        window.location.href = "./codigo_qr.html";
+    } catch (error) {
+        alert("Error al guardar los datos: " + error.message);
+    }
+});
+
+function cerrarError() {
+    modal.classList.remove("activo");
+}
+</script>
+</body>
+</html>

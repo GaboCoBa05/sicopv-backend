@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard de Eficiencia</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
+.contenedor { min-height: 100vh; display: flex; flex-direction: column; }
+.encabezado { height: 62px; background: #0b4548; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
+.titulo { display: flex; align-items: center; gap: 15px; font-size: 22px; font-weight: bold; letter-spacing: 2px; }
+.usuario { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: bold; }
+.cuerpo { display: flex; flex: 1; }
+.sidebar { width: 228px; flex-shrink: 0; background: #0b4548; padding: 18px 8px; }
+.menu { display: flex; flex-direction: column; gap: 9px; }
+.menu a { display: flex; align-items: center; gap: 13px; min-height: 49px; padding: 12px; color: white; text-decoration: none; font-size: 14px; border-radius: 6px; }
+.menu a:hover, .menu a.activo { background: #258c82; }
+.icono { width: 24px; height: 24px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.principal { flex: 1; padding: 28px 32px; background: #fafbf9; }
+.principal h1 { font-size: 26px; letter-spacing: 3px; margin-bottom: 6px; }
+.principal p { color: #5a8a87; font-size: 14px; margin-bottom: 24px; }
+.cards-kpi { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 14px; margin-bottom: 28px; }
+.kpi { background: #d4ebe5; border-radius: 12px; padding: 20px; text-align: center; }
+.kpi-valor { font-size: 32px; font-weight: bold; color: #0b4548; }
+.kpi-label { font-size: 12px; color: #4a7a77; margin-top: 4px; }
+.graficas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.panel-graf { background: white; border: 1px solid #d0e0dc; border-radius: 14px; padding: 22px; }
+.panel-graf h2 { font-size: 16px; font-weight: bold; color: #0b4548; margin-bottom: 18px; }
+/* GRÁFICA DE BARRAS MTBF */
+.barras { display: flex; align-items: flex-end; gap: 14px; height: 160px; padding-bottom: 24px; position: relative; border-bottom: 2px solid #d0e0dc; }
+.barra-wrap { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 6px; height: 100%; justify-content: flex-end; }
+.barra { background: #0b4548; border-radius: 4px 4px 0 0; width: 100%; transition: background 0.2s; cursor: pointer; }
+.barra:hover { background: #258c82; }
+.barra-mes { font-size: 11px; color: #5a8a87; margin-top: 6px; }
+.barra-val { font-size: 11px; color: #0b4548; font-weight: bold; }
+/* GRÁFICA PASTEL MTTR */
+.pastel-wrap { display: flex; align-items: center; gap: 20px; }
+.leyenda { display: flex; flex-direction: column; gap: 10px; }
+.ley-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.ley-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.ejes-y { position: absolute; left: -32px; top: 0; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+.eje-y-label { font-size: 10px; color: #5a8a87; }
+.btn-exportar { width: 100%; background: #0b4548; color: white; border: none; border-radius: 10px; padding: 16px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+.btn-exportar:hover { background: #258c82; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 200; }
+.modal-box { background: white; border-radius: 12px; padding: 28px; max-width: 300px; width: 90%; text-align: center; }
+.modal-icon { font-size: 36px; margin-bottom: 8px; }
+.modal-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
+.modal-msg { font-size: 13px; color: #4a7a77; margin-bottom: 16px; }
+.btn-modal { background: #0b4548; color: white; border: none; border-radius: 8px; padding: 10px 24px; font-size: 13px; cursor: pointer; }
+.hidden { display: none !important; }
+@media(max-width:900px){ .graficas{grid-template-columns:1fr;} }
+@media(max-width:650px){ .sidebar{width:65px;} .menu a span{display:none;} .menu a{justify-content:center;} .principal{padding:16px;} }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+<symbol id="home" viewBox="0 0 24 24"><path d="M3 10L12 3l9 7"/><path d="M5 9v12h14V9"/><path d="M9 21v-8h6v8"/></symbol>
+<symbol id="doc" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h5"/></symbol>
+<symbol id="gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M10 2h4l.7 2.4 2 .9 2.2-1.1 2.8 2.8-1.1 2.2.9 2L24 12l-2.5.8-.9 2 1.1 2.2-2.8 2.8-2.2-1.1-2 .9L14 22h-4l-.7-2.4-2-.9-2.2 1.1-2.8-2.8 1.1-2.2-.9-2L0 12l2.5-.8.9-2-1.1-2.2 2.8-2.8 2.2 1.1 2-.9z"/></symbol>
+<symbol id="mon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M12 18v3M8 21h8"/></symbol>
+<symbol id="llave" viewBox="0 0 24 24"><path d="M21 6a6 6 0 0 1-8 7L5 21l-3-3 8-8a6 6 0 0 1 7-8l-4 4 5 5z"/></symbol>
+<symbol id="cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6M17 2v6M3 10h18"/></symbol>
+<symbol id="grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 12h18"/></symbol>
+<symbol id="graf" viewBox="0 0 24 24"><path d="M4 20v-6h4v6M10 20V9h4v11M16 20V4h4v16"/></symbol>
+<symbol id="usr" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3z"/></symbol>
+</svg>
+
+<div class="contenedor">
+  <header class="encabezado">
+    <div class="titulo"><svg class="icono"><use href="#home"></use></svg> CONSULTAR DASHBOARD DE EFICIENCIA</div>
+    <div class="usuario"><svg class="icono"><use href="#usr"></use></svg> USUARIO</div>
+  </header>
+  <div class="cuerpo">
+    <aside class="sidebar">
+      <nav class="menu">
+        <a href="../FallaEquipo/seleccion.html"><svg class="icono"><use href="#doc"></use></svg><span>Reportar Falla</span></a>
+        <a href="../IngresoMaquinaria/ingreso_maquinaria.html"><svg class="icono"><use href="#gear"></use></svg><span>Ingreso Maquinaria</span></a>
+        <a href="../BitacoraDigital/bitacora_digital.html"><svg class="icono"><use href="#mon"></use></svg><span>Bitácora Digital</span></a>
+        <a href="../RegistrarTecnico/registrar_tecnico.html"><svg class="icono"><use href="#llave"></use></svg><span>Registrar Técnico</span></a>
+        <a href="../MantenimientoPreventivo/mantenimiento_preventivo.html"><svg class="icono"><use href="#cal"></use></svg><span>Mantenimiento Preventivo</span></a>
+        <a href="dashboard.html" class="activo"><svg class="icono"><use href="#grid"></use></svg><span>Dashboard</span></a>
+        <a href="../Reportes/reporte_pdf.html"><svg class="icono"><use href="#graf"></use></svg><span>Reportes</span></a>
+      </nav>
+    </aside>
+    <main class="principal">
+      <h1>GRÁFICAS</h1>
+      <p>MTBF — Tiempo Medio Entre Fallas &nbsp;|&nbsp; MTTR — Tiempo Medio de Reparación</p>
+      <div class="cards-kpi">
+        <div class="kpi"><div class="kpi-valor">68 h</div><div class="kpi-label">MTBF Promedio</div></div>
+        <div class="kpi"><div class="kpi-valor">4.2 h</div><div class="kpi-label">MTTR Promedio</div></div>
+        <div class="kpi"><div class="kpi-valor">94%</div><div class="kpi-label">Disponibilidad</div></div>
+        <div class="kpi"><div class="kpi-valor">23</div><div class="kpi-label">Fallas este mes</div></div>
+      </div>
+      <div class="graficas">
+        <!-- MTBF BARRAS -->
+        <div class="panel-graf">
+          <h2>MTBF</h2>
+          <div style="position:relative;padding-left:36px;">
+            <div class="ejes-y">
+              <span class="eje-y-label">100</span>
+              <span class="eje-y-label">80</span>
+              <span class="eje-y-label">60</span>
+              <span class="eje-y-label">40</span>
+              <span class="eje-y-label">20</span>
+              <span class="eje-y-label">0</span>
+            </div>
+            <div class="barras">
+              <div class="barra-wrap"><div class="barra-val">62</div><div class="barra" style="height:62%;" title="Ene: 62h"></div><div class="barra-mes">Ene</div></div>
+              <div class="barra-wrap"><div class="barra-val">55</div><div class="barra" style="height:55%;" title="Feb: 55h"></div><div class="barra-mes">Feb</div></div>
+              <div class="barra-wrap"><div class="barra-val">80</div><div class="barra" style="height:80%;" title="Mar: 80h"></div><div class="barra-mes">Mar</div></div>
+              <div class="barra-wrap"><div class="barra-val">35</div><div class="barra" style="height:35%;" title="Abr: 35h"></div><div class="barra-mes">Abr</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- MTTR PASTEL -->
+        <div class="panel-graf">
+          <h2>MTTR</h2>
+          <div class="pastel-wrap">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              <!-- Mantenimiento Correctivo 55% -->
+              <path d="M80 80 L80 10 A70 70 0 0 1 148.7 45 Z" fill="#0b4548"/>
+              <!-- Mantenimiento Preventivo 25% -->
+              <path d="M80 80 L148.7 45 A70 70 0 0 1 115 143.7 Z" fill="#258c82"/>
+              <!-- Ajustes 15% -->
+              <path d="M80 80 L115 143.7 A70 70 0 0 1 24.3 127.3 Z" fill="#a8ddcb"/>
+              <!-- Otros 5% -->
+              <path d="M80 80 L24.3 127.3 A70 70 0 0 1 80 10 Z" fill="#d4ebe5"/>
+              <circle cx="80" cy="80" r="30" fill="white"/>
+            </svg>
+            <div class="leyenda">
+              <div class="ley-item"><div class="ley-dot" style="background:#0b4548;"></div>Mant. Correctivo 55%</div>
+              <div class="ley-item"><div class="ley-dot" style="background:#258c82;"></div>Mant. Preventivo 25%</div>
+              <div class="ley-item"><div class="ley-dot" style="background:#a8ddcb;"></div>Ajustes 15%</div>
+              <div class="ley-item"><div class="ley-dot" style="background:#d4ebe5;"></div>Otros 5%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-exportar" onclick="modal('✅','Exportado','El reporte de métricas fue exportado correctamente.')">EXPORTAR</button>
+    </main>
+  </div>
+</div>
+
+<div id="modal-overlay" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-icon" id="m-icon"></div>
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-msg" id="m-msg"></div>
+    <button class="btn-modal" onclick="cerrarModal()">Cerrar</button>
+  </div>
+</div>
+<script>
+function modal(ic,ti,ms){
+  document.getElementById('m-icon').textContent=ic;
+  document.getElementById('m-title').textContent=ti;
+  document.getElementById('m-msg').textContent=ms;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function cerrarModal(){document.getElementById('modal-overlay').classList.add('hidden');}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)cerrarModal();});
+</script>
+</body>
+</html>

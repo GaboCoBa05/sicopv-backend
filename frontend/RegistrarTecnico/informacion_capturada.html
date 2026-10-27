@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Información Capturada</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    background: #faf9f6;
+    color: #06454a;
+    min-height: 100vh;
+}
+.barra {
+    height: 50px;
+    background: #06454a;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 22px;
+}
+.barra-izquierda {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+.barra h2 {
+    font-size: 23px;
+}
+.inicio {
+    font-size: 32px;
+    text-decoration: none;
+    color: white;
+}
+.usuario-superior {
+    font-size: 13px;
+    font-weight: bold;
+}
+.contenedor {
+    width: 740px;
+    max-width: calc(100% - 30px);
+    margin: 15px auto;
+    border: 1px solid #e3e1dc;
+    border-radius: 8px;
+    padding: 20px 25px 26px;
+}
+.encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.encabezado h1 {
+    font-size: 25px;
+}
+.cerrar {
+    color: #06454a;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+}
+.cerrar span {
+    color: #e12a2a;
+    font-size: 29px;
+    vertical-align: middle;
+    margin-right: 7px;
+}
+.formulario {
+    width: 550px;
+    max-width: 100%;
+    margin: auto;
+}
+.campo {
+    margin-bottom: 14px;
+}
+.campo label {
+    display: block;
+    font-weight: bold;
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+.entrada {
+    position: relative;
+}
+.entrada input,
+.entrada select {
+    width: 100%;
+    height: 43px;
+    border: 1px solid #d1d0cd;
+    border-radius: 5px;
+    background: #faf9f6;
+    padding: 0 42px 0 55px;
+    font-size: 15px;
+    color: #555;
+    font-family: Arial, sans-serif;
+}
+.entrada input:disabled,
+.entrada select:disabled {
+    opacity: 1;
+    -webkit-text-fill-color: #555;
+    cursor: default;
+}
+.entrada .icono {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 23px;
+    height: 23px;
+    color: #075362;
+    pointer-events: none;
+}
+.icono svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+}
+.ver {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    color: #075362;
+    cursor: pointer;
+}
+.botones {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 25px;
+}
+.boton {
+    width: 215px;
+    padding: 14px;
+    border: none;
+    border-radius: 5px;
+    background: #07545b;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.boton:hover {
+    background: #08727a;
+}
+.cancelar {
+    background: #9bd9c3;
+    color: #06454a;
+}
+.cancelar:hover {
+    background: #83cbb1;
+}
+.mensaje {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    color: #b62525;
+}
+@media(max-width: 600px) {
+    .barra h2 { font-size: 16px; }
+    .contenedor { padding: 18px 15px; }
+    .encabezado h1 { font-size: 19px; }
+    .botones { flex-wrap: wrap; }
+    .boton { flex: 1; min-width: 130px; }
+}
+</style>
+</head>
+<body>
+
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-user" viewBox="0 0 24 24">
+        <circle cx="12" cy="7" r="4"/>
+        <path d="M4 21v-3a8 8 0 0 1 16 0v3z"/>
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24">
+        <rect x="5" y="10" width="14" height="11" rx="2"/>
+        <path d="M8 11V7a4 4 0 0 1 8 0v4"
+              stroke="currentColor" stroke-width="2" fill="none"/>
+    </symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="14" rx="2"/>
+        <path d="M3 6l9 7 9-7"
+              fill="none" stroke="#faf9f6" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="i-area" viewBox="0 0 24 24">
+        <rect x="4" y="3" width="16" height="18" rx="2"/>
+        <path d="M8 7h2M14 7h2M8 12h2M14 12h2M8 17h2"
+              stroke="#faf9f6" stroke-width="2"/>
+    </symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24">
+        <path d="M10 2h4l1 3 2 1 3-1 2 4-2 2v2l2 2-2 4-3-1-2 1-1 3h-4l-1-3-2-1-3 1-2-4 2-2v-2L2 9l2-4 3 1 2-1z"/>
+        <circle cx="12" cy="12" r="3" fill="#faf9f6"/>
+    </symbol>
+</svg>
+
+<header class="barra">
+    <div class="barra-izquierda">
+        <a href="../FallaEquipo/seleccion.html"
+           class="inicio" title="Inicio">⌂</a>
+        <h2>REGISTRAR TÉCNICO</h2>
+    </div>
+    <div class="usuario-superior">♟ USUARIO</div>
+</header>
+
+<main class="contenedor">
+    <div class="encabezado">
+        <h1>INFORMACIÓN CAPTURADA</h1>
+        <a href="../FallaEquipo/seleccion.html" class="cerrar">
+            <span>×</span>CERRAR
+        </a>
+    </div>
+
+    <div class="formulario">
+        <div class="campo">
+            <label>Usuario</label>
+            <div class="entrada">
+                <span class="icono">
+                    <svg><use href="#i-user"/></svg>
+                </span>
+                <input id="usuario" type="text" disabled>
+            </div>
+        </div>
+
+        <div class="campo">
+            <label>Contraseña</label>
+            <div class="entrada">
+                <span class="icono">
+                    <svg><use href="#i-lock"/></svg>
+                </span>
+                <input id="contrasena" type="password"
+                       value="********" disabled>
+                <button class="ver" type="button"
+                        title="Contraseña oculta">◉</button>
+            </div>
+        </div>
+
+        <div class="campo">
+            <label>Correo electrónico</label>
+            <div class="entrada">
+                <span class="icono">
+                    <svg><use href="#i-mail"/></svg>
+                </span>
+                <input id="correo" type="email" disabled>
+            </div>
+        </div>
+
+        <div class="campo">
+            <label>Área</label>
+            <div class="entrada">
+                <span class="icono">
+                    <svg><use href="#i-area"/></svg>
+                </span>
+                <select id="area" disabled>
+                    <option value="">Seleccionar área</option>
+                    <option>Mantenimiento</option>
+                    <option>Producción</option>
+                    <option>Calidad</option>
+                    <option>Almacén</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="campo">
+            <label>Especialidad</label>
+            <div class="entrada">
+                <span class="icono">
+                    <svg><use href="#i-gear"/></svg>
+                </span>
+                <select id="especialidad" disabled>
+                    <option value="">Seleccionar especialidad</option>
+                    <option>Mecánica</option>
+                    <option>Electricidad</option>
+                    <option>Electrónica</option>
+                    <option>Hidráulica</option>
+                    <option>Neumática</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="botones">
+            <button type="button" class="boton cancelar"
+                    onclick="cancelar()">
+                CANCELAR
+            </button>
+            <button type="button" class="boton"
+                    onclick="registrar()">
+                REGISTRAR
+            </button>
+        </div>
+
+        <p class="mensaje" id="mensaje" role="status"></p>
+    </div>
+</main>
+
+<script>
+const pendiente = JSON.parse(
+    sessionStorage.getItem("tecnicoPendiente") || "null"
+);
+
+// Recuperar los datos enviados desde registrar_tecnico.html.
+if (pendiente) {
+    document.getElementById("usuario").value =
+        pendiente.usuario || "";
+
+    document.getElementById("correo").value =
+        pendiente.correo || "";
+
+    document.getElementById("area").value =
+        pendiente.area || "";
+
+    document.getElementById("especialidad").value =
+        pendiente.especialidad || "";
+} else {
+    document.getElementById("mensaje").textContent =
+        "No hay información pendiente. Regresa al formulario.";
+    document.querySelector(".boton:not(.cancelar)").disabled = true;
+}
+
+function cancelar() {
+    window.location.href = "registrar_tecnico.html";
+}
+
+function registrar() {
+    if (!pendiente) return;
+
+    const registros = JSON.parse(
+        localStorage.getItem("tecnicosDemo") || "[]"
+    );
+
+    const repetido = registros.some(tecnico =>
+        tecnico.usuario.toLowerCase() ===
+            pendiente.usuario.toLowerCase() ||
+        tecnico.correo.toLowerCase() ===
+            pendiente.correo.toLowerCase()
+    );
+
+    if (repetido) {
+        window.location.href = "error_registro.html";
+        return;
+    }
+
+    registros.push({
+        usuario: pendiente.usuario,
+        correo: pendiente.correo,
+        area: pendiente.area,
+        especialidad: pendiente.especialidad
+    });
+
+    localStorage.setItem(
+        "tecnicosDemo",
+        JSON.stringify(registros)
+    );
+
+    sessionStorage.removeItem("tecnicoPendiente");
+
+    alert("Técnico registrado correctamente.");
+    window.location.href = "../FallaEquipo/seleccion.html";
+}
+</script>
+
+</body>
+</html>

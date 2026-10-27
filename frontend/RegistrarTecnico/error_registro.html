@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Error en registro</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #faf9f6;
+    color: #06454a;
+    min-height: 100vh;
+}
+
+/* BARRA SUPERIOR */
+.barra {
+    height: 50px;
+    background: #06454a;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 22px;
+}
+
+.barra-izquierda {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.barra h2 {
+    font-size: 23px;
+}
+
+.inicio {
+    color: white;
+    text-decoration: none;
+    font-size: 32px;
+}
+
+.usuario-superior {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* CONTENEDOR */
+.contenedor {
+    width: 740px;
+    max-width: calc(100% - 30px);
+    margin: 15px auto;
+    border: 1px solid #e3e1dc;
+    border-radius: 8px;
+    padding: 20px 25px 26px;
+}
+
+.encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.encabezado h1 {
+    font-size: 25px;
+}
+
+.cerrar {
+    color: #06454a;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cerrar span {
+    color: #e12a2a;
+    font-size: 30px;
+    font-weight: normal;
+}
+
+/* FORMULARIO */
+.formulario {
+    width: 550px;
+    max-width: 100%;
+    margin: auto;
+}
+
+.campo {
+    margin-bottom: 14px;
+}
+
+.campo label {
+    display: block;
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.entrada {
+    position: relative;
+}
+
+.entrada input,
+.entrada select {
+    width: 100%;
+    height: 43px;
+    border: 1px solid #d1d0cd;
+    border-radius: 5px;
+    background: #faf9f6;
+    padding: 0 45px 0 55px;
+    color: #555;
+    font: 15px Arial, sans-serif;
+}
+
+.entrada input:disabled,
+.entrada select:disabled {
+    opacity: 1;
+    -webkit-text-fill-color: #555;
+}
+
+/* MISMOS ICONOS QUE INFORMACIÓN CAPTURADA */
+.entrada .icono {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 23px;
+    height: 23px;
+    color: #075362;
+    fill: currentColor;
+    pointer-events: none;
+}
+
+.ver {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #075362;
+    font-size: 20px;
+}
+
+/* BOTONES DEL FORMULARIO */
+.botones {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 25px;
+}
+
+.boton {
+    width: 215px;
+    max-width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 5px;
+    background: #07545b;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.cancelar {
+    background: #9bd9c3;
+    color: #06454a;
+}
+
+/* FONDO OSCURECIDO */
+.fondo-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.52);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* VENTANA DE ERROR */
+.modal {
+    width: 330px;
+    max-width: 100%;
+    padding: 24px 27px 18px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px #0003;
+}
+
+.modal-contenido {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.modal-icono {
+    width: 53px;
+    height: 53px;
+    flex-shrink: 0;
+    background: #ff3434;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    font-weight: bold;
+}
+
+.modal-texto {
+    color: #111;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.modal-boton {
+    width: 100%;
+    padding: 13px;
+    background: #a7d8c4;
+    border: none;
+    border-radius: 5px;
+    color: #06454a;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-boton:hover {
+    background: #8dcab3;
+}
+
+@media (max-width: 600px) {
+    .barra h2 {
+        font-size: 16px;
+    }
+
+    .contenedor {
+        padding: 18px 15px;
+    }
+
+    .encabezado h1 {
+        font-size: 19px;
+    }
+
+    .botones {
+        flex-wrap: wrap;
+    }
+
+    .boton {
+        flex: 1;
+        min-width: 130px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ICONOS IGUALES A INFORMACIÓN CAPTURADA -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+
+    <symbol id="icon-usuario" viewBox="0 0 24 24">
+        <circle cx="12" cy="7" r="4"/>
+        <path d="M4 21v-3a8 8 0 0 1 16 0v3z"/>
+    </symbol>
+
+    <symbol id="icon-candado" viewBox="0 0 24 24">
+        <rect x="5" y="10" width="14" height="11" rx="2"/>
+        <path d="M8 10V7a4 4 0 0 1 8 0v3"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"/>
+    </symbol>
+
+    <symbol id="icon-correo" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="14" rx="2"/>
+        <path d="M3 6l9 7 9-7"
+              stroke="white"
+              stroke-width="1.5"
+              fill="none"/>
+    </symbol>
+
+    <symbol id="icon-area" viewBox="0 0 24 24">
+        <rect x="4" y="3" width="16" height="18" rx="2"/>
+        <g fill="white">
+            <rect x="7" y="6" width="2" height="2"/>
+            <rect x="11" y="6" width="2" height="2"/>
+            <rect x="15" y="6" width="2" height="2"/>
+            <rect x="7" y="11" width="2" height="2"/>
+            <rect x="11" y="11" width="2" height="2"/>
+            <rect x="15" y="11" width="2" height="2"/>
+        </g>
+    </symbol>
+
+    <symbol id="icon-engranaje" viewBox="0 0 24 24">
+        <path d="M10 2h4l1 3 2 1 3-1 2 4-2 2v2l2 2-2 4-3-1-2 1-1 3h-4l-1-3-2-1-3 1-2-4 2-2v-2L2 9l2-4 3 1 2-1z"/>
+        <circle cx="12" cy="12" r="3" fill="#faf9f6"/>
+    </symbol>
+
+</svg>
+
+<!-- ENCABEZADO -->
+<header class="barra">
+    <div class="barra-izquierda">
+        <a href="../FallaEquipo/seleccion.html"
+           class="inicio">⌂</a>
+        <h2>REGISTRAR TÉCNICO</h2>
+    </div>
+
+    <div class="usuario-superior">
+        ♟ USUARIO
+    </div>
+</header>
+
+<!-- INFORMACIÓN CAPTURADA -->
+<main class="contenedor">
+
+    <div class="encabezado">
+        <h1>INFORMACIÓN CAPTURADA</h1>
+
+        <a href="../FallaEquipo/seleccion.html"
+           class="cerrar">
+            <span>×</span>CERRAR
+        </a>
+    </div>
+
+    <div class="formulario">
+
+        <!-- USUARIO -->
+        <div class="campo">
+            <label for="usuario">Usuario</label>
+            <div class="entrada">
+                <svg class="icono">
+                    <use href="#icon-usuario"></use>
+                </svg>
+
+                <input type="text"
+                       id="usuario"
+                       disabled>
+            </div>
+        </div>
+
+        <!-- CONTRASEÑA -->
+        <div class="campo">
+            <label for="contrasena">Contraseña</label>
+            <div class="entrada">
+                <svg class="icono">
+                    <use href="#icon-candado"></use>
+                </svg>
+
+                <input type="password"
+                       id="contrasena"
+                       value="********"
+                       disabled>
+
+                <span class="ver">◉</span>
+            </div>
+        </div>
+
+        <!-- CORREO ELECTRÓNICO -->
+        <div class="campo">
+            <label for="correo">Correo electrónico</label>
+            <div class="entrada">
+                <svg class="icono">
+                    <use href="#icon-correo"></use>
+                </svg>
+
+                <input type="email"
+                       id="correo"
+                       disabled>
+            </div>
+        </div>
+
+        <!-- ÁREA -->
+        <div class="campo">
+            <label for="area">Área</label>
+            <div class="entrada">
+                <svg class="icono">
+                    <use href="#icon-area"></use>
+                </svg>
+
+                <select id="area" disabled>
+                    <option value="">Seleccionar área</option>
+                    <option value="Mantenimiento">Mantenimiento</option>
+                    <option value="Producción">Producción</option>
+                    <option value="Calidad">Calidad</option>
+                    <option value="Almacén">Almacén</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- ESPECIALIDAD -->
+        <div class="campo">
+            <label for="especialidad">Especialidad</label>
+            <div class="entrada">
+                <svg class="icono">
+                    <use href="#icon-engranaje"></use>
+                </svg>
+
+                <select id="especialidad" disabled>
+                    <option value="">Seleccionar especialidad</option>
+                    <option value="Mecánica">Mecánica</option>
+                    <option value="Electricidad">Electricidad</option>
+                    <option value="Electrónica">Electrónica</option>
+                    <option value="Hidráulica">Hidráulica</option>
+                    <option value="Neumática">Neumática</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="botones">
+            <button class="boton cancelar" disabled>
+                CANCELAR
+            </button>
+
+            <button class="boton" disabled>
+                REGISTRAR
+            </button>
+        </div>
+
+    </div>
+</main>
+
+<!-- VENTANA EMERGENTE -->
+<div class="fondo-modal">
+
+    <div class="modal"
+         role="alertdialog"
+         aria-modal="true"
+         aria-labelledby="mensajeError">
+
+        <div class="modal-contenido">
+
+            <div class="modal-icono">!</div>
+
+            <div class="modal-texto" id="mensajeError">
+                Verificar información previa<br>
+                Error en registro
+            </div>
+
+        </div>
+
+        <button class="modal-boton"
+                type="button"
+                onclick="cerrarError()">
+            CERRAR
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+// RECUPERAR LOS DATOS DE INFORMACIÓN CAPTURADA
+let datos = null;
+
+try {
+    datos = JSON.parse(
+        sessionStorage.getItem("tecnicoPendiente") || "null"
+    );
+} catch (error) {
+    datos = null;
+}
+
+if (datos) {
+    document.getElementById("usuario").value =
+        datos.usuario || "";
+
+    document.getElementById("correo").value =
+        datos.correo || "";
+
+    document.getElementById("area").value =
+        datos.area || "";
+
+    document.getElementById("especialidad").value =
+        datos.especialidad || "";
+}
+
+// CERRAR ERROR Y VOLVER AL FORMULARIO
+function cerrarError() {
+    window.location.href = "registrar_tecnico.html";
+}
+</script>
+
+</body>
+</html>

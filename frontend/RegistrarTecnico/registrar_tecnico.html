@@ -1,0 +1,463 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registrar Técnico</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f8f7f4;
+    color: #06464a;
+    min-height: 100vh;
+}
+
+/* BARRA SUPERIOR */
+.barra {
+    background: #06464a;
+    height: 55px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.barra-izquierda {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.barra h2 {
+    font-size: 21px;
+}
+
+.inicio {
+    color: white;
+    text-decoration: none;
+    font-size: 29px;
+}
+
+.usuario-superior {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* FORMULARIO */
+.contenedor {
+    width: 100%;
+    max-width: 650px;
+    margin: 15px auto;
+    border: 1px solid #e1e1dd;
+    border-radius: 7px;
+    padding: 15px 25px 25px;
+}
+
+.encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.encabezado h1 {
+    font-size: 25px;
+    color: #06464a;
+}
+
+.cerrar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #06464a;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.cerrar span {
+    color: #e32d2d;
+    font-size: 29px;
+    font-weight: normal;
+}
+
+/* CAMPOS */
+.formulario {
+    max-width: 450px;
+    margin: auto;
+}
+
+.campo {
+    margin-bottom: 13px;
+}
+
+label {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.entrada {
+    position: relative;
+}
+
+.entrada input,
+.entrada select {
+    width: 100%;
+    height: 39px;
+    border: 1px solid #d0d0d0;
+    border-radius: 5px;
+    background: #fff;
+    padding: 0 40px 0 46px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #06464a;
+    outline: none;
+}
+
+.entrada input:focus,
+.entrada select:focus {
+    border-color: #087e84;
+}
+
+.entrada input::placeholder {
+    color: #999;
+}
+
+.entrada select {
+    cursor: pointer;
+}
+
+.entrada .icono {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #075362;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+}
+
+.entrada .ver {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #075362;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* BOTÓN */
+.boton {
+    display: block;
+    width: 210px;
+    max-width: 100%;
+    margin: 12px auto 0;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    background: #07565e;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boton:hover {
+    background: #087780;
+}
+
+.mensaje {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+    min-height: 18px;
+}
+
+@media (max-width: 680px) {
+    .contenedor {
+        width: calc(100% - 24px);
+        padding: 15px;
+    }
+
+    .barra h2 {
+        font-size: 16px;
+    }
+
+    .encabezado h1 {
+        font-size: 20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ICONOS -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     style="display:none">
+
+    <symbol id="icon-usuario" viewBox="0 0 24 24">
+        <circle cx="12" cy="7" r="4" fill="currentColor"/>
+        <path d="M4 21v-3a8 8 0 0 1 16 0v3z"
+              fill="currentColor"/>
+    </symbol>
+
+    <symbol id="icon-candado" viewBox="0 0 24 24">
+        <rect x="5" y="10" width="14" height="11" rx="2"
+              fill="currentColor"/>
+        <path d="M8 10V7a4 4 0 0 1 8 0v3"
+              fill="none" stroke="currentColor" stroke-width="2"/>
+    </symbol>
+
+    <symbol id="icon-correo" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="14" rx="2"
+              fill="currentColor"/>
+        <path d="M3 6l9 7 9-7"
+              stroke="white" stroke-width="1.5" fill="none"/>
+    </symbol>
+
+    <symbol id="icon-area" viewBox="0 0 24 24">
+        <rect x="4" y="3" width="16" height="18" rx="2"
+              fill="currentColor"/>
+        <g fill="white">
+            <rect x="7" y="6" width="2" height="2"/>
+            <rect x="11" y="6" width="2" height="2"/>
+            <rect x="15" y="6" width="2" height="2"/>
+            <rect x="7" y="11" width="2" height="2"/>
+            <rect x="11" y="11" width="2" height="2"/>
+            <rect x="15" y="11" width="2" height="2"/>
+        </g>
+    </symbol>
+
+    <symbol id="icon-engranaje" viewBox="0 0 24 24">
+        <path d="M10 2h4l1 3 2 1 3-1 2 4-2 2v2l2 2-2 4-3-1-2 1-1 3h-4l-1-3-2-1-3 1-2-4 2-2v-2L2 9l2-4 3 1 2-1z"
+              fill="currentColor"/>
+        <circle cx="12" cy="12" r="3" fill="white"/>
+    </symbol>
+</svg>
+
+<!-- BARRA SUPERIOR -->
+<header class="barra">
+
+    <div class="barra-izquierda">
+        <a href="../FallaEquipo/seleccion.html"
+           class="inicio"
+           title="Volver al menú">⌂</a>
+
+        <h2>REGISTRAR TÉCNICO</h2>
+    </div>
+
+    <div class="usuario-superior">
+        ♟ USUARIO
+    </div>
+
+</header>
+
+<!-- FORMULARIO -->
+<main class="contenedor">
+
+    <div class="encabezado">
+        <h1>REGISTRAR TÉCNICO</h1>
+
+        <a href="../FallaEquipo/seleccion.html" class="cerrar">
+            <span>×</span>
+            CERRAR
+        </a>
+    </div>
+
+    <form id="formTecnico" class="formulario">
+
+        <!-- USUARIO -->
+        <div class="campo">
+            <label for="usuario">Usuario</label>
+
+            <div class="entrada">
+                <svg class="icono">
+                    <use href="#icon-usuario"></use>
+                </svg>
+
+                <input
+                    type="text"
+                    id="usuario"
+                    placeholder="Usuario"
+                    minlength="3"
+                    maxlength="50"
+                    autocomplete="username"
+                    required>
+            </div>
+        </div>
+
+        <!-- CONTRASEÑA -->
+        <div class="campo">
+            <label for="contrasena">Contraseña</label>
+
+            <div class="entrada">
+                <svg class="icono">
+                    <use href="#icon-candado"></use>
+                </svg>
+
+                <input
+                    type="password"
+                    id="contrasena"
+                    placeholder="Contraseña"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required>
+
+                <button type="button"
+                        class="ver"
+                        onclick="mostrarContrasena(this)">
+                    ◉
+                </button>
+            </div>
+        </div>
+
+        <!-- CORREO -->
+        <div class="campo">
+            <label for="correo">Correo electrónico</label>
+
+            <div class="entrada">
+                <svg class="icono">
+                    <use href="#icon-correo"></use>
+                </svg>
+
+                <input
+                    type="email"
+                    id="correo"
+                    placeholder="Correo electrónico"
+                    autocomplete="email"
+                    required>
+            </div>
+        </div>
+
+        <!-- ÁREA -->
+        <div class="campo">
+            <label for="area">Área</label>
+
+            <div class="entrada">
+                <svg class="icono">
+                    <use href="#icon-area"></use>
+                </svg>
+
+                <select id="area" required>
+                    <option value="">Seleccionar área</option>
+                    <option value="Producción">Producción</option>
+                    <option value="Mantenimiento">Mantenimiento</option>
+                    <option value="Calidad">Calidad</option>
+                    <option value="Almacén">Almacén</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- ESPECIALIDAD -->
+        <div class="campo">
+            <label for="especialidad">Especialidad</label>
+
+            <div class="entrada">
+                <svg class="icono">
+                    <use href="#icon-engranaje"></use>
+                </svg>
+
+                <select id="especialidad" required>
+                    <option value="">Seleccionar especialidad</option>
+                    <option value="Mecánica">Mecánica</option>
+                    <option value="Electricidad">Electricidad</option>
+                    <option value="Electrónica">Electrónica</option>
+                    <option value="Hidráulica">Hidráulica</option>
+                    <option value="Neumática">Neumática</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- BOTÓN REGISTRO -->
+        <button type="submit" class="boton">
+            REGISTRO
+        </button>
+
+        <p id="mensaje" class="mensaje" role="status"></p>
+
+    </form>
+
+</main>
+
+<script>
+function mostrarContrasena(boton) {
+    const campo = document.getElementById("contrasena");
+
+    if (campo.type === "password") {
+        campo.type = "text";
+        boton.textContent = "Ocultar";
+    } else {
+        campo.type = "password";
+        boton.textContent = "◉";
+    }
+}
+
+document.getElementById("formTecnico")
+.addEventListener("submit", function(evento) {
+    evento.preventDefault();
+
+    const usuario =
+        document.getElementById("usuario").value.trim();
+
+    const contrasena =
+        document.getElementById("contrasena").value;
+
+    const correo =
+        document.getElementById("correo").value.trim();
+
+    const area =
+        document.getElementById("area").value;
+
+    const especialidad =
+        document.getElementById("especialidad").value;
+
+    const mensaje =
+        document.getElementById("mensaje");
+
+    mensaje.style.color = "#c62828";
+
+    if (!usuario || !contrasena || !correo ||
+        !area || !especialidad) {
+        mensaje.textContent =
+            "Completa todos los campos.";
+        return;
+    }
+
+    if (usuario.length < 3) {
+        mensaje.textContent =
+            "El usuario debe tener al menos 3 caracteres.";
+        return;
+    }
+
+    if (contrasena.length < 8) {
+        mensaje.textContent =
+            "La contraseña debe tener al menos 8 caracteres.";
+        return;
+    }
+
+    mensaje.style.color = "#08785c";
+    mensaje.textContent =
+        "Formulario válido. Falta conectar el servidor para registrar al técnico.";
+
+    // Aquí se conectará con FastAPI y PostgreSQL.
+});
+</script>
+
+</body>
+</html>

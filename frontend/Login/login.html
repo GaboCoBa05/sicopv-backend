@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iniciar sesión</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #e9eef0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.ventana {
+    width: 450px;
+    max-width: 100%;
+    background: #06454a;
+    color: white;
+    padding: 55px 36px 35px;
+    border-radius: 10px;
+    box-shadow: 0 12px 25px #0003;
+}
+
+h1 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 6px;
+    line-height: 1.4;
+    margin-bottom: 60px;
+}
+
+h2 {
+    font-size: 25px;
+    margin-bottom: 20px;
+}
+
+.campo {
+    margin-bottom: 16px;
+}
+
+input {
+    width: 100%;
+    padding: 17px;
+    background: #f5f0e8;
+    border: 1px solid #d8d8d8;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #06454a;
+    outline: none;
+}
+
+input:focus {
+    border: 2px solid #a8ddcb;
+}
+
+.password {
+    position: relative;
+}
+
+.password input {
+    padding-right: 75px;
+}
+
+.ver {
+    position: absolute;
+    right: 12px;
+    top: 15px;
+    border: none;
+    background: transparent;
+    color: #06454a;
+    cursor: pointer;
+}
+
+.olvido {
+    display: block;
+    margin: 15px 0 30px;
+    color: white;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.olvido:hover,
+.crear:hover {
+    text-decoration: underline;
+}
+
+.boton {
+    width: 100%;
+    padding: 18px;
+    background: #a8ddcb;
+    color: #06454a;
+    border: none;
+    border-radius: 5px;
+    font-size: 19px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boton:hover {
+    background: #8dceb8;
+}
+
+.mensaje {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+.separador {
+    border: none;
+    border-top: 1px solid #91b5b2;
+    margin-top: 65px;
+}
+
+.crear {
+    display: block;
+    text-align: center;
+    margin-top: 25px;
+    color: white;
+    font-size: 19px;
+    text-decoration: none;
+}
+
+@media (max-width: 480px) {
+    .ventana {
+        padding: 40px 24px 30px;
+    }
+    h1 {
+        margin-bottom: 40px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<main class="ventana">
+
+    <h1>INICIAR<br>SESIÓN</h1>
+
+    <h2>Bienvenido</h2>
+
+    <form id="formLogin">
+
+        <div class="campo">
+            <input
+                type="email"
+                id="correo"
+                placeholder="Correo electrónico"
+                autocomplete="email"
+                required>
+        </div>
+
+        <div class="campo password">
+            <input
+                type="password"
+                id="contrasena"
+                placeholder="Contraseña"
+                autocomplete="current-password"
+                required>
+
+            <button type="button"
+                    class="ver"
+                    onclick="mostrarContrasena()">
+                Ver
+            </button>
+        </div>
+
+        <!-- ENLACE A ACTUALIZAR CONTRASEÑA -->
+        <a href="ActualizarContra.html" class="olvido">
+            ¿Olvidaste tu contraseña?
+        </a>
+
+        <button type="submit" class="boton">
+            INICIAR SESIÓN
+        </button>
+
+        <p id="mensaje" class="mensaje" role="status"></p>
+
+    </form>
+
+    <hr class="separador">
+
+    <!-- ENLACE A REGISTRAR USUARIO -->
+    <a href="registro.html" class="crear">
+        Crear cuenta
+    </a>
+
+</main>
+
+<script>
+function mostrarContrasena() {
+    const input = document.getElementById("contrasena");
+    const boton = document.querySelector(".ver");
+
+    if (input.type === "password") {
+        input.type = "text";
+        boton.textContent = "Ocultar";
+    } else {
+        input.type = "password";
+        boton.textContent = "Ver";
+    }
+}
+
+
+document.getElementById("formLogin")
+.addEventListener("submit", function(evento) {
+    evento.preventDefault();
+
+    const correo = document.getElementById("correo").value.trim();
+    const contrasena = document.getElementById("contrasena").value;
+    const mensaje = document.getElementById("mensaje");
+
+    if (!correo || !contrasena) {
+        mensaje.textContent = "Completa todos los campos.";
+        return;
+    }
+
+    // Navegación temporal para probar el frontend.
+    // Todavía no verifica las credenciales.
+    window.location.href = "../FallaEquipo/seleccion.html";
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,484 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selección - Sistema de Mantenimiento</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f6f4;
+    color: #10484b;
+}
+
+.contenedor {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ENCABEZADO */
+.encabezado {
+    height: 62px;
+    background: #0b4548;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 25px;
+}
+
+.titulo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* CONTENIDO */
+.cuerpo {
+    display: flex;
+    flex: 1;
+}
+
+/* MENÚ LATERAL */
+.sidebar {
+    width: 228px;
+    flex-shrink: 0;
+    background: #0b4548;
+    padding: 18px 8px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.menu a {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-height: 49px;
+    padding: 12px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+}
+
+.menu a:hover,
+.menu a.activo {
+    background: #258c82;
+}
+
+/* ICONOS */
+.icono {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* SECCIÓN PRINCIPAL */
+.principal {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 32px;
+    background: #fafbf9;
+}
+
+.principal h1 {
+    font-size: 26px;
+    letter-spacing: 3px;
+    margin-bottom: 23px;
+}
+
+/* BOTONES DE SELECCIÓN */
+.opciones {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.opcion {
+    width: 100%;
+    min-height: 69px;
+    background: #d4ebe5;
+    border: none;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 13px 20px;
+    color: #10484b;
+    font-family: Arial, sans-serif;
+    font-size: 17px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.opcion:hover {
+    background: #b5ded4;
+}
+
+.cuadro-icono {
+    width: 43px;
+    height: 43px;
+    border-radius: 7px;
+    background: #0b4548;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nombre {
+    flex: 1;
+}
+
+.flecha {
+    font-size: 29px;
+    font-weight: 300;
+}
+
+.mensaje {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #496e6d;
+}
+
+/* DISEÑO RESPONSIVO */
+@media (max-width: 650px) {
+    .sidebar {
+        width: 65px;
+    }
+
+    .menu a {
+        justify-content: center;
+    }
+
+    .menu a span {
+        display: none;
+    }
+
+    .principal {
+        padding: 20px 12px;
+    }
+
+    .principal h1 {
+        font-size: 20px;
+    }
+
+    .opcion {
+        padding: 10px;
+        gap: 10px;
+        font-size: 14px;
+    }
+
+    .titulo {
+        font-size: 17px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ICONOS SVG -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     style="display:none">
+
+    <symbol id="home" viewBox="0 0 24 24">
+        <path d="M3 10L12 3l9 7"/>
+        <path d="M5 9v12h14V9"/>
+        <path d="M9 21v-8h6v8"/>
+    </symbol>
+
+    <symbol id="documento" viewBox="0 0 24 24">
+        <rect x="5" y="3" width="14" height="18" rx="2"/>
+        <path d="M9 8h6M9 12h6M9 16h5"/>
+    </symbol>
+
+    <symbol id="engranaje" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M10 2h4l.7 2.4 2 .9 2.2-1.1 2.8 2.8-1.1 2.2.9 2L24 12l-2.5.8-.9 2 1.1 2.2-2.8 2.8-2.2-1.1-2 .9L14 22h-4l-.7-2.4-2-.9-2.2 1.1-2.8-2.8 1.1-2.2-.9-2L0 12l2.5-.8.9-2-1.1-2.2 2.8-2.8 2.2 1.1 2-.9z"/>
+    </symbol>
+
+    <symbol id="monitor" viewBox="0 0 24 24">
+        <rect x="3" y="4" width="18" height="14" rx="2"/>
+        <path d="M12 18v3M8 21h8"/>
+    </symbol>
+
+    <symbol id="llave" viewBox="0 0 24 24">
+        <path d="M21 6a6 6 0 0 1-8 7L5 21l-3-3 8-8a6 6 0 0 1 7-8l-4 4 5 5z"/>
+    </symbol>
+
+    <symbol id="calendario" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="16" rx="2"/>
+        <path d="M7 2v6M17 2v6M3 10h18"/>
+        <path d="M8 14h2M14 14h2M8 18h2"/>
+    </symbol>
+
+    <symbol id="cuadricula" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <path d="M12 3v18M3 12h18"/>
+    </symbol>
+
+    <symbol id="grafica" viewBox="0 0 24 24">
+        <path d="M4 20v-6h4v6M10 20V9h4v11M16 20V4h4v16"/>
+    </symbol>
+
+    <symbol id="usuario" viewBox="0 0 24 24">
+        <circle cx="12" cy="7" r="4"/>
+        <path d="M4 21v-3a8 8 0 0 1 16 0v3z"/>
+    </symbol>
+
+</svg>
+
+<div class="contenedor">
+
+    <!-- ENCABEZADO -->
+    <header class="encabezado">
+
+        <div class="titulo">
+            <svg class="icono">
+                <use href="#home"></use>
+            </svg>
+            SELECCIÓN
+        </div>
+
+        <div class="usuario">
+            <svg class="icono">
+                <use href="#usuario"></use>
+            </svg>
+            USUARIO
+        </div>
+
+    </header>
+
+    <div class="cuerpo">
+
+        <!-- MENÚ LATERAL -->
+        <aside class="sidebar">
+
+            <nav class="menu">
+
+                <a href="fallas.html" class="activo">
+                    <svg class="icono">
+                        <use href="#documento"></use>
+                    </svg>
+                    <span>Reportar Falla</span>
+                </a>
+
+                <a href="../IngresoMaquinaria/ingreso_maquinaria.html">
+                    <svg class="icono">
+                        <use href="#engranaje"></use>
+                    </svg>
+                    <span>Ingreso Maquinaria</span>
+                </a>
+
+                <a href="../BitacoraDigital/bitacora_digital.html">
+                    <svg class="icono">
+                        <use href="#monitor"></use>
+                    </svg>
+                    <span>Bitácora Digital</span>
+                </a>
+
+                <!-- REGISTRAR TÉCNICO CORREGIDO -->
+                <a href="../RegistrarTecnico/registrar_tecnico.html">
+                    <svg class="icono">
+                        <use href="#llave"></use>
+                    </svg>
+                    <span>Registrar Técnico</span>
+                </a>
+
+                <a href="../MantenimientoPreventivo/mantenimiento_preventivo.html">
+                    <svg class="icono">
+                        <use href="#calendario"></use>
+                    </svg>
+                    <span>Mantenimiento Preventivo</span>
+                </a>
+
+                <a href="../Dashboard/dashboard.html">
+                    <svg class="icono">
+                        <use href="#cuadricula"></use>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="../Reportes/reporte_pdf.html">
+                    <svg class="icono">
+                        <use href="#grafica"></use>
+                    </svg>
+                    <span>Reportes</span>
+                </a>
+
+            </nav>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="principal">
+
+            <h1>SELECCIÓN</h1>
+
+            <div class="opciones">
+
+                <!-- REPORTAR FALLA -->
+                <button class="opcion"
+                        onclick="abrir('fallas.html')">
+
+                    <div class="cuadro-icono">
+                        <svg class="icono">
+                            <use href="#documento"></use>
+                        </svg>
+                    </div>
+
+                    <span class="nombre">Reportar Falla</span>
+                    <span class="flecha">›</span>
+                </button>
+
+                <!-- INGRESO MAQUINARIA -->
+                <button class="opcion"
+                        onclick="window.location.href='../IngresoMaquinaria/ingreso_maquinaria.html'">
+                    
+
+                    <div class="cuadro-icono">
+                        <svg class="icono">
+                            <use href="#engranaje"></use>
+                        </svg>
+                    </div>
+
+                    <span class="nombre">Ingreso Maquinaria</span>
+                    <span class="flecha">›</span>
+                </button>
+
+                <!-- BITÁCORA DIGITAL -->
+                <button class="opcion"
+                        onclick="window.location.href='../BitacoraDigital/bitacora_digital.html'">
+
+                    <div class="cuadro-icono">
+                        <svg class="icono">
+                            <use href="#monitor"></use>
+                        </svg>
+                    </div>
+
+                    <span class="nombre">Bitácora Digital</span>
+                    <span class="flecha">›</span>
+                </button>
+
+                <!-- REGISTRAR TÉCNICO CORREGIDO -->
+                <button class="opcion"
+                        onclick="abrir('../RegistrarTecnico/registrar_tecnico.html')">
+
+                    <div class="cuadro-icono">
+                        <svg class="icono">
+                            <use href="#llave"></use>
+                        </svg>
+                    </div>
+
+                    <span class="nombre">Registrar Técnico</span>
+                    <span class="flecha">›</span>
+                </button>
+
+                <!-- MANTENIMIENTO PREVENTIVO -->
+                <button class="opcion"
+                        onclick="window.location.href='../MantenimientoPreventivo/mantenimiento_preventivo.html'">
+
+                    <div class="cuadro-icono">
+                        <svg class="icono">
+                            <use href="#calendario"></use>
+                        </svg>
+                    </div>
+
+                    <span class="nombre">Mantenimiento Preventivo</span>
+                    <span class="flecha">›</span>
+                </button>
+
+                <!-- DASHBOARD -->
+                <button class="opcion"
+                        onclick="window.location.href='../Dashboard/dashboard.html'">
+
+                    <div class="cuadro-icono">
+                        <svg class="icono">
+                            <use href="#cuadricula"></use>
+                        </svg>
+                    </div>
+
+                    <span class="nombre">Dashboard</span>
+                    <span class="flecha">›</span>
+                </button>
+
+                <!-- REPORTES -->
+                <button class="opcion"
+                        onclick="window.location.href='../Reportes/reporte_pdf.html'">
+
+                    <div class="cuadro-icono">
+                        <svg class="icono">
+                            <use href="#grafica"></use>
+                        </svg>
+                    </div>
+
+                    <span class="nombre">Reportes</span>
+                    <span class="flecha">›</span>
+                </button>
+
+            </div>
+
+            <p id="mensaje" class="mensaje" role="status"></p>
+
+        </main>
+
+    </div>
+</div>
+
+<script>
+// ABRIR OTRA INTERFAZ
+function abrir(ruta) {
+    window.location.href = ruta;
+}
+
+// MOSTRAR OPCIONES PENDIENTES
+function pendiente(nombre) {
+    document.getElementById("mensaje").textContent =
+        "La interfaz de " + nombre +
+        " queda pendiente de hacer";
+}
+
+// CONTROLAR ENLACES PENDIENTES
+document.querySelectorAll("[data-pendiente]")
+.forEach(enlace => {
+    enlace.addEventListener("click", function(evento) {
+        evento.preventDefault();
+        pendiente(this.dataset.pendiente);
+    });
+});
+</script>
+
+</body>
+</html>
+

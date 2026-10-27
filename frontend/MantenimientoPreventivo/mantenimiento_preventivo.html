@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mantenimiento Preventivo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
+.contenedor { min-height: 100vh; display: flex; flex-direction: column; }
+.encabezado { height: 62px; background: #0b4548; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
+.titulo { display: flex; align-items: center; gap: 15px; font-size: 22px; font-weight: bold; letter-spacing: 2px; }
+.usuario { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: bold; }
+.cuerpo { display: flex; flex: 1; }
+.sidebar { width: 228px; flex-shrink: 0; background: #0b4548; padding: 18px 8px; }
+.menu { display: flex; flex-direction: column; gap: 9px; }
+.menu a { display: flex; align-items: center; gap: 13px; min-height: 49px; padding: 12px; color: white; text-decoration: none; font-size: 14px; border-radius: 6px; }
+.menu a:hover, .menu a.activo { background: #258c82; }
+.icono { width: 24px; height: 24px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.principal { flex: 1; background: #fafbf9; display: flex; }
+.lista-panel { width: 280px; flex-shrink: 0; border-right: 1px solid #d0e0dc; padding: 24px 16px; }
+.lista-panel h1 { font-size: 22px; letter-spacing: 2px; margin-bottom: 18px; }
+.activos { display: flex; flex-direction: column; gap: 10px; }
+.activo-btn { background: #d4ebe5; border: none; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-family: Arial; font-size: 15px; color: #10484b; transition: background 0.2s; }
+.activo-btn:hover, .activo-btn.sel { background: #0b4548; color: white; }
+.activo-btn.sel svg { stroke: white; }
+.activo-icono { width: 36px; height: 36px; background: #0b4548; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
+.activo-btn.sel .activo-icono { background: #258c82; }
+.activo-info { flex: 1; text-align: left; margin-left: 12px; }
+.detalle-panel { flex: 1; padding: 24px 32px; }
+.back-btn { background: none; border: none; color: #0b4548; font-family: Arial; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 16px; }
+.back-btn:hover { color: #258c82; }
+.detalle-titulo { font-size: 26px; font-weight: bold; letter-spacing: 2px; margin-bottom: 6px; }
+.sub-maquina { font-size: 14px; color: #5a8a87; margin-bottom: 24px; }
+.grid-det { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.sec-det { background: #eaf4f1; border-radius: 12px; padding: 20px; }
+.sec-det h3 { font-size: 14px; font-weight: bold; color: #5a8a87; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.periodo-input { width: 100%; padding: 10px 12px; border: 1px solid #b7c9d8; border-radius: 8px; background: #f5f0e8; color: #073f57; font-family: Arial; font-size: 14px; outline: none; }
+.tabla-piezas { width: 100%; border-collapse: collapse; }
+.tabla-piezas th { font-size: 12px; color: #5a8a87; text-align: left; padding: 6px 8px; border-bottom: 1px solid #d0e0dc; }
+.tabla-piezas td { padding: 8px; font-size: 13px; border-bottom: 1px solid #e8f0ee; }
+.btn-agregar-pieza { background: #0b4548; color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+.btn-agregar-pieza:hover { background: #258c82; }
+.tabla-piezas input { width: 100%; border: 1px solid #d0e0dc; border-radius: 6px; padding: 6px 8px; font-size: 12px; background: #f5f0e8; outline: none; }
+.tabla-piezas .btn-x { background: none; border: none; color: #a22; cursor: pointer; font-size: 16px; }
+.registros { display: flex; flex-direction: column; gap: 8px; }
+.registro-row { display: flex; gap: 8px; align-items: center; }
+.registro-row input { flex: 1; padding: 8px 10px; border: 1px solid #b7c9d8; border-radius: 6px; background: #f5f0e8; font-size: 13px; outline: none; }
+.btn-guardar { width: 100%; background: #0b4548; color: white; border: none; border-radius: 10px; padding: 16px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+.btn-guardar:hover { background: #258c82; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 200; }
+.modal-box { background: white; border-radius: 12px; padding: 28px; max-width: 300px; width: 90%; text-align: center; }
+.modal-icon { font-size: 36px; margin-bottom: 8px; }
+.modal-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
+.modal-msg { font-size: 13px; color: #4a7a77; margin-bottom: 16px; }
+.btn-modal { background: #0b4548; color: white; border: none; border-radius: 8px; padding: 10px 24px; font-size: 13px; cursor: pointer; }
+.hidden { display: none !important; }
+@media(max-width:800px){ .grid-det{grid-template-columns:1fr;} .lista-panel{width:200px;} }
+@media(max-width:650px){ .sidebar{width:65px;} .menu a span{display:none;} .menu a{justify-content:center;} .principal{flex-direction:column;} .lista-panel{width:100%;border-right:none;border-bottom:1px solid #d0e0dc;} }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+<symbol id="home" viewBox="0 0 24 24"><path d="M3 10L12 3l9 7"/><path d="M5 9v12h14V9"/><path d="M9 21v-8h6v8"/></symbol>
+<symbol id="doc" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h5"/></symbol>
+<symbol id="gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M10 2h4l.7 2.4 2 .9 2.2-1.1 2.8 2.8-1.1 2.2.9 2L24 12l-2.5.8-.9 2 1.1 2.2-2.8 2.8-2.2-1.1-2 .9L14 22h-4l-.7-2.4-2-.9-2.2 1.1-2.8-2.8 1.1-2.2-.9-2L0 12l2.5-.8.9-2-1.1-2.2 2.8-2.8 2.2 1.1 2-.9z"/></symbol>
+<symbol id="mon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M12 18v3M8 21h8"/></symbol>
+<symbol id="llave" viewBox="0 0 24 24"><path d="M21 6a6 6 0 0 1-8 7L5 21l-3-3 8-8a6 6 0 0 1 7-8l-4 4 5 5z"/></symbol>
+<symbol id="cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6M17 2v6M3 10h18"/></symbol>
+<symbol id="grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 12h18"/></symbol>
+<symbol id="graf" viewBox="0 0 24 24"><path d="M4 20v-6h4v6M10 20V9h4v11M16 20V4h4v16"/></symbol>
+<symbol id="usr" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3z"/></symbol>
+</svg>
+
+<div class="contenedor">
+  <header class="encabezado">
+    <div class="titulo"><svg class="icono"><use href="#home"></use></svg> MANTENIMIENTO PREVENTIVO</div>
+    <div class="usuario"><svg class="icono"><use href="#usr"></use></svg> USUARIO</div>
+  </header>
+  <div class="cuerpo">
+    <aside class="sidebar">
+      <nav class="menu">
+        <a href="../FallaEquipo/seleccion.html"><svg class="icono"><use href="#doc"></use></svg><span>Reportar Falla</span></a>
+        <a href="../IngresoMaquinaria/ingreso_maquinaria.html"><svg class="icono"><use href="#gear"></use></svg><span>Ingreso Maquinaria</span></a>
+        <a href="../BitacoraDigital/bitacora_digital.html"><svg class="icono"><use href="#mon"></use></svg><span>Bitácora Digital</span></a>
+        <a href="../RegistrarTecnico/registrar_tecnico.html"><svg class="icono"><use href="#llave"></use></svg><span>Registrar Técnico</span></a>
+        <a href="mantenimiento_preventivo.html" class="activo"><svg class="icono"><use href="#cal"></use></svg><span>Mantenimiento Preventivo</span></a>
+        <a href="../Dashboard/dashboard.html"><svg class="icono"><use href="#grid"></use></svg><span>Dashboard</span></a>
+        <a href="../Reportes/reporte_pdf.html"><svg class="icono"><use href="#graf"></use></svg><span>Reportes</span></a>
+      </nav>
+    </aside>
+    <div class="principal">
+      <div class="lista-panel">
+        <h1>ACTIVOS</h1>
+        <div class="activos">
+          <button class="activo-btn" onclick="selActivo('Máquina 1',this)">
+            <div class="activo-icono"><svg class="icono"><use href="#gear"></use></svg></div>
+            <div class="activo-info">Máquina 1</div>
+            <span>›</span>
+          </button>
+          <button class="activo-btn" onclick="selActivo('Máquina 2',this)">
+            <div class="activo-icono"><svg class="icono"><use href="#gear"></use></svg></div>
+            <div class="activo-info">Máquina 2</div>
+            <span>›</span>
+          </button>
+          <button class="activo-btn" onclick="selActivo('Máquina 3',this)">
+            <div class="activo-icono"><svg class="icono"><use href="#gear"></use></svg></div>
+            <div class="activo-info">Máquina 3</div>
+            <span>›</span>
+          </button>
+        </div>
+      </div>
+      <div class="detalle-panel" id="detalle">
+        <div style="text-align:center;margin-top:60px;color:#5a8a87;">
+          <svg class="icono" style="width:48px;height:48px;margin:0 auto 12px;display:block;"><use href="#cal"></use></svg>
+          <p>Selecciona un activo para ver sus detalles.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-overlay" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-icon" id="m-icon"></div>
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-msg" id="m-msg"></div>
+    <button class="btn-modal" onclick="cerrarModal()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+let piezas = [];
+function selActivo(nombre, btn) {
+  document.querySelectorAll('.activo-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  piezas = [];
+  document.getElementById('detalle').innerHTML = `
+    <button class="back-btn" onclick="resetDetalle()">← Volver</button>
+    <div class="detalle-titulo">DETALLES</div>
+    <div class="sub-maquina">${nombre}</div>
+    <div class="grid-det">
+      <div class="sec-det">
+        <h3><svg class="icono" style="stroke:#5a8a87"><use href="#cal"></use></svg> Periodo de uso</h3>
+        <input class="periodo-input" id="periodo" type="text" placeholder="Tiempo a definir..."/>
+        <h3 style="margin-top:18px;"><svg class="icono" style="stroke:#5a8a87"><use href="#llave"></use></svg> Piezas a cambiar
+          <button class="btn-agregar-pieza" style="margin-left:auto;" onclick="addPieza()">+ Agregar pieza</button>
+        </h3>
+        <table class="tabla-piezas">
+          <thead><tr><th>Pieza</th><th>Acciones</th></tr></thead>
+          <tbody id="tbody-piezas"><tr><td colspan="2" style="color:#5a8a87;font-size:12px;padding:10px;">No hay piezas registradas</td></tr></tbody>
+        </table>
+      </div>
+      <div class="sec-det">
+        <h3><svg class="icono" style="stroke:#5a8a87"><use href="#doc"></use></svg> Registros
+          <button class="btn-agregar-pieza" style="margin-left:auto;" onclick="addRegistro()">+ Agregar registro</button>
+        </h3>
+        <div class="registros" id="registros">
+          <div class="registro-row">
+            <input placeholder="Mtt" style="max-width:60px;"/>
+            <input placeholder="Descripción"/>
+            <button class="btn-x" onclick="this.parentElement.remove()">×</button>
+          </div>
+          <div class="registro-row">
+            <input placeholder="Mtt" style="max-width:60px;"/>
+            <input placeholder="Descripción"/>
+            <button class="btn-x" onclick="this.parentElement.remove()">×</button>
+          </div>
+          <div class="registro-row">
+            <input placeholder="Mtt" style="max-width:60px;"/>
+            <input placeholder="Descripción"/>
+            <button class="btn-x" onclick="this.parentElement.remove()">×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-guardar" onclick="guardar()">GUARDAR</button>
+  `;
+}
+function addPieza() {
+  const tbody = document.getElementById('tbody-piezas');
+  if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td><input placeholder="Nombre de pieza..."/></td><td><button class="btn-x" onclick="this.closest(\'tr\').remove()">×</button></td>';
+  tbody.appendChild(tr);
+}
+function addRegistro() {
+  const div = document.createElement('div'); div.className='registro-row';
+  div.innerHTML='<input placeholder="Mtt" style="max-width:60px;"/><input placeholder="Descripción"/><button class="btn-x" onclick="this.parentElement.remove()">×</button>';
+  document.getElementById('registros').appendChild(div);
+}
+function guardar() {
+  const p = document.getElementById('periodo');
+  if (!p || !p.value.trim()) { modal('❌','Completar campos','Por favor completa el periodo de uso.'); return; }
+  modal('✅','Mantenimiento programado exitosamente','El mantenimiento preventivo quedó registrado en el sistema.');
+}
+function resetDetalle() {
+  document.querySelectorAll('.activo-btn').forEach(b => b.classList.remove('sel'));
+  document.getElementById('detalle').innerHTML='<div style="text-align:center;margin-top:60px;color:#5a8a87;"><svg class="icono" style="width:48px;height:48px;margin:0 auto 12px;display:block;"><use href="#cal"></use></svg><p>Selecciona un activo para ver sus detalles.</p></div>';
+}
+function modal(ic,ti,ms) {
+  document.getElementById('m-icon').textContent=ic;
+  document.getElementById('m-title').textContent=ti;
+  document.getElementById('m-msg').textContent=ms;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function cerrarModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)cerrarModal();});
+</script>
+</body>
+</html>

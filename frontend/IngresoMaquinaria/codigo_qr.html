@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Código QR - Ingreso Maquinaria</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #faf9f6;
+    color: #06454a;
+    min-height: 100vh;
+}
+
+.barra {
+    height: 50px;
+    background: #06454a;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+}
+
+.barra-izquierda {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.inicio {
+    color: white;
+    font-size: 32px;
+    text-decoration: none;
+}
+
+.barra h2 {
+    font-size: 22px;
+}
+
+.usuario {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.contenedor {
+    position: relative;
+    width: 740px;
+    max-width: calc(100% - 30px);
+    margin: 15px auto;
+    padding: 20px 25px 26px;
+    border: 1px solid #e3e1dc;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.cerrar {
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    color: #06454a;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.cerrar span {
+    color: #e12525;
+    font-size: 28px;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+h1 {
+    font-size: 25px;
+    margin-bottom: 12px;
+}
+
+.qr-marco {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 205px;
+    min-height: 205px;
+    margin: 0 auto 12px;
+    padding: 12px;
+    border: 1px solid #e0e0df;
+    border-radius: 12px;
+    background: white;
+}
+
+#codigoQR {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#codigoQR img,
+#codigoQR canvas {
+    display: block;
+    max-width: 100%;
+}
+
+.boton {
+    width: 300px;
+    max-width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 5px;
+    background: #a7d8c4;
+    color: #06454a;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boton:hover {
+    background: #8ccbb4;
+}
+
+.boton:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.mensaje {
+    font-size: 14px;
+    margin: 10px auto;
+    color: #b62525;
+}
+
+.datos-impresion {
+    display: none;
+}
+
+@media(max-width:600px) {
+    .barra h2 {
+        font-size: 16px;
+    }
+
+    .contenedor {
+        padding-top: 60px;
+    }
+}
+
+@media print {
+    .barra,
+    .cerrar,
+    .boton,
+    .mensaje {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+    }
+
+    .contenedor {
+        border: none;
+        margin: 20px auto;
+    }
+
+    .datos-impresion {
+        display: block;
+        margin: 15px auto;
+        font-size: 13px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="barra">
+    <div class="barra-izquierda">
+        <a href="../FallaEquipo/seleccion.html"
+           class="inicio">⌂</a>
+        <h2>INGRESO MAQUINARIA</h2>
+    </div>
+
+    <div class="usuario">
+        ♟ USUARIO
+    </div>
+</header>
+
+<main class="contenedor">
+
+    <a href="../FallaEquipo/seleccion.html"
+       class="cerrar">
+        <span>×</span>CERRAR
+    </a>
+
+    <h1>CÓDIGO</h1>
+
+    <div class="qr-marco">
+        <div id="codigoQR"></div>
+    </div>
+
+    <p id="mensaje" class="mensaje" role="status"></p>
+
+    <div id="datosImpresion" class="datos-impresion"></div>
+
+    <button
+        type="button"
+        class="boton"
+        id="botonGuardar"
+        onclick="guardarOImprimir()"
+        disabled>
+        GUARDAR / IMPRIMIR
+    </button>
+
+</main>
+
+<script>
+let equipo = null;
+
+const contenedorQR = document.getElementById("codigoQR");
+const mensaje = document.getElementById("mensaje");
+const boton = document.getElementById("botonGuardar");
+const datosImpresion = document.getElementById("datosImpresion");
+
+try {
+    equipo = JSON.parse(
+        sessionStorage.getItem("equipoQR") || "null"
+    );
+} catch (error) {
+    equipo = null;
+}
+
+function mostrarError(texto) {
+    mensaje.textContent = texto;
+    boton.disabled = true;
+}
+
+function generarQR() {
+    if (!equipo || !equipo.serie) {
+        mostrarError(
+            "No se encontraron datos del equipo. " +
+            "Regresa a Ingreso Maquinaria."
+        );
+        return;
+    }
+
+    if (typeof QRCode === "undefined") {
+        mostrarError(
+            "No se cargó la librería QR. " +
+            "Verifica tu conexión a Internet."
+        );
+        return;
+    }
+
+    // Información que contendrá el QR
+    const informacionQR = JSON.stringify({
+        numeroSerie: equipo.serie,
+        nombreMaquinaria: equipo.nombre,
+        ubicacionArea: equipo.ubicacion,
+        descripcionFuncion: equipo.descripcion
+    });
+
+    contenedorQR.innerHTML = "";
+
+    try {
+        new QRCode(contenedorQR, {
+            text: informacionQR,
+            width: 180,
+            height: 180,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.L
+        });
+
+        datosImpresion.textContent =
+            "Serie: " + equipo.serie +
+            " | Maquinaria: " + equipo.nombre +
+            " | Ubicación: " + equipo.ubicacion +
+            " | Función: " + equipo.descripcion;
+
+        boton.disabled = false;
+        mensaje.textContent = "";
+
+    } catch (error) {
+        mostrarError(
+            "No fue posible generar el QR. " +
+            "Prueba con una descripción más corta."
+        );
+        console.error("Error al generar QR:", error);
+    }
+}
+
+function guardarOImprimir() {
+    if (boton.disabled) return;
+
+    const guardar = confirm(
+        "Aceptar: guardar código QR como PNG.\n" +
+        "Cancelar: imprimir código QR."
+    );
+
+    if (guardar) {
+        guardarQR();
+    } else {
+        window.print();
+    }
+}
+
+function guardarQR() {
+    const imagen = contenedorQR.querySelector("img");
+    const canvas = contenedorQR.querySelector("canvas");
+
+    let url = "";
+
+    if (canvas) {
+        url = canvas.toDataURL("image/png");
+    } else if (imagen) {
+        url = imagen.src;
+    }
+
+    if (!url) {
+        alert("No se encontró la imagen del código QR.");
+        return;
+    }
+
+    const serieSegura = String(equipo.serie)
+        .replace(/[^a-zA-Z0-9_-]/g, "_");
+
+    const enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = "QR_Maquinaria_" + serieSegura + ".png";
+
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+}
+
+document.addEventListener("DOMContentLoaded", generarQR);
+</script>
+
+</body>
+</html>

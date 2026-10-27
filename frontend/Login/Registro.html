@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registrar usuario</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #e9eef0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.ventana {
+    width: 450px;
+    max-width: 100%;
+    background: #06454a;
+    color: white;
+    padding: 50px 36px 35px;
+    border-radius: 10px;
+    box-shadow: 0 12px 25px #0003;
+}
+
+h1 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 7px;
+    margin-bottom: 50px;
+}
+
+.campo {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 9px;
+}
+
+input {
+    width: 100%;
+    padding: 16px;
+    background: #f5f0e8;
+    border: 1px solid #d8d8d8;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #06454a;
+    outline: none;
+}
+
+input:focus {
+    border: 2px solid #a8ddcb;
+}
+
+.password {
+    position: relative;
+}
+
+.password input {
+    padding-right: 75px;
+}
+
+.ver {
+    position: absolute;
+    right: 12px;
+    top: 14px;
+    background: transparent;
+    border: none;
+    color: #06454a;
+    cursor: pointer;
+}
+
+.boton {
+    width: 100%;
+    padding: 18px;
+    margin-top: 15px;
+    background: #a8ddcb;
+    color: #06454a;
+    border: none;
+    border-radius: 5px;
+    font-size: 19px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boton:hover {
+    background: #8dceb8;
+}
+
+.mensaje {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+.volver {
+    display: block;
+    margin-top: 35px;
+    padding-top: 20px;
+    border-top: 1px solid #91b5b2;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+}
+
+.volver:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .ventana {
+        padding: 35px 22px;
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 35px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<main class="ventana">
+
+    <h1>REGISTRAR</h1>
+
+    <form id="formRegistro">
+
+        <!-- USUARIO -->
+        <div class="campo">
+            <label for="usuario">Usuario</label>
+            <input
+                type="text"
+                id="usuario"
+                placeholder="Usuario"
+                autocomplete="username"
+                minlength="3"
+                maxlength="50"
+                required>
+        </div>
+
+        <!-- CORREO ELECTRÓNICO -->
+        <div class="campo">
+            <label for="correo">
+                Correo electrónico
+            </label>
+            <input
+                type="email"
+                id="correo"
+                placeholder="Correo electrónico"
+                autocomplete="email"
+                required>
+        </div>
+
+        <!-- CONTRASEÑA -->
+        <div class="campo">
+            <label for="contrasena">
+                Contraseña
+            </label>
+
+            <div class="password">
+                <input
+                    type="password"
+                    id="contrasena"
+                    placeholder="Contraseña"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required>
+
+                <button type="button"
+                        class="ver"
+                        onclick="mostrar('contrasena', this)">
+                    Ver
+                </button>
+            </div>
+        </div>
+
+        <!-- CONFIRMAR CONTRASEÑA -->
+        <div class="campo">
+            <label for="confirmar">
+                Confirmar contraseña
+            </label>
+
+            <div class="password">
+                <input
+                    type="password"
+                    id="confirmar"
+                    placeholder="Confirmar contraseña"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required>
+
+                <button type="button"
+                        class="ver"
+                        onclick="mostrar('confirmar', this)">
+                    Ver
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="boton">
+            CREAR USUARIO
+        </button>
+
+        <p id="mensaje" class="mensaje" role="status"></p>
+
+    </form>
+
+    <!-- REGRESAR A LOGIN -->
+    <a href="login.html" class="volver">
+        ← Volver a iniciar sesión
+    </a>
+
+</main>
+
+<script>
+function mostrar(id, boton) {
+    const input = document.getElementById(id);
+
+    if (input.type === "password") {
+        input.type = "text";
+        boton.textContent = "Ocultar";
+    } else {
+        input.type = "password";
+        boton.textContent = "Ver";
+    }
+}
+
+document.getElementById("formRegistro")
+.addEventListener("submit", function(evento) {
+    evento.preventDefault();
+
+    const usuario =
+        document.getElementById("usuario").value.trim();
+
+    const correo =
+        document.getElementById("correo").value.trim();
+
+    const contrasena =
+        document.getElementById("contrasena").value;
+
+    const confirmar =
+        document.getElementById("confirmar").value;
+
+    const mensaje =
+        document.getElementById("mensaje");
+
+    mensaje.style.color = "#ffdddd";
+
+    if (!usuario || !correo ||
+        !contrasena || !confirmar) {
+        mensaje.textContent =
+            "Completa todos los campos.";
+        return;
+    }
+
+    if (usuario.length < 3) {
+        mensaje.textContent =
+            "El usuario debe tener al menos 3 caracteres.";
+        return;
+    }
+
+    if (contrasena.length < 8) {
+        mensaje.textContent =
+            "La contraseña debe tener al menos 8 caracteres.";
+        return;
+    }
+
+    if (contrasena !== confirmar) {
+        mensaje.textContent =
+            "Las contraseñas no coinciden.";
+        return;
+    }
+
+    mensaje.style.color = "#a8ddcb";
+    mensaje.textContent =
+        "Formulario válido. Falta conectar con el servidor para crear la cuenta.";
+
+    // Cuando FastAPI confirme el registro:
+    // window.location.href = "login.html";
+});
+</script>
+
+</body>
+</html>

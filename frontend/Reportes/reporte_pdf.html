@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportes</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
+.contenedor { min-height: 100vh; display: flex; flex-direction: column; }
+.encabezado { height: 62px; background: #0b4548; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
+.titulo { display: flex; align-items: center; gap: 15px; font-size: 22px; font-weight: bold; letter-spacing: 2px; }
+.usuario { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: bold; }
+.cuerpo { display: flex; flex: 1; }
+.sidebar { width: 228px; flex-shrink: 0; background: #0b4548; padding: 18px 8px; }
+.menu { display: flex; flex-direction: column; gap: 9px; }
+.menu a { display: flex; align-items: center; gap: 13px; min-height: 49px; padding: 12px; color: white; text-decoration: none; font-size: 14px; border-radius: 6px; }
+.menu a:hover, .menu a.activo { background: #258c82; }
+.icono { width: 24px; height: 24px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.principal { flex: 1; background: #fafbf9; display: flex; }
+.lista-rep { width: 300px; flex-shrink: 0; border-right: 1px solid #d0e0dc; padding: 24px 16px; }
+.lista-rep h1 { font-size: 22px; letter-spacing: 2px; margin-bottom: 18px; }
+.reparaciones { display: flex; flex-direction: column; gap: 10px; }
+.rep-btn { background: #d4ebe5; border: none; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; cursor: pointer; gap: 14px; transition: background 0.2s; width: 100%; font-family: Arial; }
+.rep-btn:hover, .rep-btn.sel { background: #0b4548; color: white; }
+.rep-icono { width: 36px; height: 36px; background: #0b4548; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
+.rep-btn.sel .rep-icono { background: #258c82; }
+.rep-info { flex: 1; text-align: left; }
+.rep-nombre { font-size: 14px; font-weight: bold; color: #10484b; }
+.rep-btn.sel .rep-nombre { color: white; }
+.rep-sub { font-size: 11px; color: #4a7a77; margin-top: 2px; }
+.rep-btn.sel .rep-sub { color: #a8ddcb; }
+.rep-num { font-size: 20px; font-weight: bold; color: #0b4548; }
+.rep-btn.sel .rep-num { color: white; }
+.detalle-rep { flex: 1; padding: 24px 32px; }
+.back-btn { background: none; border: none; color: #0b4548; font-family: Arial; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 20px; }
+.back-btn:hover { color: #258c82; }
+.reporte-titulo { font-size: 24px; font-weight: bold; letter-spacing: 2px; margin-bottom: 20px; }
+.pdf-box { background: white; border: 2px solid #d0e0dc; border-radius: 14px; padding: 40px; display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 360px; }
+.pdf-icon { font-size: 64px; }
+.pdf-nombre { font-size: 16px; font-weight: bold; color: #0b4548; }
+.btn-pdf { background: #eaf4f1; border: 1px solid #d0e0dc; border-radius: 8px; padding: 12px 24px; font-size: 14px; font-weight: bold; color: #0b4548; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+.btn-pdf:hover { background: #d4ebe5; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 200; }
+.modal-box { background: white; border-radius: 12px; padding: 28px; max-width: 300px; width: 90%; text-align: center; }
+.modal-icon { font-size: 36px; margin-bottom: 8px; }
+.modal-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
+.modal-msg { font-size: 13px; color: #4a7a77; margin-bottom: 16px; }
+.btn-modal { background: #0b4548; color: white; border: none; border-radius: 8px; padding: 10px 24px; font-size: 13px; cursor: pointer; }
+.hidden { display: none !important; }
+@media(max-width:650px){ .sidebar{width:65px;} .menu a span{display:none;} .menu a{justify-content:center;} .principal{flex-direction:column;} .lista-rep{width:100%;border-right:none;border-bottom:1px solid #d0e0dc;} }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+<symbol id="home" viewBox="0 0 24 24"><path d="M3 10L12 3l9 7"/><path d="M5 9v12h14V9"/><path d="M9 21v-8h6v8"/></symbol>
+<symbol id="doc" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h5"/></symbol>
+<symbol id="gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M10 2h4l.7 2.4 2 .9 2.2-1.1 2.8 2.8-1.1 2.2.9 2L24 12l-2.5.8-.9 2 1.1 2.2-2.8 2.8-2.2-1.1-2 .9L14 22h-4l-.7-2.4-2-.9-2.2 1.1-2.8-2.8 1.1-2.2-.9-2L0 12l2.5-.8.9-2-1.1-2.2 2.8-2.8 2.2 1.1 2-.9z"/></symbol>
+<symbol id="mon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M12 18v3M8 21h8"/></symbol>
+<symbol id="llave" viewBox="0 0 24 24"><path d="M21 6a6 6 0 0 1-8 7L5 21l-3-3 8-8a6 6 0 0 1 7-8l-4 4 5 5z"/></symbol>
+<symbol id="cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6M17 2v6M3 10h18"/></symbol>
+<symbol id="grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 12h18"/></symbol>
+<symbol id="graf" viewBox="0 0 24 24"><path d="M4 20v-6h4v6M10 20V9h4v11M16 20V4h4v16"/></symbol>
+<symbol id="usr" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3z"/></symbol>
+<symbol id="pdf" viewBox="0 0 24 24"><path d="M5 2h10l5 5v15H5z"/><path d="M15 2v6h5"/><path d="M8 12h2a2 2 0 0 1 0 4H8v-4zM14 12h2M14 16h2M8 18v-2"/></symbol>
+<symbol id="dl" viewBox="0 0 24 24"><path d="M12 3v12M7 11l5 5 5-5"/><path d="M3 18h18"/></symbol>
+</svg>
+
+<div class="contenedor">
+  <header class="encabezado">
+    <div class="titulo"><svg class="icono"><use href="#home"></use></svg> REPORTES</div>
+    <div class="usuario"><svg class="icono"><use href="#usr"></use></svg> USUARIO</div>
+  </header>
+  <div class="cuerpo">
+    <aside class="sidebar">
+      <nav class="menu">
+        <a href="../FallaEquipo/seleccion.html"><svg class="icono"><use href="#doc"></use></svg><span>Reportar Falla</span></a>
+        <a href="../IngresoMaquinaria/ingreso_maquinaria.html"><svg class="icono"><use href="#gear"></use></svg><span>Ingreso Maquinaria</span></a>
+        <a href="../BitacoraDigital/bitacora_digital.html"><svg class="icono"><use href="#mon"></use></svg><span>Bitácora Digital</span></a>
+        <a href="../RegistrarTecnico/registrar_tecnico.html"><svg class="icono"><use href="#llave"></use></svg><span>Registrar Técnico</span></a>
+        <a href="../MantenimientoPreventivo/mantenimiento_preventivo.html"><svg class="icono"><use href="#cal"></use></svg><span>Mantenimiento Preventivo</span></a>
+        <a href="../Dashboard/dashboard.html"><svg class="icono"><use href="#grid"></use></svg><span>Dashboard</span></a>
+        <a href="reporte_pdf.html" class="activo"><svg class="icono"><use href="#graf"></use></svg><span>Reportes</span></a>
+      </nav>
+    </aside>
+    <div class="principal">
+      <div class="lista-rep">
+        <h1>REPARACIONES</h1>
+        <div class="reparaciones">
+          <button class="rep-btn" onclick="verReporte('Reporte 1','3',this)">
+            <div class="rep-icono"><svg class="icono"><use href="#doc"></use></svg></div>
+            <div class="rep-info"><div class="rep-nombre">Reparación 1</div><div class="rep-sub">SOLUCIONADA</div></div>
+            <div class="rep-num">3</div>
+            <span style="font-size:20px;color:#4a7a77;">›</span>
+          </button>
+          <button class="rep-btn" onclick="verReporte('Reporte 2','18',this)">
+            <div class="rep-icono"><svg class="icono"><use href="#doc"></use></svg></div>
+            <div class="rep-info"><div class="rep-nombre">Reparación 2</div><div class="rep-sub">SOLUCIONADA</div></div>
+            <div class="rep-num">18</div>
+            <span style="font-size:20px;color:#4a7a77;">›</span>
+          </button>
+          <button class="rep-btn" onclick="verReporte('Reporte 3','20',this)">
+            <div class="rep-icono"><svg class="icono"><use href="#doc"></use></svg></div>
+            <div class="rep-info"><div class="rep-nombre">Reparación 3</div><div class="rep-sub">SOLUCIONADA</div></div>
+            <div class="rep-num">20</div>
+            <span style="font-size:20px;color:#4a7a77;">›</span>
+          </button>
+          <button class="rep-btn" onclick="verReporte('Reporte 4','23',this)">
+            <div class="rep-icono"><svg class="icono"><use href="#doc"></use></svg></div>
+            <div class="rep-info"><div class="rep-nombre">Reparación 4</div><div class="rep-sub">SOLUCIONADA</div></div>
+            <div class="rep-num">23</div>
+            <span style="font-size:20px;color:#4a7a77;">›</span>
+          </button>
+        </div>
+      </div>
+      <div class="detalle-rep" id="detalle">
+        <div style="text-align:center;margin-top:60px;color:#5a8a87;">
+          <svg class="icono" style="width:48px;height:48px;margin:0 auto 12px;display:block;"><use href="#pdf"></use></svg>
+          <p>Selecciona una reparación para ver su reporte.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-overlay" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-icon" id="m-icon"></div>
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-msg" id="m-msg"></div>
+    <button class="btn-modal" onclick="cerrarModal()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+function verReporte(nombre, num, btn) {
+  document.querySelectorAll('.rep-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('detalle').innerHTML = `
+    <button class="back-btn" onclick="resetDetalle()">← Volver</button>
+    <div class="reporte-titulo">${nombre.toUpperCase()}</div>
+    <div class="pdf-box">
+      <div class="pdf-icon">📄</div>
+      <div class="pdf-nombre">${nombre}</div>
+      <button class="btn-pdf" onclick="guardar('${nombre}')">
+        <svg class="icono" style="stroke:#0b4548"><use href="#dl"></use></svg> PDF
+      </button>
+    </div>
+  `;
+}
+function guardar(nombre) {
+  modal('✅','Archivo guardado exitosamente','El reporte '+nombre+' fue guardado en el sistema.');
+}
+function resetDetalle() {
+  document.querySelectorAll('.rep-btn').forEach(b => b.classList.remove('sel'));
+  document.getElementById('detalle').innerHTML='<div style="text-align:center;margin-top:60px;color:#5a8a87;"><svg class="icono" style="width:48px;height:48px;margin:0 auto 12px;display:block;"><use href="#pdf"></use></svg><p>Selecciona una reparación para ver su reporte.</p></div>';
+}
+function modal(ic,ti,ms){
+  document.getElementById('m-icon').textContent=ic;
+  document.getElementById('m-title').textContent=ti;
+  document.getElementById('m-msg').textContent=ms;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function cerrarModal(){document.getElementById('modal-overlay').classList.add('hidden');}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)cerrarModal();});
+</script>
+</body>
+</html>
