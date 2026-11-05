@@ -1,206 +1,910 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ingreso Maquinaria</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#faf9f6;color:#06454a;min-height:100vh}
-.barra{height:50px;background:#06454a;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
-.barra-izquierda{display:flex;align-items:center;gap:22px}
-.barra h2{font-size:22px}
-.inicio{color:white;text-decoration:none;font-size:32px}
-.usuario{font-size:13px;font-weight:bold}
-.contenedor{width:740px;max-width:calc(100% - 30px);margin:15px auto;border:1px solid #e3e1dc;border-radius:8px;padding:20px 25px 26px}
-.encabezado{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-.encabezado h1{font-size:24px}
-.cerrar{display:flex;align-items:center;gap:7px;color:#06454a;font-size:12px;font-weight:bold;text-decoration:none}
-.cerrar span{font-size:28px;color:#e12525}
-.formulario{width:550px;max-width:100%;margin:auto}
-.campo{margin-bottom:13px}
-label{display:block;font-size:15px;font-weight:bold;margin-bottom:5px}
-.entrada{position:relative}
-.icono{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:23px;height:23px;color:#075362;fill:currentColor;pointer-events:none}
-.entrada input,.entrada select,.entrada textarea{width:100%;border:1px solid #d0d0cd;border-radius:5px;background:#faf9f6;padding:0 14px 0 42px;color:#06454a;font:14px Arial,sans-serif;outline:none}
-.entrada input,.entrada select{height:43px}
-.entrada textarea{min-height:55px;padding-top:12px;resize:vertical}
-.entrada:has(textarea) .icono{top:15px;transform:none}
-.entrada input:focus,.entrada select:focus,.entrada textarea:focus{border-color:#08747a}
-.boton{display:block;width:240px;max-width:100%;margin:15px auto 0;padding:13px;border:none;border-radius:5px;background:#07545b;color:white;font-size:14px;font-weight:bold;cursor:pointer}
-.boton:hover{background:#08737a}
-.fondo-modal{position:fixed;inset:0;background:rgba(0,0,0,.52);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
-.fondo-modal.activo{display:flex}
-.modal{width:350px;max-width:100%;background:white;border-radius:8px;padding:25px;position:relative}
-.modal-cerrar{position:absolute;right:12px;top:7px;font-size:30px;color:#e12525;border:0;background:none;cursor:pointer}
-.modal-contenido{display:flex;align-items:center;justify-content:center;gap:30px;margin:12px 0 25px}
-.alerta{width:48px;height:48px;border-radius:50%;background:#f52c2c;color:white;font-size:36px;font-weight:bold;display:flex;align-items:center;justify-content:center}
-.modal-texto{font-size:15px;font-weight:bold}
-.modal-boton{width:100%;background:#a7d8c4;color:#06454a;border:0;border-radius:5px;padding:13px;font-weight:bold;font-size:15px;cursor:pointer}
-@media(max-width:600px){.barra h2{font-size:16px}.encabezado h1{font-size:19px}.contenedor{padding:18px 15px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiCoPV - Ingreso y Estado de Maquinaria</title>
+    <style>
+        :root {
+            --primary: #06454a;
+            --primary-light: #0d5f66;
+            --accent: #a7d8c4;
+            --accent-hover: #8fceb9;
+            --bg: #f5f7f8;
+            --card-bg: #ffffff;
+            --text-main: #06454a;
+            --text-muted: #5e7a82;
+            --border: #dbe4e6;
+            --badge-operativo: #2a9d8f;
+            --badge-mantenimiento: #f4a261;
+            --badge-fuera: #e76f51;
+            --badge-espera: #457b9d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* BARRA SUPERIOR */
+        .barra {
+            height: 58px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .barra-izquierda {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .inicio {
+            color: white;
+            text-decoration: none;
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .inicio:hover {
+            transform: scale(1.1);
+        }
+
+        .barra h2 {
+            font-size: 19px;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .usuario-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .contenedor-general {
+            width: 1300px;
+            max-width: calc(100% - 30px);
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* TARJETAS KPI RESUMEN */
+        .metricas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 8px rgba(6, 69, 74, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .kpi-data h4 {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .kpi-data .valor {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .kpi-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(167, 216, 196, 0.25);
+            color: var(--primary);
+        }
+
+        /* GRID PRINCIPAL: FORMULARIO Y TABLA */
+        .panel-trabajo {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 22px 24px;
+            box-shadow: 0 4px 12px rgba(6, 69, 74, 0.04);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .card-header h3 {
+            font-size: 17px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* FORMULARIO */
+        .form-campo {
+            margin-bottom: 13px;
+        }
+
+        .form-campo label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+
+        .form-campo input,
+        .form-campo select,
+        .form-campo textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            background: #fafbfc;
+            font-size: 13px;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-campo input:focus,
+        .form-campo select:focus,
+        .form-campo textarea:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(6, 69, 74, 0.1);
+        }
+
+        .form-campo textarea {
+            resize: vertical;
+            min-height: 65px;
+        }
+
+        .btn-registrar {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 6px;
+        }
+
+        .btn-registrar:hover {
+            background: var(--primary-light);
+        }
+
+        /* FILTROS Y CONTROLES DE LA TABLA */
+        .tabla-controles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .busqueda-wrapper {
+            flex: 1;
+            min-width: 240px;
+            position: relative;
+        }
+
+        .busqueda-wrapper input {
+            width: 100%;
+            padding: 9px 12px 9px 34px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .busqueda-wrapper svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            stroke: var(--text-muted);
+        }
+
+        .filtros-botones {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-filtro {
+            background: #eef3f3;
+            border: 1px solid var(--border);
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-filtro.activo, .btn-filtro:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* TABLA DINÁMICA */
+        .tabla-contenedor {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: #eef3f3;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 12px 14px;
+            border-bottom: 1.5px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #edf1f2;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: #fbfdfd;
+        }
+
+        .badge-tipo {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tipo-torno { background: #e0f2fe; color: #0369a1; }
+        .tipo-prensa { background: #fef3c7; color: #b45309; }
+        .tipo-robot { background: #f3e8ff; color: #7e22ce; }
+        .tipo-otro { background: #e2e8f0; color: #475569; }
+
+        .badge-estado {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        .estado-operativo { background: var(--badge-operativo); }
+        .estado-mantenimiento { background: var(--badge-mantenimiento); }
+        .estado-fuera { background: var(--badge-fuera); }
+        .estado-espera { background: var(--badge-espera); }
+
+        .btn-accion {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--primary);
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 4px;
+            transition: all 0.2s;
+        }
+
+        .btn-accion:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-accion.peligro:hover {
+            background: #e63946;
+            border-color: #e63946;
+            color: white;
+        }
+
+        /* MODAL DE DUPLICADO / AVISO */
+        .fondo-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .fondo-modal.activo {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 100%;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .modal-icono {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #fee2e2;
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: bold;
+            margin: 0 auto 12px;
+        }
+
+        .modal-boton {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1024px) {
+            .panel-trabajo {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-<symbol id="codigo-barras" viewBox="0 0 24 24">
-<path d="M2 4v16M5 4v16M8 4v16M11 4v16M14 4v16M17 4v16M20 4v16M22 4v16" stroke="currentColor" stroke-width="1.5"/>
-</symbol>
-<symbol id="engranaje" viewBox="0 0 24 24">
-<path d="M10 2h4l1 3 2 1 3-1 2 4-2 2v2l2 2-2 4-3-1-2 1-1 3h-4l-1-3-2-1-3 1-2-4 2-2v-2L2 9l2-4 3 1 2-1z"/>
-<circle cx="12" cy="12" r="3" fill="#faf9f6"/>
-</symbol>
-<symbol id="ubicacion-icono" viewBox="0 0 24 24">
-<path d="M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8z"/>
-<circle cx="12" cy="10" r="3" fill="#faf9f6"/>
-</symbol>
-<symbol id="documento" viewBox="0 0 24 24">
-<path d="M5 2h10l5 5v15H5z"/>
-<path d="M14 2v6h6M8 12h9M8 16h9" stroke="#faf9f6" stroke-width="1.5" fill="none"/>
-</symbol>
-</svg>
+    <!-- BARRA SUPERIOR -->
+    <header class="barra">
+        <div class="barra-izquierda">
+            <a href="../FallaEquipo/seleccion.html" class="inicio" title="Regresar al Menú Principal">&#8962;</a>
+            <h2>INGRESO Y ESTADO DE MAQUINARIA &bull; SiCoPV</h2>
+        </div>
+        <div class="usuario-info">
+            <span id="labelUsuario">OPERADOR INDUSTRIAL</span>
+        </div>
+    </header>
 
-<header class="barra">
-<div class="barra-izquierda">
-<a href="../FallaEquipo/seleccion.html" class="inicio">⌂</a>
-<h2>INGRESO MAQUINARIA</h2>
-</div>
-<div class="usuario">♟ USUARIO</div>
-</header>
+    <main class="contenedor-general">
 
-<main class="contenedor">
-<div class="encabezado">
-<h1>INGRESO MAQUINARIA</h1>
-<a href="../FallaEquipo/seleccion.html" class="cerrar">
-<span>×</span>CERRAR
-</a>
-</div>
+        <!-- KPI METRICS SUMMARY -->
+        <section class="metricas-grid">
+            <div class="kpi-card">
+                <div class="kpi-data">
+                    <h4>Total Equipos</h4>
+                    <div class="valor" id="kpiTotal">0</div>
+                </div>
+                <div class="kpi-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                </div>
+            </div>
 
-<form id="formMaquinaria" class="formulario">
-<div class="campo">
-<label for="serie">Número de serie</label>
-<div class="entrada">
-<svg class="icono"><use href="#codigo-barras"/></svg>
-<input id="serie" type="text" placeholder="Ingrese número de serie..." maxlength="100" required>
-</div>
-</div>
+            <div class="kpi-card">
+                <div class="kpi-data">
+                    <h4>Tornos Registrados</h4>
+                    <div class="valor" id="kpiTornos">0</div>
+                </div>
+                <div class="kpi-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </div>
+            </div>
 
-<div class="campo">
-<label for="nombre">Nombre de la maquinaria</label>
-<div class="entrada">
-<svg class="icono"><use href="#engranaje"/></svg>
-<input id="nombre" type="text" placeholder="Ingrese nombre de la maquinaria..." maxlength="100" required>
-</div>
-</div>
+            <div class="kpi-card">
+                <div class="kpi-data">
+                    <h4>Prensas Registradas</h4>
+                    <div class="valor" id="kpiPrensas">0</div>
+                </div>
+                <div class="kpi-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 22h16M6 18h12M8 14h8M10 2v8h4V2"></path>
+                    </svg>
+                </div>
+            </div>
 
-<div class="campo">
-<label for="ubicacion">Ubicación/Área</label>
-<div class="entrada">
-<svg class="icono"><use href="#ubicacion-icono"/></svg>
-<select id="ubicacion" required>
-<option value="">Seleccione ubicación/área...</option>
-<option>Producción</option>
-<option>Mantenimiento</option>
-<option>Calidad</option>
-<option>Almacén</option>
-<option>Línea 1 - Área A</option>
-<option>Línea 2 - Área B</option>
-</select>
-</div>
-</div>
+            <div class="kpi-card">
+                <div class="kpi-data">
+                    <h4>Robots Industriales</h4>
+                    <div class="valor" id="kpiRobots">0</div>
+                </div>
+                <div class="kpi-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="5" y="4" width="14" height="12" rx="2"></rect>
+                        <circle cx="9" cy="9" r="1.5"></circle>
+                        <circle cx="15" cy="9" r="1.5"></circle>
+                        <line x1="9" y1="13" x2="15" y2="13"></line>
+                    </svg>
+                </div>
+            </div>
 
-<div class="campo">
-<label for="descripcion">Descripción (función)</label>
-<div class="entrada">
-<svg class="icono"><use href="#documento"/></svg>
-<textarea id="descripcion" placeholder="Ingrese descripción de la función..." maxlength="500" required></textarea>
-</div>
-</div>
+            <div class="kpi-card">
+                <div class="kpi-data">
+                    <h4>En Falla / Mtto</h4>
+                    <div class="valor" id="kpiFallas" style="color:var(--badge-fuera)">0</div>
+                </div>
+                <div class="kpi-icon" style="background:#fee2e2;color:#dc2626;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+            </div>
+        </section>
 
-<button type="submit" class="boton">REGISTRAR EQUIPO</button>
-</form>
-</main>
+        <!-- PANEL DIVIDIDO: FORMULARIO Y TABLA DINÁMICA -->
+        <div class="panel-trabajo">
 
-<div class="fondo-modal" id="fondoModal">
-<div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="textoError">
-<button type="button" class="modal-cerrar" onclick="cerrarError()">×</button>
-<div class="modal-contenido">
-<div class="alerta">!</div>
-<div class="modal-texto" id="textoError">Registro duplicado</div>
-</div>
-<button type="button" class="modal-boton" onclick="cerrarError()">CERRAR</button>
-</div>
-</div>
+            <!-- FORMULARIO DE REGISTRO -->
+            <section class="card">
+                <div class="card-header">
+                    <h3>Registrar Nueva Maquinaria</h3>
+                </div>
 
-<script>
-const formulario = document.getElementById("formMaquinaria");
-const modal = document.getElementById("fondoModal");
+                <form id="formMaquinaria">
+                    <div class="form-campo">
+                        <label for="serie">Número de Serie / ID</label>
+                        <input type="text" id="serie" placeholder="Ej. TRN-001, PRN-002, ROB-003" required>
+                    </div>
 
-function normalizar(texto) {
-    return String(texto || "").trim().toLowerCase();
-}
+                    <div class="form-campo">
+                        <label for="categoria">Categoría / Tipo de Equipo</label>
+                        <select id="categoria" required>
+                            <option value="">Seleccione Categoría...</option>
+                            <option value="Torno">Torno (CNC / Paralelo)</option>
+                            <option value="Prensa">Prensa (Hidráulica / Mecánica)</option>
+                            <option value="Robot">Robot Industrial / Soldadura</option>
+                            <option value="Centro Maquinado">Centro de Maquinado</option>
+                            <option value="Rectificadora">Rectificadora</option>
+                            <option value="Otro">Otro Equipo Industrial</option>
+                        </select>
+                    </div>
 
-formulario.addEventListener("submit", function(evento) {
-    evento.preventDefault();
+                    <div class="form-campo">
+                        <label for="nombre">Nombre / Modelo de Máquina</label>
+                        <input type="text" id="nombre" placeholder="Ej. Mazak Quick Turn 250" required>
+                    </div>
 
-    if (!formulario.reportValidity()) return;
+                    <div class="form-campo">
+                        <label for="ubicacion">Ubicación / Área Operativa</label>
+                        <select id="ubicacion" required>
+                            <option value="">Seleccione Ubicación...</option>
+                            <option value="Línea 1 - Torneado">Línea 1 - Torneado</option>
+                            <option value="Línea 2 - Estampado">Línea 2 - Estampado</option>
+                            <option value="Celda 3 - Robótica">Celda 3 - Robótica</option>
+                            <option value="Área de Ensamble">Área de Ensamble</option>
+                            <option value="Taller de Mantenimiento">Taller de Mantenimiento</option>
+                            <option value="Control de Calidad">Control de Calidad</option>
+                        </select>
+                    </div>
 
-    const equipo = {
-        serie: document.getElementById("serie").value.trim(),
-        nombre: document.getElementById("nombre").value.trim(),
-        ubicacion: document.getElementById("ubicacion").value,
-        descripcion: document.getElementById("descripcion").value.trim()
-    };
+                    <div class="form-campo">
+                        <label for="estado">Estado Operativo Inicial</label>
+                        <select id="estado" required>
+                            <option value="Operativo" selected>Operativo (En servicio)</option>
+                            <option value="En Mantenimiento">En Mantenimiento</option>
+                            <option value="Fuera de Servicio">Fuera de Servicio (Parada)</option>
+                            <option value="En Espera">En Espera / Calibración</option>
+                        </select>
+                    </div>
 
-    if (!equipo.serie || !equipo.nombre ||
-        !equipo.ubicacion || !equipo.descripcion) {
-        alert("Completa todos los campos.");
-        return;
-    }
+                    <div class="form-campo">
+                        <label for="descripcion">Descripción de Función</label>
+                        <textarea id="descripcion" placeholder="Indicar funciones críticas, especificaciones o celda asignada..." required></textarea>
+                    </div>
 
-    let equipos = [];
+                    <button type="submit" class="btn-registrar">GUARDAR Y HABILITAR EQUIPO</button>
+                </form>
+            </section>
 
-    try {
-        equipos = JSON.parse(
-            localStorage.getItem("equiposMaquinaria") || "[]"
-        );
-        if (!Array.isArray(equipos)) equipos = [];
-    } catch (error) {
-        equipos = [];
-    }
+            <!-- TABLA DINÁMICA DE MAQUINARIA -->
+            <section class="card">
+                <div class="card-header">
+                    <h3>Inventario Dinámico de Maquinaria y Estado Operativo</h3>
+                </div>
 
-    const duplicado = equipos.some(item =>
-        normalizar(item.serie) === normalizar(equipo.serie) ||
-        (
-            normalizar(item.nombre) === normalizar(equipo.nombre) &&
-            normalizar(item.ubicacion) === normalizar(equipo.ubicacion)
-        )
-    );
+                <!-- CONTROLES DE FILTRADO Y BÚSQUEDA -->
+                <div class="tabla-controles">
+                    <div class="busqueda-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="inputBusqueda" placeholder="Buscar por serie, modelo o celda..." oninput="filtrarEquipos()">
+                    </div>
 
-    if (duplicado) {
-        modal.classList.add("activo");
-        return;
-    }
+                    <div class="filtros-botones">
+                        <button type="button" class="btn-filtro activo" data-filtro="todos" onclick="setFiltroTipo('todos', this)">Todos</button>
+                        <button type="button" class="btn-filtro" data-filtro="Torno" onclick="setFiltroTipo('Torno', this)">Tornos</button>
+                        <button type="button" class="btn-filtro" data-filtro="Prensa" onclick="setFiltroTipo('Prensa', this)">Prensas</button>
+                        <button type="button" class="btn-filtro" data-filtro="Robot" onclick="setFiltroTipo('Robot', this)">Robots</button>
+                    </div>
+                </div>
 
-    try {
-        sessionStorage.setItem("equipoQR", JSON.stringify(equipo));
+                <!-- TABLA -->
+                <div class="tabla-contenedor">
+                    <table id="tablaMaquinaria">
+                        <thead>
+                            <tr>
+                                <th>Serie / ID</th>
+                                <th>Categoría</th>
+                                <th>Nombre / Modelo</th>
+                                <th>Ubicación</th>
+                                <th>Estado Operativo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyMaquinaria">
+                            <!-- Filas generadas dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-        equipos.push(equipo);
-        localStorage.setItem(
-            "equiposMaquinaria",
-            JSON.stringify(equipos)
-        );
+        </div>
+    </main>
 
-        window.location.href = "./codigo_qr.html";
-    } catch (error) {
-        alert("Error al guardar los datos: " + error.message);
-    }
-});
+    <!-- MODAL DUPLICADO -->
+    <div class="fondo-modal" id="modalDuplicado">
+        <div class="modal-box">
+            <div class="modal-icono">!</div>
+            <h3 style="color: #b91c1c; margin-bottom: 8px;">Equipo Duplicado</h3>
+            <p id="modalMensaje" style="font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+                Ya existe un registro con este número de serie o misma asignación de área.
+            </p>
+            <button type="button" class="modal-boton" onclick="cerrarModal()">ENTENDIDO</button>
+        </div>
+    </div>
 
-function cerrarError() {
-    modal.classList.remove("activo");
-}
-</script>
+    <script>
+        const API_MAQUINARIA_URL = 'http://localhost:3000/api/maquinaria';
+
+        // Catálogo industrial inicial predeterminado para TSR Saltillo
+        const catalogoBase = [
+            { serie: 'TRN-001', categoria: 'Torno', nombre: 'Mazak Quick Turn 250', ubicacion: 'Línea 1 - Torneado', estado: 'Operativo', descripcion: 'Mecanizado de flechas y rotores.' },
+            { serie: 'TRN-002', categoria: 'Torno', nombre: 'Haas ST-30 CNC', ubicacion: 'Línea 1 - Torneado', estado: 'En Mantenimiento', descripcion: 'Torno pesado de desbaste primario.' },
+            { serie: 'PRN-001', categoria: 'Prensa', nombre: 'Prensa Schuler 500T', ubicacion: 'Línea 2 - Estampado', estado: 'Operativo', descripcion: 'Estampado de piezas de carrocería.' },
+            { serie: 'PRN-002', categoria: 'Prensa', nombre: 'Komatsu Mecánica 300T', ubicacion: 'Línea 2 - Estampado', estado: 'Fuera de Servicio', descripcion: 'Troquelado de soportes y placas.' },
+            { serie: 'ROB-001', categoria: 'Robot', nombre: 'Fanuc M-20iA/35M', ubicacion: 'Celda 3 - Robótica', estado: 'Operativo', descripcion: 'Soldadura por arco continua.' },
+            { serie: 'ROB-002', categoria: 'Robot', nombre: 'Kuka KR 60 Jet', ubicacion: 'Celda 3 - Robótica', estado: 'En Espera', descripcion: 'Paletizado y transferencia de material.' },
+            { serie: 'ROB-003', categoria: 'Robot', nombre: 'ABB IRB 6700', ubicacion: 'Área de Ensamble', estado: 'Operativo', descripcion: 'Manipulación y ensamble de componentes.' }
+        ];
+
+        let listaMaquinaria = [];
+        let filtroTipoActual = 'todos';
+
+        // Inicializar datos combinando API REST y persistencia local
+        async function cargarMaquinaria() {
+            let datosServidor = null;
+            const token = localStorage.getItem('token');
+
+            try {
+                const res = await fetch(API_MAQUINARIA_URL, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                if (res.ok) {
+                    datosServidor = await res.json();
+                }
+            } catch (err) {
+                console.warn('Endpoint /api/maquinaria no disponible. Operando con caché local.', err);
+            }
+
+            if (datosServidor && Array.isArray(datosServidor)) {
+                listaMaquinaria = datosServidor;
+            } else {
+                try {
+                    const localData = JSON.parse(localStorage.getItem('equiposMaquinaria') || '[]');
+                    listaMaquinaria = (Array.isArray(localData) && localData.length > 0) ? localData : catalogoBase;
+                } catch (e) {
+                    listaMaquinaria = catalogoBase;
+                }
+            }
+
+            guardarEnCache();
+            actualizarMetricas();
+            renderizarTabla();
+        }
+
+        function guardarEnCache() {
+            try {
+                localStorage.setItem('equiposMaquinaria', JSON.stringify(listaMaquinaria));
+            } catch (e) {
+                console.error('Error al guardar en localStorage:', e);
+            }
+        }
+
+        // Renderizado dinámico de la tabla con filtros
+        function renderizarTabla() {
+            const tbody = document.getElementById('tbodyMaquinaria');
+            const busqueda = document.getElementById('inputBusqueda').value.toLowerCase().trim();
+
+            const filtrados = listaMaquinaria.filter(item => {
+                const coincideTipo = filtroTipoActual === 'todos' || item.categoria.toLowerCase() === filtroTipoActual.toLowerCase();
+                const coincideTexto = !busqueda || 
+                    item.serie.toLowerCase().includes(busqueda) ||
+                    item.nombre.toLowerCase().includes(busqueda) ||
+                    item.ubicacion.toLowerCase().includes(busqueda) ||
+                    item.descripcion.toLowerCase().includes(busqueda);
+                return coincideTipo && coincideTexto;
+            });
+
+            tbody.innerHTML = '';
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted);">
+                            No se encontraron máquinas con los filtros especificados.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtrados.forEach(item => {
+                const tr = document.createElement('tr');
+
+                // Categoría badge
+                let claseTipo = 'tipo-otro';
+                if (item.categoria.includes('Torno')) claseTipo = 'tipo-torno';
+                else if (item.categoria.includes('Prensa')) claseTipo = 'tipo-prensa';
+                else if (item.categoria.includes('Robot')) claseTipo = 'tipo-robot';
+
+                // Estado badge
+                let claseEstado = 'estado-operativo';
+                if (item.estado === 'En Mantenimiento') claseEstado = 'estado-mantenimiento';
+                else if (item.estado === 'Fuera de Servicio') claseEstado = 'estado-fuera';
+                else if (item.estado === 'En Espera') claseEstado = 'estado-espera';
+
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(item.serie)}</strong></td>
+                    <td><span class="badge-tipo ${claseTipo}">${escapeHtml(item.categoria)}</span></td>
+                    <td>${escapeHtml(item.nombre)}</td>
+                    <td>${escapeHtml(item.ubicacion)}</td>
+                    <td>
+                        <button class="badge-estado ${claseEstado}" title="Haga clic para alternar estado" onclick="alternarEstado('${escapeHtml(item.serie)}')">
+                            &bull; ${escapeHtml(item.estado)}
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn-accion" title="Ver o generar QR" onclick="verQR('${escapeHtml(item.serie)}')">QR</button>
+                        <button class="btn-accion peligro" title="Eliminar del inventario" onclick="eliminarEquipo('${escapeHtml(item.serie)}')">&times;</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Actualización de KPIs
+        function actualizarMetricas() {
+            document.getElementById('kpiTotal').textContent = listaMaquinaria.length;
+            document.getElementById('kpiTornos').textContent = listaMaquinaria.filter(m => m.categoria.toLowerCase().includes('torno')).length;
+            document.getElementById('kpiPrensas').textContent = listaMaquinaria.filter(m => m.categoria.toLowerCase().includes('prensa')).length;
+            document.getElementById('kpiRobots').textContent = listaMaquinaria.filter(m => m.categoria.toLowerCase().includes('robot')).length;
+            document.getElementById('kpiFallas').textContent = listaMaquinaria.filter(m => m.estado === 'En Mantenimiento' || m.estado === 'Fuera de Servicio').length;
+        }
+
+        // Manejo de filtros
+        function setFiltroTipo(tipo, boton) {
+            filtroTipoActual = tipo;
+            document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
+            boton.classList.add('activo');
+            renderizarTabla();
+        }
+
+        function filtrarEquipos() {
+            renderizarTabla();
+        }
+
+        // Alternar cíclicamente el estado operativo
+        async function alternarEstado(serie) {
+            const index = listaMaquinaria.findIndex(m => m.serie === serie);
+            if (index === -1) return;
+
+            const cicloEstados = ['Operativo', 'En Mantenimiento', 'Fuera de Servicio', 'En Espera'];
+            const estadoActualIdx = cicloEstados.indexOf(listaMaquinaria[index].estado);
+            const nuevoEstado = cicloEstados[(estadoActualIdx + 1) % cicloEstados.length];
+
+            listaMaquinaria[index].estado = nuevoEstado;
+            guardarEnCache();
+            actualizarMetricas();
+            renderizarTabla();
+
+            // Sincronización opcional con API REST
+            const token = localStorage.getItem('token');
+            try {
+                await fetch(`${API_MAQUINARIA_URL}/${encodeURIComponent(serie)}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify({ estado: nuevoEstado })
+                });
+            } catch (e) {
+                // Silencioso en modo local
+            }
+        }
+
+        // Eliminar equipo
+        function eliminarEquipo(serie) {
+            if (!confirm(`¿Confirmas la baja del equipo [${serie}]?`)) return;
+
+            listaMaquinaria = listaMaquinaria.filter(m => m.serie !== serie);
+            guardarEnCache();
+            actualizarMetricas();
+            renderizarTabla();
+        }
+
+        // Generar o visualizar QR en interfaz dedicada
+        function verQR(serie) {
+            const equipo = listaMaquinaria.find(m => m.serie === serie);
+            if (!equipo) return;
+
+            sessionStorage.setItem('equipoQR', JSON.stringify(equipo));
+            window.location.href = './codigo_qr.html';
+        }
+
+        // Registro de Nueva Maquinaria
+        document.getElementById('formMaquinaria').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const nuevoEquipo = {
+                serie: document.getElementById('serie').value.trim(),
+                categoria: document.getElementById('categoria').value,
+                nombre: document.getElementById('nombre').value.trim(),
+                ubicacion: document.getElementById('ubicacion').value,
+                estado: document.getElementById('estado').value,
+                descripcion: document.getElementById('descripcion').value.trim()
+            };
+
+            // Validación de duplicado
+            const existeDuplicado = listaMaquinaria.some(m => 
+                m.serie.toLowerCase() === nuevoEquipo.serie.toLowerCase() ||
+                (m.nombre.toLowerCase() === nuevoEquipo.nombre.toLowerCase() && m.ubicacion === nuevoEquipo.ubicacion)
+            );
+
+            if (existeDuplicado) {
+                document.getElementById('modalMensaje').textContent = 
+                    `Ya existe un equipo con la serie "${nuevoEquipo.serie}" o con el mismo nombre y área de asignación.`;
+                document.getElementById('modalDuplicado').classList.add('activo');
+                return;
+            }
+
+            // Intento de envío a backend REST
+            const token = localStorage.getItem('token');
+            try {
+                await fetch(API_MAQUINARIA_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify(nuevoEquipo)
+                });
+            } catch (err) {
+                console.warn('No se pudo sincronizar vía REST con localhost:3000. Guardando localmente.', err);
+            }
+
+            listaMaquinaria.unshift(nuevoEquipo);
+            guardarEnCache();
+            actualizarMetricas();
+            renderizarTabla();
+
+            document.getElementById('formMaquinaria').reset();
+            alert(`Equipo [${nuevoEquipo.serie} - ${nuevoEquipo.nombre}] registrado exitosamente.`);
+        });
+
+        function cerrarModal() {
+            document.getElementById('modalDuplicado').classList.remove('activo');
+        }
+
+        function escapeHtml(texto) {
+            const div = document.createElement('div');
+            div.textContent = texto || '';
+            return div.innerHTML;
+        }
+
+        // Cargar datos al iniciar
+        window.addEventListener('DOMContentLoaded', () => {
+            const usuarioJSON = localStorage.getItem('usuario');
+            if (usuarioJSON) {
+                try {
+                    const u = JSON.parse(usuarioJSON);
+                    document.getElementById('labelUsuario').textContent = 
+                        (u.nombre || u.correo || 'OPERADOR').toUpperCase() + ' (' + (u.rol || 'OPERADOR').toUpperCase() + ')';
+                } catch (e) {}
+            }
+            cargarMaquinaria();
+        });
+    </script>
 </body>
 </html>

@@ -1,463 +1,783 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registrar Técnico</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiCoPV - Alta de Personal Técnico y Operadores</title>
+    <style>
+        :root {
+            --primary: #06464a;
+            --primary-dark: #043336;
+            --primary-light: #0d5f64;
+            --accent: #a7d8c4;
+            --accent-hover: #8ecbb5;
+            --bg: #f8f7f4;
+            --card-bg: #ffffff;
+            --text-main: #06464a;
+            --text-muted: #527376;
+            --border: #d7dede;
+            --danger: #d90429;
+            --success: #2a9d8f;
+        }
 
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+        }
 
-body {
-    font-family: Arial, sans-serif;
-    background: #f8f7f4;
-    color: #06464a;
-    min-height: 100vh;
-}
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-/* BARRA SUPERIOR */
-.barra {
-    background: #06464a;
-    height: 55px;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-}
+        /* BARRA SUPERIOR */
+        .barra {
+            background: var(--primary);
+            height: 58px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
 
-.barra-izquierda {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
+        .barra-izquierda {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
 
-.barra h2 {
-    font-size: 21px;
-}
+        .barra h2 {
+            font-size: 19px;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
 
-.inicio {
-    color: white;
-    text-decoration: none;
-    font-size: 29px;
-}
+        .inicio {
+            color: white;
+            text-decoration: none;
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s;
+        }
 
-.usuario-superior {
-    font-size: 13px;
-    font-weight: bold;
-}
+        .inicio:hover {
+            transform: scale(1.1);
+        }
 
-/* FORMULARIO */
-.contenedor {
-    width: 100%;
-    max-width: 650px;
-    margin: 15px auto;
-    border: 1px solid #e1e1dd;
-    border-radius: 7px;
-    padding: 15px 25px 25px;
-}
+        .usuario-superior {
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.12);
+            padding: 5px 14px;
+            border-radius: 20px;
+        }
 
-.encabezado {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
+        /* CONTENEDOR PRINCIPAL */
+        .contenedor {
+            width: 1250px;
+            max-width: calc(100% - 30px);
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: 460px 1fr;
+            gap: 22px;
+            align-items: start;
+        }
 
-.encabezado h1 {
-    font-size: 25px;
-    color: #06464a;
-}
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 22px 26px;
+            box-shadow: 0 4px 14px rgba(6, 70, 74, 0.05);
+        }
 
-.cerrar {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    color: #06464a;
-    text-decoration: none;
-    font-size: 11px;
-    font-weight: bold;
-}
+        .encabezado-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--accent);
+        }
 
-.cerrar span {
-    color: #e32d2d;
-    font-size: 29px;
-    font-weight: normal;
-}
+        .encabezado-card h1 {
+            font-size: 18px;
+            color: var(--primary);
+            font-weight: 700;
+        }
 
-/* CAMPOS */
-.formulario {
-    max-width: 450px;
-    margin: auto;
-}
+        .cerrar-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            transition: opacity 0.2s;
+        }
 
-.campo {
-    margin-bottom: 13px;
-}
+        .cerrar-link:hover {
+            opacity: 0.75;
+        }
 
-label {
-    display: block;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
+        .cerrar-link span {
+            color: var(--danger);
+            font-size: 18px;
+            line-height: 1;
+        }
 
-.entrada {
-    position: relative;
-}
+        /* FORMULARIO */
+        .formulario {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-.entrada input,
-.entrada select {
-    width: 100%;
-    height: 39px;
-    border: 1px solid #d0d0d0;
-    border-radius: 5px;
-    background: #fff;
-    padding: 0 40px 0 46px;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    color: #06464a;
-    outline: none;
-}
+        .campo {
+            display: flex;
+            flex-direction: column;
+        }
 
-.entrada input:focus,
-.entrada select:focus {
-    border-color: #087e84;
-}
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
 
-.entrada input::placeholder {
-    color: #999;
-}
+        label {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
 
-.entrada select {
-    cursor: pointer;
-}
+        .requerido::after {
+            content: " *";
+            color: var(--danger);
+        }
 
-.entrada .icono {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #075362;
-    width: 20px;
-    height: 20px;
-    pointer-events: none;
-}
+        .entrada {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
 
-.entrada .ver {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: none;
-    background: transparent;
-    color: #075362;
-    cursor: pointer;
-    font-size: 14px;
-}
+        .icono-campo {
+            position: absolute;
+            left: 12px;
+            width: 18px;
+            height: 18px;
+            stroke: var(--primary);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            pointer-events: none;
+        }
 
-/* BOTÓN */
-.boton {
-    display: block;
-    width: 210px;
-    max-width: 100%;
-    margin: 12px auto 0;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
-    background: #07565e;
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-}
+        .entrada input,
+        .entrada select {
+            width: 100%;
+            height: 40px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            background: #fafbfc;
+            padding: 0 12px 0 40px;
+            font-size: 13px;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s;
+        }
 
-.boton:hover {
-    background: #087780;
-}
+        .entrada input:focus,
+        .entrada select:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(6, 70, 74, 0.1);
+        }
 
-.mensaje {
-    text-align: center;
-    margin-top: 12px;
-    font-size: 13px;
-    min-height: 18px;
-}
+        .btn-ver-pwd {
+            position: absolute;
+            right: 10px;
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 4px;
+        }
 
-@media (max-width: 680px) {
-    .contenedor {
-        width: calc(100% - 24px);
-        padding: 15px;
-    }
+        .btn-ver-pwd:hover {
+            background: rgba(6, 70, 74, 0.1);
+        }
 
-    .barra h2 {
-        font-size: 16px;
-    }
+        /* BOTÓN DE ALTA */
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
 
-    .encabezado h1 {
-        font-size: 20px;
-    }
-}
-</style>
+        .btn-submit:hover:not(:disabled) {
+            background: var(--primary-light);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ALERTAS */
+        .alerta-box {
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alerta-box.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            display: block;
+        }
+
+        .alerta-box.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* TABLA DINÁMICA DE PERSONAL */
+        .tabla-contenedor {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        th {
+            background: #eef3f3;
+            color: var(--primary);
+            padding: 10px 12px;
+            border-bottom: 1.5px solid var(--border);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #edf1f2;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: #fafdfc;
+        }
+
+        .badge-rol {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .rol-tecnico { background: #e0f2fe; color: #0284c7; }
+        .rol-operador { background: #fef3c7; color: #d97706; }
+        .rol-supervisor { background: #dcfce7; color: #16a34a; }
+
+        .filtro-busqueda {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 992px) {
+            .contenedor {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- ICONOS -->
-<svg xmlns="http://www.w3.org/2000/svg"
-     style="display:none">
-
-    <symbol id="icon-usuario" viewBox="0 0 24 24">
-        <circle cx="12" cy="7" r="4" fill="currentColor"/>
-        <path d="M4 21v-3a8 8 0 0 1 16 0v3z"
-              fill="currentColor"/>
-    </symbol>
-
-    <symbol id="icon-candado" viewBox="0 0 24 24">
-        <rect x="5" y="10" width="14" height="11" rx="2"
-              fill="currentColor"/>
-        <path d="M8 10V7a4 4 0 0 1 8 0v3"
-              fill="none" stroke="currentColor" stroke-width="2"/>
-    </symbol>
-
-    <symbol id="icon-correo" viewBox="0 0 24 24">
-        <rect x="3" y="5" width="18" height="14" rx="2"
-              fill="currentColor"/>
-        <path d="M3 6l9 7 9-7"
-              stroke="white" stroke-width="1.5" fill="none"/>
-    </symbol>
-
-    <symbol id="icon-area" viewBox="0 0 24 24">
-        <rect x="4" y="3" width="16" height="18" rx="2"
-              fill="currentColor"/>
-        <g fill="white">
-            <rect x="7" y="6" width="2" height="2"/>
-            <rect x="11" y="6" width="2" height="2"/>
-            <rect x="15" y="6" width="2" height="2"/>
-            <rect x="7" y="11" width="2" height="2"/>
-            <rect x="11" y="11" width="2" height="2"/>
-            <rect x="15" y="11" width="2" height="2"/>
-        </g>
-    </symbol>
-
-    <symbol id="icon-engranaje" viewBox="0 0 24 24">
-        <path d="M10 2h4l1 3 2 1 3-1 2 4-2 2v2l2 2-2 4-3-1-2 1-1 3h-4l-1-3-2-1-3 1-2-4 2-2v-2L2 9l2-4 3 1 2-1z"
-              fill="currentColor"/>
-        <circle cx="12" cy="12" r="3" fill="white"/>
-    </symbol>
-</svg>
-
-<!-- BARRA SUPERIOR -->
-<header class="barra">
-
-    <div class="barra-izquierda">
-        <a href="../FallaEquipo/seleccion.html"
-           class="inicio"
-           title="Volver al menú">⌂</a>
-
-        <h2>REGISTRAR TÉCNICO</h2>
-    </div>
-
-    <div class="usuario-superior">
-        ♟ USUARIO
-    </div>
-
-</header>
-
-<!-- FORMULARIO -->
-<main class="contenedor">
-
-    <div class="encabezado">
-        <h1>REGISTRAR TÉCNICO</h1>
-
-        <a href="../FallaEquipo/seleccion.html" class="cerrar">
-            <span>×</span>
-            CERRAR
-        </a>
-    </div>
-
-    <form id="formTecnico" class="formulario">
-
-        <!-- USUARIO -->
-        <div class="campo">
-            <label for="usuario">Usuario</label>
-
-            <div class="entrada">
-                <svg class="icono">
-                    <use href="#icon-usuario"></use>
-                </svg>
-
-                <input
-                    type="text"
-                    id="usuario"
-                    placeholder="Usuario"
-                    minlength="3"
-                    maxlength="50"
-                    autocomplete="username"
-                    required>
-            </div>
+    <!-- BARRA SUPERIOR -->
+    <header class="barra">
+        <div class="barra-izquierda">
+            <a href="../FallaEquipo/seleccion.html" class="inicio" title="Volver al menú">&#8962;</a>
+            <h2>REGISTRO DE PERSONAL &bull; SiCoPV</h2>
         </div>
+        <div class="usuario-superior" id="usuarioSesion">
+            ADMINISTRADOR TSR
+        </div>
+    </header>
 
-        <!-- CONTRASEÑA -->
-        <div class="campo">
-            <label for="contrasena">Contraseña</label>
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="contenedor">
 
-            <div class="entrada">
-                <svg class="icono">
-                    <use href="#icon-candado"></use>
-                </svg>
+        <!-- FORMULARIO DE ALTA -->
+        <section class="card">
+            <div class="encabezado-card">
+                <h1>Alta de Personal Técnico / Operador</h1>
+                <a href="../FallaEquipo/seleccion.html" class="cerrar-link">
+                    <span>&times;</span> CERRAR
+                </a>
+            </div>
 
-                <input
-                    type="password"
-                    id="contrasena"
-                    placeholder="Contraseña"
-                    autocomplete="new-password"
-                    minlength="8"
-                    required>
+            <form id="formTecnico" class="formulario" novalidate>
+                
+                <!-- ROL / PERFIL -->
+                <div class="campo">
+                    <label for="rol" class="requerido">Perfil / Puesto Operativo</label>
+                    <div class="entrada">
+                        <svg class="icono-campo" viewBox="0 0 24 24">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <polyline points="17 11 19 13 23 9"></polyline>
+                        </svg>
+                        <select id="rol" required>
+                            <option value="tecnico" selected>Técnico de Mantenimiento</option>
+                            <option value="operador">Operador de Maquinaria</option>
+                            <option value="supervisor">Supervisor de Turno</option>
+                            <option value="ingeniero">Ingeniero de Procesos</option>
+                        </select>
+                    </div>
+                </div>
 
-                <button type="button"
-                        class="ver"
-                        onclick="mostrarContrasena(this)">
-                    ◉
+                <!-- NOMBRE COMPLETO -->
+                <div class="campo">
+                    <label for="nombreCompleto" class="requerido">Nombre Completo</label>
+                    <div class="entrada">
+                        <svg class="icono-campo" viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <input type="text" id="nombreCompleto" placeholder="Ej. Juan Carlos Ramírez" required>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <!-- NÓMINA / USUARIO -->
+                    <div class="campo">
+                        <label for="usuario" class="requerido">N&uacute;m. Nómina / Usuario</label>
+                        <div class="entrada">
+                            <svg class="icono-campo" viewBox="0 0 24 24">
+                                <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                                <line x1="7" y1="8" x2="17" y2="8"></line>
+                                <line x1="7" y1="12" x2="13" y2="12"></line>
+                            </svg>
+                            <input type="text" id="usuario" placeholder="TSR-1045" minlength="3" maxlength="30" required>
+                        </div>
+                    </div>
+
+                    <!-- TURNO -->
+                    <div class="campo">
+                        <label for="turno" class="requerido">Turno Asignado</label>
+                        <div class="entrada">
+                            <svg class="icono-campo" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <select id="turno" required>
+                                <option value="Turno 1">Turno 1 (07:00 - 15:00)</option>
+                                <option value="Turno 2">Turno 2 (15:00 - 23:00)</option>
+                                <option value="Turno 3">Turno 3 (23:00 - 07:00)</option>
+                                <option value="Mixto">Mixto / Rotativo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CORREO INSTITUCIONAL -->
+                <div class="campo">
+                    <label for="correo" class="requerido">Correo Electrónico Institucional</label>
+                    <div class="entrada">
+                        <svg class="icono-campo" viewBox="0 0 24 24">
+                            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                            <path d="M22 6l-10 7L2 6"></path>
+                        </svg>
+                        <input type="email" id="correo" placeholder="colaborador@tsr-saltillo.com" required>
+                    </div>
+                </div>
+
+                <!-- CONTRASEÑA -->
+                <div class="campo">
+                    <label for="contrasena" class="requerido">Contraseña de Acceso</label>
+                    <div class="entrada">
+                        <svg class="icono-campo" viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <input type="password" id="contrasena" placeholder="Mínimo 8 caracteres" minlength="8" required>
+                        <button type="button" class="btn-ver-pwd" id="btnTogglePwd" onclick="alternarPassword()">Ver</button>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <!-- ÁREA DE ASIGNACIÓN -->
+                    <div class="campo">
+                        <label for="area" class="requerido">Área Asignada</label>
+                        <div class="entrada">
+                            <svg class="icono-campo" viewBox="0 0 24 24">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            </svg>
+                            <select id="area" required>
+                                <option value="">Seleccionar área...</option>
+                                <option value="Mantenimiento" selected>Mantenimiento</option>
+                                <option value="Producción">Producción</option>
+                                <option value="Estampado">Estampado</option>
+                                <option value="Celdas Robóticas">Celdas Robóticas</option>
+                                <option value="Calidad">Calidad</option>
+                                <option value="Almacén">Almacén</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ESPECIALIDAD -->
+                    <div class="campo">
+                        <label for="especialidad" class="requerido">Especialidad</label>
+                        <div class="entrada">
+                            <svg class="icono-campo" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <select id="especialidad" required>
+                                <option value="">Seleccionar especialidad...</option>
+                                <option value="Mecánica" selected>Mecánica</option>
+                                <option value="Eléctrica">Eléctrica</option>
+                                <option value="Electrónica / PLC">Electrónica / PLC</option>
+                                <option value="Robótica Industrial">Robótica Industrial</option>
+                                <option value="Hidráulica y Neumática">Hidráulica y Neumática</option>
+                                <option value="Operador CNC / Prensas">Operador CNC / Prensas</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTÓN DE ENVÍO -->
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    REGISTRAR Y HABILITAR ACCESO
                 </button>
+
+                <div id="alertaBox" class="alerta-box" role="alert"></div>
+            </form>
+        </section>
+
+        <!-- PLANTILLA Y CONSULTA DE TÉCNICOS / OPERADORES -->
+        <section class="card">
+            <div class="encabezado-card">
+                <h1>Personal Técnico y Operativo Registrado</h1>
             </div>
-        </div>
 
-        <!-- CORREO -->
-        <div class="campo">
-            <label for="correo">Correo electrónico</label>
+            <input 
+                type="text" 
+                id="inputFiltroPersonal" 
+                class="filtro-busqueda" 
+                placeholder="Filtrar por nómina, nombre, área o especialidad..." 
+                oninput="filtrarPersonal()">
 
-            <div class="entrada">
-                <svg class="icono">
-                    <use href="#icon-correo"></use>
-                </svg>
-
-                <input
-                    type="email"
-                    id="correo"
-                    placeholder="Correo electrónico"
-                    autocomplete="email"
-                    required>
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nómina</th>
+                            <th>Colaborador</th>
+                            <th>Puesto / Rol</th>
+                            <th>Área</th>
+                            <th>Especialidad</th>
+                            <th>Turno</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyPersonal">
+                        <!-- Filas inyectadas dinámicamente -->
+                    </tbody>
+                </table>
             </div>
-        </div>
+        </section>
 
-        <!-- ÁREA -->
-        <div class="campo">
-            <label for="area">Área</label>
+    </main>
 
-            <div class="entrada">
-                <svg class="icono">
-                    <use href="#icon-area"></use>
-                </svg>
+    <script>
+        const API_TECNICOS_URL = 'http://localhost:3000/api/tecnicos';
+        const API_USUARIOS_URL = 'http://localhost:3000/api/usuarios';
 
-                <select id="area" required>
-                    <option value="">Seleccionar área</option>
-                    <option value="Producción">Producción</option>
-                    <option value="Mantenimiento">Mantenimiento</option>
-                    <option value="Calidad">Calidad</option>
-                    <option value="Almacén">Almacén</option>
-                </select>
-            </div>
-        </div>
+        // Personal precargado de referencia para el equipo de planta TSR Saltillo
+        const personalInicial = [
+            { usuario: 'TSR-1001', nombre: 'Ing. Carlos Mendoza', correo: 'cmendoza@tsr-saltillo.com', rol: 'supervisor', area: 'Mantenimiento', especialidad: 'Electrónica / PLC', turno: 'Turno 1' },
+            { usuario: 'TSR-1022', nombre: 'Roberto González', correo: 'rgonzalez@tsr-saltillo.com', rol: 'tecnico', area: 'Mantenimiento', especialidad: 'Mecánica', turno: 'Turno 1' },
+            { usuario: 'TSR-1035', nombre: 'Laura Martínez', correo: 'lmartinez@tsr-saltillo.com', rol: 'tecnico', area: 'Celdas Robóticas', especialidad: 'Robótica Industrial', turno: 'Turno 2' },
+            { usuario: 'TSR-2010', nombre: 'Esteban Sánchez', correo: 'esanchez@tsr-saltillo.com', rol: 'operador', area: 'Producción', especialidad: 'Operador CNC / Prensas', turno: 'Turno 1' },
+            { usuario: 'TSR-2015', nombre: 'Miguel Ángel Rivas', correo: 'mrivas@tsr-saltillo.com', rol: 'operador', area: 'Estampado', especialidad: 'Hidráulica y Neumática', turno: 'Turno 2' }
+        ];
 
-        <!-- ESPECIALIDAD -->
-        <div class="campo">
-            <label for="especialidad">Especialidad</label>
+        let listaPersonal = [];
 
-            <div class="entrada">
-                <svg class="icono">
-                    <use href="#icon-engranaje"></use>
-                </svg>
+        const alertaBox = document.getElementById('alertaBox');
+        const btnSubmit = document.getElementById('btnSubmit');
 
-                <select id="especialidad" required>
-                    <option value="">Seleccionar especialidad</option>
-                    <option value="Mecánica">Mecánica</option>
-                    <option value="Electricidad">Electricidad</option>
-                    <option value="Electrónica">Electrónica</option>
-                    <option value="Hidráulica">Hidráulica</option>
-                    <option value="Neumática">Neumática</option>
-                </select>
-            </div>
-        </div>
+        function mostrarMensaje(texto, tipo = 'success') {
+            alertaBox.className = `alerta-box ${tipo}`;
+            alertaBox.textContent = texto;
+            alertaBox.style.display = 'block';
+        }
 
-        <!-- BOTÓN REGISTRO -->
-        <button type="submit" class="boton">
-            REGISTRO
-        </button>
+        function alternarPassword() {
+            const input = document.getElementById('contrasena');
+            const btn = document.getElementById('btnTogglePwd');
+            const esPass = input.type === 'password';
+            input.type = esPass ? 'text' : 'password';
+            btn.textContent = esPass ? 'Ocultar' : 'Ver';
+        }
 
-        <p id="mensaje" class="mensaje" role="status"></p>
+        // Carga inicial sincronizando backend o almacenamiento local
+        async function cargarPersonal() {
+            const token = localStorage.getItem('token');
+            let datosServidor = null;
 
-    </form>
+            try {
+                const res = await fetch(API_TECNICOS_URL, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                if (res.ok) {
+                    datosServidor = await res.json();
+                }
+            } catch (err) {
+                console.warn('API /api/tecnicos no disponible. Cargando de memoria local.');
+            }
 
-</main>
+            if (datosServidor && Array.isArray(datosServidor)) {
+                listaPersonal = datosServidor;
+            } else {
+                try {
+                    const localData = JSON.parse(localStorage.getItem('sicopv_personal_registrado') || '[]');
+                    listaPersonal = (Array.isArray(localData) && localData.length > 0) ? localData : personalInicial;
+                } catch (e) {
+                    listaPersonal = personalInicial;
+                }
+            }
 
-<script>
-function mostrarContrasena(boton) {
-    const campo = document.getElementById("contrasena");
+            guardarLocal();
+            renderizarTablaPersonal();
+        }
 
-    if (campo.type === "password") {
-        campo.type = "text";
-        boton.textContent = "Ocultar";
-    } else {
-        campo.type = "password";
-        boton.textContent = "◉";
-    }
-}
+        function guardarLocal() {
+            try {
+                localStorage.setItem('sicopv_personal_registrado', JSON.stringify(listaPersonal));
+            } catch (e) {
+                console.error('Error al persistir en localStorage:', e);
+            }
+        }
 
-document.getElementById("formTecnico")
-.addEventListener("submit", function(evento) {
-    evento.preventDefault();
+        function renderizarTablaPersonal() {
+            const tbody = document.getElementById('tbodyPersonal');
+            const query = document.getElementById('inputFiltroPersonal').value.toLowerCase().trim();
 
-    const usuario =
-        document.getElementById("usuario").value.trim();
+            const filtrados = listaPersonal.filter(p => {
+                return !query || 
+                    (p.usuario && p.usuario.toLowerCase().includes(query)) ||
+                    (p.nombre && p.nombre.toLowerCase().includes(query)) ||
+                    (p.area && p.area.toLowerCase().includes(query)) ||
+                    (p.especialidad && p.especialidad.toLowerCase().includes(query)) ||
+                    (p.rol && p.rol.toLowerCase().includes(query));
+            });
 
-    const contrasena =
-        document.getElementById("contrasena").value;
+            tbody.innerHTML = '';
 
-    const correo =
-        document.getElementById("correo").value.trim();
+            if (filtrados.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:18px;color:var(--text-muted);">
+                            No se encontró personal registrado con los términos especificados.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
 
-    const area =
-        document.getElementById("area").value;
+            filtrados.forEach(p => {
+                const tr = document.createElement('tr');
+                let badgeClase = 'rol-tecnico';
+                if (p.rol === 'operador') badgeClase = 'rol-operador';
+                if (p.rol === 'supervisor') badgeClase = 'rol-supervisor';
 
-    const especialidad =
-        document.getElementById("especialidad").value;
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(p.usuario)}</strong></td>
+                    <td>${escapeHtml(p.nombre)}</td>
+                    <td><span class="badge-rol ${badgeClase}">${escapeHtml(p.rol.toUpperCase())}</span></td>
+                    <td>${escapeHtml(p.area)}</td>
+                    <td>${escapeHtml(p.especialidad)}</td>
+                    <td>${escapeHtml(p.turno)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-    const mensaje =
-        document.getElementById("mensaje");
+        function filtrarPersonal() {
+            renderizarTablaPersonal();
+        }
 
-    mensaje.style.color = "#c62828";
+        function escapeHtml(str) {
+            const d = document.createElement('div');
+            d.textContent = str || '';
+            return d.innerHTML;
+        }
 
-    if (!usuario || !contrasena || !correo ||
-        !area || !especialidad) {
-        mensaje.textContent =
-            "Completa todos los campos.";
-        return;
-    }
+        // Envío del formulario de alta
+        document.getElementById('formTecnico').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alertaBox.style.display = 'none';
 
-    if (usuario.length < 3) {
-        mensaje.textContent =
-            "El usuario debe tener al menos 3 caracteres.";
-        return;
-    }
+            const rol = document.getElementById('rol').value;
+            const nombre = document.getElementById('nombreCompleto').value.trim();
+            const usuario = document.getElementById('usuario').value.trim();
+            const turno = document.getElementById('turno').value;
+            const correo = document.getElementById('correo').value.trim();
+            const contrasena = document.getElementById('contrasena').value;
+            const area = document.getElementById('area').value;
+            const especialidad = document.getElementById('especialidad').value;
 
-    if (contrasena.length < 8) {
-        mensaje.textContent =
-            "La contraseña debe tener al menos 8 caracteres.";
-        return;
-    }
+            // Validaciones de negocio
+            if (!nombre || !usuario || !correo || !contrasena || !area || !especialidad) {
+                mostrarMensaje('Completa todos los campos obligatorios (*).', 'error');
+                return;
+            }
 
-    mensaje.style.color = "#08785c";
-    mensaje.textContent =
-        "Formulario válido. Falta conectar el servidor para registrar al técnico.";
+            if (contrasena.length < 8) {
+                mostrarMensaje('La contraseña debe tener un mínimo de 8 caracteres.', 'error');
+                return;
+            }
 
-    // Aquí se conectará con FastAPI y PostgreSQL.
-});
-</script>
+            // Comprobar duplicidad local
+            const yaExiste = listaPersonal.some(p => 
+                p.usuario.toLowerCase() === usuario.toLowerCase() || 
+                p.correo.toLowerCase() === correo.toLowerCase()
+            );
 
+            if (yaExiste) {
+                mostrarMensaje(`El usuario/nómina "${usuario}" o el correo "${correo}" ya están registrados.`, 'error');
+                return;
+            }
+
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'REGISTRANDO EN SiCoPV...';
+
+            const nuevoPersonal = {
+                usuario,
+                nombre,
+                correo,
+                contrasena,
+                rol,
+                area,
+                especialidad,
+                turno,
+                fecha_alta: new Date().toISOString()
+            };
+
+            const token = localStorage.getItem('token');
+            let exitoServidor = false;
+
+            // 1. Envío al endpoint REST POST http://localhost:3000/api/tecnicos
+            try {
+                const res = await fetch(API_TECNICOS_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify(nuevoPersonal)
+                });
+
+                if (res.ok) {
+                    exitoServidor = true;
+                } else if (res.status === 404) {
+                    // Intento de fallback a /api/usuarios
+                    const resUsuarios = await fetch(API_USUARIOS_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                        },
+                        body: JSON.stringify(nuevoPersonal)
+                    });
+                    if (resUsuarios.ok) exitoServidor = true;
+                }
+            } catch (err) {
+                console.warn('Conexión con el servidor no disponible. Procediendo con alta local:', err.message);
+            }
+
+            // Integración inmediata a la lista activa
+            listaPersonal.unshift(nuevoPersonal);
+            guardarLocal();
+            renderizarTablaPersonal();
+
+            mostrarMensaje(
+                `Personal "${nombre}" (${usuario}) dado de alta satisfactoriamente como ${rol.toUpperCase()}.` +
+                (exitoServidor ? ' Credenciales activas en el servidor.' : ' Registrado en base local.'),
+                'success'
+            );
+
+            document.getElementById('formTecnico').reset();
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'REGISTRAR Y HABILITAR ACCESO';
+        });
+
+        // Al iniciar página
+        window.addEventListener('DOMContentLoaded', () => {
+            const usuarioJSON = localStorage.getItem('usuario');
+            if (usuarioJSON) {
+                try {
+                    const u = JSON.parse(usuarioJSON);
+                    document.getElementById('usuarioSesion').textContent = 
+                        (u.nombre || u.correo || 'ADMIN').toUpperCase() + ' (' + (u.rol || 'ADMIN').toUpperCase() + ')';
+                } catch (e) {}
+            }
+            cargarPersonal();
+        });
+    </script>
 </body>
 </html>
