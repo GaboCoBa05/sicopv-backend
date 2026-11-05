@@ -1,57 +1,34 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 
-exports.iniciarReparacion = async (req, res) => {
-  const { folio_incidencia, tecnico_id } = req.body;
+const registrarAtencion = async (req, res) => {
+  const { incidencia_id, tecnico_id, diagnostico, causa_raiz, tiempo_reparacion_min } = req.body;
   try {
-    const result = await db.query(
-      `INSERT INTO bitacora (folio_incidencia, tecnico_id, tiempo_inicio_reparacion, estado)
-       VALUES ($1, $2, CURRENT_TIMESTAMP, 'EN_PROCESO')
-       ON CONFLICT (folio_incidencia) 
-       DO UPDATE SET tiempo_inicio_reparacion = CURRENT_TIMESTAMP, estado = 'EN_PROCESO'
-       RETURNING *`,
-      [folio_incidencia, tecnico_id]
-    );
+    await pool.query('BEGIN');
 
-    await db.query(`UPDATE fallas SET estatus = 'EN_PROCESO' WHERE folio_incidencia = $1`, [folio_incidencia]);
+    const queryBitacora = `
+      INSERT INTO bitacora_mantenimiento (incidencia_id, tecnico_id, diagnostico, causa_raiz, tiempo_reparacion_min, fecha_cierre)
+      VALUES ($1, $2, $3, $4, $5, NOW())
+      RETURNING *;
+    `;
+    const bitacora = await pool.query(queryBitacora, [incidencia_id, tecnico_id, diagnostico, causa_raiz, tiempo_reparacion_min]);
 
+    await pool.query("UPDATE incidencias SET estado = 'RESUELTA' WHERE id = $1", [incidencia_id]);
+
+    await pool.query('COMMIT');
+    res.status(201).json({ mensaje: 'Atención registrada y folio cerrado', bitacora: bitacora.rows[0] });
+  } catch (err) {
+    await pool.query('ROLLBACK');
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const obtenerMetricasMttr = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT AVG(tiempo_reparacion_min)::NUMERIC(10,2) AS mttr_promedio_minutos FROM bitacora_mantenimiento');
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-exports.finalizarReparacion = async (req, res) => {
-  const { folio_incidencia, causa_raiz, fotografia_url } = req.body;
-  try {
-    const result = await db.query(
-      `UPDATE bitacora 
-       SET tiempo_fin_reparacion = CURRENT_TIMESTAMP, causa_raiz = $1, fotografia_url = $2, estado = 'SOLUCIONADA'
-       WHERE folio_incidencia = $3 RETURNING *`,
-      [causa_raiz, fotografia_url, folio_incidencia]
-    );
-
-    await db.query(`UPDATE fallas SET estatus = 'SOLUCIONADA' WHERE folio_incidencia = $1`, [folio_incidencia]);
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-exports.obtenerMetricas = async (req, res) => {
-  try {
-    const mttrResult = await db.query(`
-      SELECT 
-        AVG(EXTRACT(EPOCH FROM (tiempo_fin_reparacion - tiempo_inicio_reparacion))/60) AS mttr_minutos
-      FROM bitacora 
-      WHERE estado = 'SOLUCIONADA'
-    `);
-
-    res.json({
-      mttr_promedio_minutos: parseFloat(mttrResult.rows[0].mttr_minutos || 0).toFixed(2),
-      unidad: 'Minutos'
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+module.exports = { registrarAtencion, obtenerMetricasMttr };

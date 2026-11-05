@@ -1,45 +1,30 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 
-exports.reportarFalla = async (req, res) => {
-  const { equipo_id, usuario_id, tipo_falla, descripcion } = req.body;
-  const folio = `FOL-${Date.now().toString().slice(-6)}`;
+const reportarFalla = async (req, res) => {
+  const { equipo_id, usuario_reporta_id, descripcion_falla, prioridad } = req.body;
   try {
-    const result = await db.query(
-      `INSERT INTO fallas (folio_incidencia, equipo_id, usuario_id, tipo_falla, descripcion)
-       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [folio, equipo_id, usuario_id, tipo_falla, descripcion]
-    );
-    res.status(201).json(result.rows[0]);
+    const folio = `FOL-${Math.floor(100000 + Math.random() * 900000)}`;
+    const query = `
+      INSERT INTO incidencias (folio, equipo_id, usuario_reporta_id, descripcion_falla, prioridad, estado, fecha_reporte)
+      VALUES ($1, $2, $3, $4, $5, 'ABIERTA', NOW())
+      RETURNING *;
+    `;
+    const values = [folio, equipo_id, usuario_reporta_id, descripcion_falla, prioridad || 'MEDIA'];
+    const result = await pool.query(query, values);
+
+    res.status(201).json({ mensaje: 'Falla registrada correctamente', incidencia: result.rows[0] });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-exports.obtenerFallas = async (req, res) => {
+const obtenerFallas = async (req, res) => {
   try {
-    const result = await db.query(`
-      SELECT f.*, e.nombre AS equipo_nombre, e.numero_serie, u.usuario AS reportado_por
-      FROM fallas f
-      JOIN equipos e ON f.equipo_id = e.id
-      LEFT JOIN usuarios u ON f.usuario_id = u.id
-      ORDER BY f.fecha_reporte DESC
-    `);
+    const result = await pool.query('SELECT * FROM incidencias ORDER BY fecha_reporte DESC');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-exports.actualizarEstatusFalla = async (req, res) => {
-  const { id } = req.params;
-  const { estatus } = req.body;
-  try {
-    const result = await db.query(
-      'UPDATE fallas SET estatus = $1 WHERE id = $2 RETURNING *',
-      [estatus, id]
-    );
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+module.exports = { reportarFalla, obtenerFallas };

@@ -1,7 +1,7 @@
 {
-  "name": "sicopv-backend",
+  "name": "node-core-service",
   "version": "1.0.0",
-  "description": "API REST y Base de Datos para el Sistema SiCoPV / AFYP - TSR Saltillo",
+  "description": "API REST Core para SiCoPV / AFYP - TSR Saltillo",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",

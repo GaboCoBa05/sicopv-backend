@@ -1,35 +1,20 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
-
-const authRoutes = require('./routes/authRoutes');
-const equipoRoutes = require('./routes/equipoRoutes');
-const fallaRoutes = require('./routes/fallaRoutes');
-const bitacoraRoutes = require('./routes/bitacoraRoutes');
+const apiRoutes = require('./routes/api');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Endpoint base de healthcheck
-app.get('/', (req, res) => {
-  res.json({
-    sistema: "SiCoPV - AFYP (TSR Saltillo)",
-    modulo: "Backend API REST",
-    estado: "🚀 API en línea y funcionando",
-    version: "1.0.0"
-  });
+app.use('/api', apiRoutes);
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', servicio: 'node-core-service', timestamp: new Date() });
 });
 
-// Rutas de la API
-app.use('/api/auth', authRoutes);
-app.use('/api/equipos', equipoRoutes);
-app.use('/api/fallas', fallaRoutes);
-app.use('/api/bitacora', bitacoraRoutes);
-
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🔥 Servidor SiCoPV corriendo en http://localhost:${PORT}`);
+  console.log(`🚀 Node Core Service corriendo en puerto ${PORT}`);
 });

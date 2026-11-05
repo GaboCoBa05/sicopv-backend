@@ -13,12 +13,12 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+      - ./backend/baseDeDatos/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./backend/baseDeDatos/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
 
-  backend:
-    build: .
-    container_name: sicopv_backend
+  node-core-service:
+    build: ./backend/node-core-service
+    container_name: sicopv_node_core
     restart: always
     ports:
       - "3000:3000"
@@ -30,6 +30,15 @@ services:
       - DB_NAME=sicopv_db
       - DB_PORT=5432
       - JWT_SECRET=secreto_vibecode_sicopv_2026
+    depends_on:
+      - db
+
+  spring-realtime-service:
+    build: ./backend/spring-realtime-service
+    container_name: sicopv_spring_realtime
+    restart: always
+    ports:
+      - "8080:8080"
     depends_on:
       - db
 

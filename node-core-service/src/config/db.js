@@ -1,5 +1,4 @@
 const { Pool } = require('pg');
-require('dotenv').config();
 
 const pool = new Pool({
   host: process.env.DB_HOST || 'db',
@@ -10,7 +9,7 @@ const pool = new Pool({
 });
 
 pool.on('connect', () => {
-  console.log('⚡ Conexión exitosa a la BD PostgreSQL (SiCoPV)');
+  console.log('✅ [PostgreSQL] Conectado a la base de datos de SiCoPV');
 });
 
 module.exports = pool;
