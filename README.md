@@ -102,7 +102,8 @@ El backend combina la agilidad de Node.js para las operaciones transaccionales R
             |                                    (PostgreSQL)                                       |
             +---------------------------------------------------------------------------------------+
 
-            A continuación, se presentan los bloques de documentación técnica normada en formato Markdown, estructurados conforme a los lineamientos institucionales (ITS) y los requerimientos de la Unidad 3 para la plataforma **SiCoPV / AFYP (TSR Saltillo)**.
+            
+A continuación, se presentan los bloques de documentación técnica normada en formato Markdown, estructurados conforme a los lineamientos institucionales (ITS) y los requerimientos de la Unidad 3 para la plataforma **SiCoPV / AFYP (TSR Saltillo)**.
 
 ---
 
@@ -355,3 +356,4 @@ docker-compose up --build -d
 - [x] **Rutas relativas estandarizadas de imágenes:** `./documentacion/arquitectura_software.png` y `./documentacion/modelo_uml.png`.
 - [x] **Convención de ramas documentada:** `main`, `feature/node-core`, `feature/spring-realtime`, `feature/frontend-ui`.
 - [x] **Cumplimiento de rubros R1 a R5:** Descripción funcional, CRUD/STOMP, lógica paso a paso y reglas de negocio para ambos microservicios.
+
