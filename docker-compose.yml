@@ -38,9 +38,21 @@ services:
     container_name: sicopv_spring_realtime
     restart: always
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       - db
+
+  frontend-web:
+    image: nginx:alpine
+    container_name: sicopv_frontend
+    restart: always
+    ports:
+      - "8082:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - node-core-service
+      - spring-realtime-service
 
 volumes:
   pgdata:

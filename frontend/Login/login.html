@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SiCoPV / AFYP - Iniciar Sesión</title>
     <style>
         :root {
-            --primary: #06454a;
-            --primary-hover: #08595f;
-            --accent: #a8ddcb;
-            --accent-hover: #8fceb9;
-            --bg: #e9eef0;
-            --card-bg: #06454a;
-            --text-light: #ffffff;
-            --text-dark: #06454a;
-            --input-bg: #f8faf9;
-            --error: #e63946;
-            --success: #2a9d8f;
-            --border: #d2dedb;
+            --primary: #0B3B36;
+            --primary-light: #135D54;
+            --accent: #A8DDCB;
+            --accent-hover: #8DCEB8;
+            --bg: #F5F6F4;
+            --card-bg: #0B3B36;
+            --text-light: #FFFFFF;
+            --text-dark: #10484B;
+            --input-bg: #F8FAF9;
+            --error: #E63946;
+            --success: #2A9D8F;
+            --border: #D2DEDB;
         }
 
         * {
@@ -29,9 +30,9 @@
 
         body {
             background-color: var(--bg);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(6, 69, 74, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(168, 221, 203, 0.15) 0%, transparent 30%);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(11, 59, 54, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(168, 221, 203, 0.2) 0%, transparent 30%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -40,15 +41,14 @@
         }
 
         .login-card {
-            width: 440px;
+            width: 480px;
             max-width: 100%;
             background: var(--card-bg);
             color: var(--text-light);
-            padding: 48px 36px 36px;
+            padding: 40px 36px 36px;
             border-radius: 14px;
-            box-shadow: 0 16px 35px rgba(6, 69, 74, 0.25), 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 16px 35px rgba(11, 59, 54, 0.3);
             position: relative;
-            overflow: hidden;
         }
 
         .login-card::before {
@@ -58,12 +58,13 @@
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(90deg, var(--accent), #48bfe3);
+            background: linear-gradient(90deg, var(--accent), #258C82);
+            border-radius: 14px 14px 0 0;
         }
 
         .brand-header {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 24px;
         }
 
         .brand-badge {
@@ -72,41 +73,73 @@
             color: var(--accent);
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             border: 1px solid rgba(168, 221, 203, 0.3);
         }
 
         .brand-header h1 {
             font-size: 26px;
             font-weight: 700;
-            letter-spacing: 4px;
-            line-height: 1.2;
+            letter-spacing: 3px;
             color: #ffffff;
         }
 
         .brand-header p {
-            font-size: 14px;
-            color: #b0d0ce;
-            margin-top: 6px;
-            letter-spacing: 0.5px;
+            font-size: 13px;
+            color: #B0D0CE;
+            margin-top: 4px;
+        }
+
+        /* NAVEGACIÓN POR PESTAÑAS (LOGIN, REGISTRO, RECUPERAR) */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(168, 221, 203, 0.25);
+            margin-bottom: 22px;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 10px 4px;
+            color: #B0D0CE;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .tab-btn.activo {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.activo {
+            display: block;
+            animation: fadeIn 0.3s ease;
         }
 
         .form-group {
-            margin-bottom: 18px;
-            position: relative;
+            margin-bottom: 14px;
         }
 
-        .form-group label {
+        label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: #d1ece5;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
+            color: #D1ECE5;
+            margin-bottom: 5px;
         }
 
         .input-wrapper {
@@ -115,421 +148,279 @@
             align-items: center;
         }
 
-        .input-icon {
-            position: absolute;
-            left: 14px;
-            width: 18px;
-            height: 18px;
-            stroke: var(--primary);
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .input-wrapper input {
+        input,
+        select {
             width: 100%;
-            padding: 14px 16px 14px 44px;
+            padding: 12px 14px;
             background: var(--input-bg);
             border: 1.5px solid var(--border);
-            border-radius: 8px;
-            font-size: 15px;
+            border-radius: 7px;
+            font-size: 14px;
             color: var(--text-dark);
             outline: none;
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
         }
 
-        .input-wrapper input:focus {
+        input:focus,
+        select:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(168, 221, 203, 0.35);
+            box-shadow: 0 0 0 3px rgba(168, 221, 203, 0.3);
             background: #ffffff;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 12px;
-            background: transparent;
-            border: none;
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 6px 10px;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-
-        .toggle-password:hover {
-            background: rgba(6, 69, 74, 0.1);
-        }
-
-        .aux-links {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 12px 0 24px;
-            font-size: 13px;
-        }
-
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #d1ece5;
-            cursor: pointer;
-        }
-
-        .remember-me input {
-            cursor: pointer;
-            accent-color: var(--accent);
-        }
-
-        .forgot-link {
-            color: var(--accent);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .forgot-link:hover {
-            color: #ffffff;
-            text-decoration: underline;
         }
 
         .btn-submit {
             width: 100%;
-            padding: 15px;
+            padding: 13px;
             background: var(--accent);
             color: var(--text-dark);
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 7px;
+            font-size: 15px;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            margin-top: 10px;
+            transition: all 0.2s;
         }
 
         .btn-submit:hover:not(:disabled) {
             background: var(--accent-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .btn-submit:disabled {
-            opacity: 0.65;
+            opacity: 0.6;
             cursor: not-allowed;
         }
 
-        .spinner {
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(6, 69, 74, 0.3);
-            border-top-color: var(--text-dark);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: none;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         .alert-box {
-            margin-top: 18px;
-            padding: 12px 14px;
+            margin-top: 14px;
+            padding: 10px 14px;
             border-radius: 6px;
             font-size: 13px;
             display: none;
-            align-items: center;
-            gap: 10px;
             animation: fadeIn 0.3s ease;
         }
 
         .alert-box.error {
-            display: flex;
-            background: rgba(230, 57, 70, 0.2);
-            border: 1px solid rgba(230, 57, 70, 0.5);
-            color: #ffccd0;
+            display: block;
+            background: rgba(230, 57, 70, 0.25);
+            border: 1px solid rgba(230, 57, 70, 0.6);
+            color: #FFCCD0;
         }
 
         .alert-box.success {
-            display: flex;
-            background: rgba(42, 157, 143, 0.2);
-            border: 1px solid rgba(42, 157, 143, 0.5);
-            color: #c7f9cc;
+            display: block;
+            background: rgba(42, 157, 143, 0.25);
+            border: 1px solid rgba(42, 157, 143, 0.6);
+            color: #C7F9CC;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .divider {
-            border: 0;
-            border-top: 1px solid rgba(168, 221, 203, 0.2);
-            margin: 30px 0 20px;
-        }
-
-        .footer-links {
-            text-align: center;
-            font-size: 13px;
-            color: #d1ece5;
-        }
-
-        .footer-links a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 600;
-            margin-left: 5px;
-        }
-
-        .footer-links a:hover {
-            text-decoration: underline;
-            color: #ffffff;
-        }
-
-        @media (max-width: 480px) {
-            .login-card {
-                padding: 35px 22px 25px;
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
             }
-            .brand-header h1 {
-                font-size: 22px;
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
 </head>
+
 <body>
 
     <main class="login-card">
         <header class="brand-header">
             <span class="brand-badge">TSR Saltillo &bull; AFYP</span>
             <h1>SiCoPV</h1>
-            <p>Control de Producción y Fallas</p>
+            <p>Control de Paros y Ventanillas de Mantenimiento</p>
         </header>
 
-        <form id="formLogin" novalidate>
-            <div class="form-group">
-                <label for="correo">Correo Institucional o Usuario</label>
-                <div class="input-wrapper">
-                    <svg class="input-icon" viewBox="0 0 24 24">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                    <input 
-                        type="email" 
-                        id="correo" 
-                        placeholder="usuario@tsr-saltillo.com" 
-                        autocomplete="username" 
-                        required 
-                        autofocus>
+        <!-- PESTAÑAS -->
+        <nav class="tabs">
+            <button type="button" class="tab-btn activo" onclick="mostrarTab('login', this)">Iniciar Sesión</button>
+            <button type="button" class="tab-btn" onclick="mostrarTab('registro', this)">Crear Cuenta</button>
+            <button type="button" class="tab-btn" onclick="mostrarTab('reset', this)">Actualizar Contraseña</button>
+        </nav>
+
+        <!-- PANEL 1: INICIAR SESIÓN -->
+        <section id="panel-login" class="tab-panel activo">
+            <form id="formLogin" novalidate>
+                <div class="form-group">
+                    <label for="correoLogin">Correo Electrónico o Usuario</label>
+                    <input type="text" id="correoLogin" placeholder="usuario@tsr-saltillo.com o admin" required>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label for="contrasena">Contraseña</label>
-                <div class="input-wrapper">
-                    <svg class="input-icon" viewBox="0 0 24 24">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    </svg>
-                    <input 
-                        type="password" 
-                        id="contrasena" 
-                        placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" 
-                        autocomplete="current-password" 
-                        required>
-                    <button type="button" class="toggle-password" id="btnTogglePassword" aria-label="Mostrar contraseña">
-                        Ver
-                    </button>
+                <div class="form-group">
+                    <label for="passLogin">Contraseña</label>
+                    <input type="password" id="passLogin" placeholder="••••••••" required>
                 </div>
-            </div>
+                <button type="submit" class="btn-submit" id="btnLogin">INICIAR SESIÓN</button>
+            </form>
+        </section>
 
-            <div class="aux-links">
-                <label class="remember-me">
-                    <input type="checkbox" id="recordarSesion">
-                    <span>Recordar equipo</span>
-                </label>
-                <a href="ActualizarContra.html" class="forgot-link">¿Olvidaste tu contraseña?</a>
-            </div>
+        <!-- PANEL 2: CREAR CUENTA -->
+        <section id="panel-registro" class="tab-panel">
+            <form id="formRegistro" novalidate>
+                <div class="form-group">
+                    <label for="regUsuario">Nombre de Usuario</label>
+                    <input type="text" id="regUsuario" placeholder="Ej. rgonzalez" required>
+                </div>
+                <div class="form-group">
+                    <label for="regCorreo">Correo Electrónico</label>
+                    <input type="email" id="regCorreo" placeholder="colaborador@tsr-saltillo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Contraseña</label>
+                    <input type="password" id="regPassword" placeholder="Mínimo 8 caracteres" minlength="8" required>
+                </div>
+                <div class="form-group">
+                    <label for="regRol">Rol Operativo</label>
+                    <select id="regRol" required>
+                        <option value="OPERADOR">OPERADOR (Piso de planta)</option>
+                        <option value="TECNICO">TECNICO (Mantenimiento)</option>
+                        <option value="SUPERVISOR">SUPERVISOR (Línea)</option>
+                        <option value="JEFE_MANTTO">JEFE DE MANTENIMIENTO</option>
+                        <option value="CALIDAD">CALIDAD</option>
+                        <option value="ADMIN">ADMINISTRADOR</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">REGISTRAR CUENTA</button>
+            </form>
+        </section>
 
-            <button type="submit" class="btn-submit" id="btnSubmit">
-                <span class="spinner" id="loginSpinner"></span>
-                <span id="btnText">INICIAR SESIÓN</span>
-            </button>
+        <!-- PANEL 3: ACTUALIZAR CONTRASEÑA -->
+        <section id="panel-reset" class="tab-panel">
+            <form id="formReset" novalidate>
+                <div class="form-group">
+                    <label for="resetCorreo">Correo Registrado</label>
+                    <input type="email" id="resetCorreo" placeholder="correo@tsr-saltillo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="resetCodigo">Código de Verificación (Opcional)</label>
+                    <input type="text" id="resetCodigo" placeholder="TSR-XXXX">
+                </div>
+                <div class="form-group">
+                    <label for="resetPass">Nueva Contraseña</label>
+                    <input type="password" id="resetPass" placeholder="Nueva contraseña segura" minlength="8" required>
+                </div>
+                <button type="submit" class="btn-submit">ACTUALIZAR CONTRASEÑA</button>
+            </form>
+        </section>
 
-            <div id="alertBox" class="alert-box" role="alert">
-                <span id="alertMessage"></span>
-            </div>
-        </form>
-
-        <hr class="divider">
-
-        <div class="footer-links">
-            <span>¿Nuevo colaborador?</span>
-            <a href="registro.html">Crear cuenta</a>
-        </div>
+        <!-- MENSAJE DE ESTADO -->
+        <div id="alertaBox" class="alert-box" role="alert"></div>
     </main>
 
     <script>
-        const API_LOGIN_URL = 'http://localhost:3000/api/auth/login';
+        const API_URL = 'http://localhost:3000/api/auth';
+        const alertaBox = document.getElementById('alertaBox');
 
-        // Toggle Mostrar / Ocultar contraseña
-        const btnTogglePassword = document.getElementById('btnTogglePassword');
-        const inputContrasena = document.getElementById('contrasena');
-
-        btnTogglePassword.addEventListener('click', () => {
-            const isPassword = inputContrasena.getAttribute('type') === 'password';
-            inputContrasena.setAttribute('type', isPassword ? 'text' : 'password');
-            btnTogglePassword.textContent = isPassword ? 'Ocultar' : 'Ver';
-        });
-
-        // Manejo de mensajes de alerta
-        const alertBox = document.getElementById('alertBox');
-        const alertMessage = document.getElementById('alertMessage');
-        const btnSubmit = document.getElementById('btnSubmit');
-        const btnText = document.getElementById('btnText');
-        const loginSpinner = document.getElementById('loginSpinner');
-
-        function mostrarMensaje(texto, tipo = 'error') {
-            alertBox.className = `alert-box ${tipo}`;
-            alertMessage.textContent = texto;
-            alertBox.style.display = 'flex';
+        function mostrarTab(tab, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('activo'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('activo'));
+            document.getElementById('panel-' + tab).classList.add('activo');
+            btn.classList.add('activo');
+            alertaBox.style.display = 'none';
         }
 
-        function ocultarMensaje() {
-            alertBox.style.display = 'none';
+        function setAlerta(msg, tipo = 'error') {
+            alertaBox.className = `alert-box ${tipo}`;
+            alertaBox.textContent = msg;
+            alertaBox.style.display = 'block';
         }
 
-        function setCargando(cargando) {
-            btnSubmit.disabled = cargando;
-            loginSpinner.style.display = cargando ? 'inline-block' : 'none';
-            btnText.textContent = cargando ? 'AUTENTICANDO...' : 'INICIAR SESIÓN';
-        }
-
-        // Redirección basada en el rol del usuario autenticado
         function redirigirSegunRol(rol) {
-            const rolNormalizado = (rol || '').toLowerCase().trim();
-            switch (rolNormalizado) {
-                case 'admin':
-                case 'administrador':
-                case 'supervisor':
-                    window.location.href = '../Dashboard/dashboard.html';
-                    break;
-                case 'tecnico':
-                case 'técnico':
-                case 'mantenimiento':
-                    window.location.href = '../BitacoraDigital/bitacora_digital.html';
-                    break;
-                case 'operador':
-                    window.location.href = '../FallaEquipo/fallas.html';
-                    break;
-                default:
-                    window.location.href = '../FallaEquipo/seleccion.html';
-                    break;
+            const r = (rol || '').toUpperCase();
+            if (r === 'ADMIN' || r === 'JEFE_MANTTO' || r === 'SUPERVISOR') {
+                window.location.href = '../Dashboard/dashboard.html';
+            } else if (r === 'TECNICO') {
+                window.location.href = '../BitacoraDigital/bitacora_digital.html';
+            } else {
+                window.location.href = '../FallaEquipo/fallas.html';
             }
         }
 
-        // Auto-completar correo si fue recordado previamente
-        document.addEventListener('DOMContentLoaded', () => {
-            const correoGuardado = localStorage.getItem('sicopv_remembered_email');
-            if (correoGuardado) {
-                document.getElementById('correo').value = correoGuardado;
-                document.getElementById('recordarSesion').checked = true;
-                inputContrasena.focus();
-            }
-        });
+        // 1. INICIAR SESIÓN
+        document.getElementById('formLogin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('correoLogin').value.trim();
+            const password = document.getElementById('passLogin').value;
 
-        // Enviar formulario al endpoint POST http://localhost:3000/api/auth/login
-        document.getElementById('formLogin').addEventListener('submit', async (evento) => {
-            evento.preventDefault();
-            ocultarMensaje();
-
-            const correo = document.getElementById('correo').value.trim();
-            const contrasena = inputContrasena.value;
-            const recordar = document.getElementById('recordarSesion').checked;
-
-            if (!correo || !contrasena) {
-                mostrarMensaje('Por favor ingresa tu correo y contraseña.', 'error');
-                return;
-            }
-
-            setCargando(true);
+            if (!email || !password) return setAlerta('Ingresa tu correo y contraseña.');
 
             try {
-                // Compatible con esquemas { email, password } y { correo, contrasena }
-                const payload = {
-                    email: correo,
-                    password: contrasena,
-                    correo: correo,
-                    contrasena: contrasena
-                };
-
-                const respuesta = await fetch(API_LOGIN_URL, {
+                const res = await fetch(`${API_URL}/login`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
                 });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión.');
 
-                const data = await respuesta.json().catch(() => null);
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('usuario', JSON.stringify(data.user));
+                localStorage.setItem('rol', data.user.rol);
 
-                if (!respuesta.ok) {
-                    const mensajeError = (data && (data.message || data.error || data.msg)) 
-                        || `Error de autenticación (${respuesta.status}). Verifique sus credenciales.`;
-                    throw new Error(mensajeError);
-                }
+                setAlerta('Inicio de sesión exitoso. Redirigiendo...', 'success');
+                setTimeout(() => redirigirSegunRol(data.user.rol), 600);
+            } catch (err) {
+                setAlerta(err.message);
+            }
+        });
 
-                // Extracción segura del JWT Token
-                const token = data?.token || data?.accessToken || data?.jwt || data?.data?.token;
+        // 2. CREAR CUENTA
+        document.getElementById('formRegistro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombre_usuario = document.getElementById('regUsuario').value.trim();
+            const correo = document.getElementById('regCorreo').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const rol = document.getElementById('regRol').value;
 
-                if (!token) {
-                    throw new Error('La respuesta del servidor no incluyó un token JWT válido.');
-                }
+            if (!nombre_usuario || !correo || !password) return setAlerta('Completa todos los campos obligatorios.');
 
-                // Extracción de usuario y rol
-                const usuario = data?.user || data?.usuario || data?.data?.user || {};
-                const rol = usuario.rol || usuario.role || data?.role || data?.rol || 'operador';
+            try {
+                const res = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre_usuario, correo, password, rol })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error en registro.');
 
-                // Almacenamiento seguro en localStorage
-                localStorage.setItem('token', token);
-                localStorage.setItem('usuario', JSON.stringify({
-                    nombre: usuario.nombre || usuario.username || correo.split('@')[0],
-                    correo: usuario.correo || usuario.email || correo,
-                    rol: rol,
-                    id: usuario.id || usuario._id || null
-                }));
-                localStorage.setItem('rol', rol);
+                setAlerta('Cuenta creada con éxito. Ahora puedes iniciar sesión.', 'success');
+                document.getElementById('formRegistro').reset();
+            } catch (err) {
+                setAlerta(err.message);
+            }
+        });
 
-                if (recordar) {
-                    localStorage.setItem('sicopv_remembered_email', correo);
-                } else {
-                    localStorage.removeItem('sicopv_remembered_email');
-                }
+        // 3. ACTUALIZAR CONTRASEÑA
+        document.getElementById('formReset').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const correo = document.getElementById('resetCorreo').value.trim();
+            const codigo_verificacion = document.getElementById('resetCodigo').value.trim();
+            const nueva_contrasena = document.getElementById('resetPass').value;
 
-                mostrarMensaje('Acceso autorizado. Redirigiendo al sistema...', 'success');
+            if (!correo || !nueva_contrasena) return setAlerta('Ingresa tu correo y la nueva contraseña.');
 
-                setTimeout(() => {
-                    redirigirSegunRol(rol);
-                }, 700);
+            try {
+                const res = await fetch(`${API_URL}/reset-password`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo, codigo_verificacion, nueva_contrasena })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error al actualizar contraseña.');
 
-            } catch (error) {
-                console.error('Error durante el inicio de sesión:', error);
-                const mensaje = error.message.includes('Failed to fetch') 
-                    ? 'No se pudo conectar con el servidor (http://localhost:3000). Verifique su conexión de red o si la API está en ejecución.'
-                    : error.message;
-                mostrarMensaje(mensaje, 'error');
-            } finally {
-                setCargando(false);
+                setAlerta(data.message || 'Contraseña actualizada. Ya puedes iniciar sesión.', 'success');
+                document.getElementById('formReset').reset();
+            } catch (err) {
+                setAlerta(err.message);
             }
         });
     </script>
 </body>
+
 </html>
