@@ -5,7 +5,7 @@
 **Institución:** Instituto Tecnológico de Saltillo  
 **Docente:** Ing. Alejandra Margarita Sánchez Malacara  
 **Equipo de Desarrollo:**
-- Roberto Julian Nakasima Martinez
+- Roberto Julián Nakasima Martinez
 - Uriel Coronado Jaramillo
 - Carlos Alberto Hernandez Monsivais
 - Andrés Valdés Romo
