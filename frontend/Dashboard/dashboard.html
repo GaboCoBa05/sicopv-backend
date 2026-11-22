@@ -8,9 +8,13 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
 .contenedor { min-height: 100vh; display: flex; flex-direction: column; }
-.encabezado { height: 62px; background: #0b4548; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
+.encabezado { height: 62px; background: #0b4548; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; gap: 12px; }
 .titulo { display: flex; align-items: center; gap: 15px; font-size: 22px; font-weight: bold; letter-spacing: 2px; }
-.usuario { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: bold; }
+.usuario-area { display: flex; align-items: center; gap: 14px; }
+.usuario { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; white-space: nowrap; background: transparent; border: none; color: white; cursor: pointer; padding: 6px 8px; border-radius: 6px; transition: background 0.2s; }
+.usuario:hover { background: rgba(255,255,255,0.12); }
+.btn-cerrar-sesion { background: #a8ddcb; color: #0b4548; border: none; border-radius: 6px; padding: 7px 12px; font-size: 12px; font-weight: bold; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+.btn-cerrar-sesion:hover { background: #8dceb8; }
 .cuerpo { display: flex; flex: 1; }
 .sidebar { width: 228px; flex-shrink: 0; background: #0b4548; padding: 18px 8px; }
 .menu { display: flex; flex-direction: column; gap: 9px; }
@@ -43,15 +47,24 @@ body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
 .eje-y-label { font-size: 10px; color: #5a8a87; }
 .btn-exportar { width: 100%; background: #0b4548; color: white; border: none; border-radius: 10px; padding: 16px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 8px; }
 .btn-exportar:hover { background: #258c82; }
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 200; }
-.modal-box { background: white; border-radius: 12px; padding: 28px; max-width: 300px; width: 90%; text-align: center; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 200; }
+.modal-box { background: white; border-radius: 12px; padding: 28px; max-width: 340px; width: 92%; text-align: center; box-shadow: 0 12px 28px rgba(0,0,0,0.2); }
+.modal-perfil { max-width: 400px; text-align: left; }
+.modal-perfil h3 { font-size: 18px; color: #0b4548; margin-bottom: 14px; }
+.campo-perfil { margin-bottom: 12px; }
+.campo-perfil label { display: block; font-size: 12px; font-weight: bold; color: #0b4548; margin-bottom: 4px; }
+.campo-perfil input { width: 100%; padding: 9px 11px; border: 1px solid #c5dbd6; border-radius: 7px; font-size: 13px; color: #10484b; }
+.campo-perfil input:read-only { background: #eef4f2; color: #4a7a77; }
+.acciones-perfil { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.btn-secundario { background: #e3eeeb; color: #0b4548; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: bold; cursor: pointer; }
+.msg-perfil { font-size: 12px; margin-top: 8px; color: #258c82; font-weight: bold; min-height: 16px; }
 .modal-icon { font-size: 36px; margin-bottom: 8px; }
 .modal-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
 .modal-msg { font-size: 13px; color: #4a7a77; margin-bottom: 16px; }
-.btn-modal { background: #0b4548; color: white; border: none; border-radius: 8px; padding: 10px 24px; font-size: 13px; cursor: pointer; }
+.btn-modal { background: #0b4548; color: white; border: none; border-radius: 8px; padding: 10px 24px; font-size: 13px; font-weight: bold; cursor: pointer; }
 .hidden { display: none !important; }
 @media(max-width:900px){ .graficas{grid-template-columns:1fr;} }
-@media(max-width:650px){ .sidebar{width:65px;} .menu a span{display:none;} .menu a{justify-content:center;} .principal{padding:16px;} }
+@media(max-width:650px){ .sidebar{width:65px;} .menu a span{display:none;} .menu a{justify-content:center;} .principal{padding:16px;} .titulo{font-size:15px;letter-spacing:1px;} }
 </style>
 </head>
 <body>
@@ -70,12 +83,18 @@ body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
 <div class="contenedor">
   <header class="encabezado">
     <div class="titulo"><svg class="icono"><use href="#home"></use></svg> CONSULTAR DASHBOARD DE EFICIENCIA</div>
-    <div class="usuario"><svg class="icono"><use href="#usr"></use></svg> USUARIO</div>
+    <div class="usuario-area">
+      <button type="button" class="usuario" onclick="abrirPerfil()" title="Gestionar perfil">
+        <svg class="icono"><use href="#usr"></use></svg>
+        <span id="nombreUsuario">USUARIO</span>
+      </button>
+      <button type="button" class="btn-cerrar-sesion" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </div>
   </header>
   <div class="cuerpo">
     <aside class="sidebar">
       <nav class="menu">
-        <a href="../FallaEquipo/seleccion.html"><svg class="icono"><use href="#doc"></use></svg><span>Reportar Falla</span></a>
+        <a href="../FallaEquipo/fallas.html"><svg class="icono"><use href="#doc"></use></svg><span>Reportar Falla</span></a>
         <a href="../IngresoMaquinaria/ingreso_maquinaria.html"><svg class="icono"><use href="#gear"></use></svg><span>Ingreso Maquinaria</span></a>
         <a href="../BitacoraDigital/bitacora_digital.html"><svg class="icono"><use href="#mon"></use></svg><span>Bitácora Digital</span></a>
         <a href="../RegistrarTecnico/registrar_tecnico.html"><svg class="icono"><use href="#llave"></use></svg><span>Registrar Técnico</span></a>
@@ -119,13 +138,9 @@ body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
           <h2>MTTR</h2>
           <div class="pastel-wrap">
             <svg width="160" height="160" viewBox="0 0 160 160">
-              <!-- Mantenimiento Correctivo 55% -->
               <path d="M80 80 L80 10 A70 70 0 0 1 148.7 45 Z" fill="#0b4548"/>
-              <!-- Mantenimiento Preventivo 25% -->
               <path d="M80 80 L148.7 45 A70 70 0 0 1 115 143.7 Z" fill="#258c82"/>
-              <!-- Ajustes 15% -->
               <path d="M80 80 L115 143.7 A70 70 0 0 1 24.3 127.3 Z" fill="#a8ddcb"/>
-              <!-- Otros 5% -->
               <path d="M80 80 L24.3 127.3 A70 70 0 0 1 80 10 Z" fill="#d4ebe5"/>
               <circle cx="80" cy="80" r="30" fill="white"/>
             </svg>
@@ -143,6 +158,32 @@ body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
   </div>
 </div>
 
+<!-- MODAL MI PERFIL -->
+<div id="modal-perfil" class="modal-overlay hidden">
+  <div class="modal-box modal-perfil">
+    <h3>Mi Perfil</h3>
+    <form id="formPerfil" onsubmit="guardarPerfil(event)">
+      <div class="campo-perfil">
+        <label for="perfilNombre">Nombre de Usuario</label>
+        <input type="text" id="perfilNombre" required>
+      </div>
+      <div class="campo-perfil">
+        <label for="perfilCorreo">Correo Electrónico</label>
+        <input type="text" id="perfilCorreo" readonly>
+      </div>
+      <div class="campo-perfil">
+        <label for="perfilRol">Rol Operativo</label>
+        <input type="text" id="perfilRol" readonly>
+      </div>
+      <div id="msgPerfil" class="msg-perfil"></div>
+      <div class="acciones-perfil">
+        <button type="button" class="btn-secundario" onclick="cerrarPerfil()">Cancelar</button>
+        <button type="submit" class="btn-modal">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div id="modal-overlay" class="modal-overlay hidden">
   <div class="modal-box">
     <div class="modal-icon" id="m-icon"></div>
@@ -151,15 +192,88 @@ body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
     <button class="btn-modal" onclick="cerrarModal()">Cerrar</button>
   </div>
 </div>
+
 <script>
+function obtenerUsuarioActual() {
+  try {
+    const raw = localStorage.getItem('usuario') || sessionStorage.getItem('sicopv_usuario');
+    return raw ? JSON.parse(raw) : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+(function mostrarNombreUsuario() {
+  const u = obtenerUsuarioActual();
+  const etiqueta = u.nombre || u.nombre_usuario || u.usuario || u.correo;
+  if (etiqueta) {
+    document.getElementById('nombreUsuario').textContent = etiqueta.toUpperCase();
+  }
+})();
+
+function abrirPerfil() {
+  const u = obtenerUsuarioActual();
+  const rolGuardado = localStorage.getItem('rol') || sessionStorage.getItem('sicopv_rol') || u.rol || 'USUARIO';
+  document.getElementById('perfilNombre').value = u.nombre || u.nombre_usuario || u.usuario || '';
+  document.getElementById('perfilCorreo').value = u.correo || u.email || 'No disponible';
+  document.getElementById('perfilRol').value = rolGuardado;
+  document.getElementById('msgPerfil').textContent = '';
+  document.getElementById('modal-perfil').classList.remove('hidden');
+}
+
+function cerrarPerfil() {
+  document.getElementById('modal-perfil').classList.add('hidden');
+}
+
+function guardarPerfil(e) {
+  e.preventDefault();
+  const nuevoNombre = document.getElementById('perfilNombre').value.trim();
+  if (!nuevoNombre) return;
+
+  const u = obtenerUsuarioActual();
+  u.nombre = nuevoNombre;
+  u.nombre_usuario = nuevoNombre;
+
+  const serializado = JSON.stringify(u);
+  if (localStorage.getItem('usuario') || !sessionStorage.getItem('sicopv_usuario')) {
+    localStorage.setItem('usuario', serializado);
+  }
+  if (sessionStorage.getItem('sicopv_usuario')) {
+    sessionStorage.setItem('sicopv_usuario', serializado);
+  }
+
+  document.getElementById('nombreUsuario').textContent = nuevoNombre.toUpperCase();
+  document.getElementById('msgPerfil').textContent = 'Perfil actualizado localmente.';
+  setTimeout(cerrarPerfil, 500);
+}
+
+function cerrarSesion() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('usuario');
+  localStorage.removeItem('rol');
+  sessionStorage.removeItem('sicopv_usuario');
+  sessionStorage.removeItem('sicopv_rol');
+  window.location.href = '../Login/login.html';
+}
+
 function modal(ic,ti,ms){
   document.getElementById('m-icon').textContent=ic;
   document.getElementById('m-title').textContent=ti;
   document.getElementById('m-msg').textContent=ms;
   document.getElementById('modal-overlay').classList.remove('hidden');
 }
-function cerrarModal(){document.getElementById('modal-overlay').classList.add('hidden');}
-document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)cerrarModal();});
+
+function cerrarModal(){
+  document.getElementById('modal-overlay').classList.add('hidden');
+}
+
+document.getElementById('modal-overlay').addEventListener('click',function(e){
+  if(e.target===this)cerrarModal();
+});
+
+document.getElementById('modal-perfil').addEventListener('click',function(e){
+  if(e.target===this)cerrarPerfil();
+});
 </script>
 </body>
 </html>

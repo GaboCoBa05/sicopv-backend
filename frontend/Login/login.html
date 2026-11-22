@@ -1,482 +1,526 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SiCoPV / AFYP - Acceso</title>
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiCoPV / AFYP - Iniciar Sesión</title>
+    <style>
+        :root {
+            --primary: #0B3B36;
+            --primary-light: #135D54;
+            --accent: #A8DDCB;
+            --accent-hover: #8DCEB8;
+            --bg: #F5F6F4;
+            --card-bg: #0B3B36;
+            --text-light: #FFFFFF;
+            --text-dark: #10484B;
+            --input-bg: #F8FAF9;
+            --error: #E63946;
+            --success: #2A9D8F;
+            --border: #D2DEDB;
+        }
 
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #eef3f1;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    color: #10484b;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+        }
 
-.tarjeta-login {
-    width: 100%;
-    max-width: 430px;
-    background: #0b3b36;
-    color: #ffffff;
-    border-radius: 14px;
-    padding: 28px 26px;
-    box-shadow: 0 12px 30px rgba(11, 59, 54, 0.22);
-}
+        body {
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(11, 59, 54, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(168, 221, 203, 0.2) 0%, transparent 30%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-.encabezado-marca {
-    text-align: center;
-    margin-bottom: 20px;
-}
+        .login-card {
+            width: 480px;
+            max-width: 100%;
+            background: var(--card-bg);
+            color: var(--text-light);
+            padding: 40px 36px 36px;
+            border-radius: 14px;
+            box-shadow: 0 16px 35px rgba(11, 59, 54, 0.3);
+            position: relative;
+        }
 
-.submarca {
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: #a8ddcb;
-    font-weight: bold;
-    margin-bottom: 6px;
-}
+        .login-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent), #258C82);
+            border-radius: 14px 14px 0 0;
+        }
 
-.encabezado-marca h1 {
-    font-size: 28px;
-    letter-spacing: 1px;
-    margin-bottom: 4px;
-}
+        .brand-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
 
-.encabezado-marca p {
-    font-size: 12px;
-    color: #d4ebe5;
-}
+        .brand-badge {
+            display: inline-block;
+            background: rgba(168, 221, 203, 0.15);
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            border: 1px solid rgba(168, 221, 203, 0.3);
+        }
 
-.tabs {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    padding: 5px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
+        .brand-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #ffffff;
+        }
 
-.tab-btn {
-    border: none;
-    background: transparent;
-    color: #d4ebe5;
-    padding: 9px 6px;
-    border-radius: 7px;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-}
+        .brand-header p {
+            font-size: 13px;
+            color: #B0D0CE;
+            margin-top: 4px;
+        }
 
-.tab-btn.activo {
-    background: #a8ddcb;
-    color: #0b3b36;
-}
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(168, 221, 203, 0.25);
+            margin-bottom: 22px;
+            gap: 8px;
+        }
 
-.campo {
-    margin-bottom: 14px;
-}
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 10px 4px;
+            color: #B0D0CE;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            text-align: center;
+        }
 
-.campo label {
-    display: block;
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 6px;
-    color: #d4ebe5;
-}
+        .tab-btn.activo {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
 
-.campo input,
-.campo select {
-    width: 100%;
-    padding: 11px 13px;
-    border: 1px solid #b7c9d8;
-    border-radius: 8px;
-    background: #ffffff;
-    color: #073f57;
-    font-size: 13px;
-    outline: none;
-}
+        .tab-panel {
+            display: none;
+        }
 
-.campo input:focus,
-.campo select:focus {
-    border-color: #a8ddcb;
-    box-shadow: 0 0 0 2px rgba(168, 221, 203, 0.35);
-}
+        .tab-panel.activo {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
 
-.requisitos-pass {
-    list-style: none;
-    margin-top: 8px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.06);
-    font-size: 11px;
-    line-height: 1.5;
-    color: #b8d8d0;
-}
+        .form-group {
+            margin-bottom: 14px;
+        }
 
-.requisitos-pass li::before {
-    content: "○ ";
-    font-weight: bold;
-}
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #D1ECE5;
+            margin-bottom: 5px;
+        }
 
-.requisitos-pass li.cumplido {
-    color: #a8ddcb;
-    font-weight: bold;
-}
+        input,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--input-bg);
+            border: 1.5px solid var(--border);
+            border-radius: 7px;
+            font-size: 14px;
+            color: var(--text-dark);
+            outline: none;
+            transition: all 0.2s ease;
+        }
 
-.requisitos-pass li.cumplido::before {
-    content: "✔ ";
-}
+        input:focus,
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(168, 221, 203, 0.3);
+            background: #ffffff;
+        }
 
-.btn-principal {
-    width: 100%;
-    background: #a8ddcb;
-    color: #0b3b36;
-    border: none;
-    border-radius: 8px;
-    padding: 13px;
-    font-size: 14px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    cursor: pointer;
-    margin-top: 6px;
-    transition: background 0.2s;
-}
+        .requisitos-pass {
+            list-style: none;
+            margin-top: 8px;
+            padding: 8px 12px;
+            border-radius: 7px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(168, 221, 203, 0.15);
+            font-size: 11.5px;
+            line-height: 1.55;
+            color: #B0D0CE;
+        }
 
-.btn-principal:hover {
-    background: #8dceb8;
-}
+        .requisitos-pass li::before {
+            content: "○ ";
+            font-weight: 700;
+        }
 
-.mensaje-alerta {
-    margin-top: 14px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    line-height: 1.4;
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
-    border-left: 4px solid #a8ddcb;
-}
+        .requisitos-pass li.cumplido {
+            color: var(--accent);
+            font-weight: 600;
+        }
 
-.mensaje-alerta.error {
-    background: rgba(220, 53, 69, 0.22);
-    border-left-color: #ff8a95;
-}
+        .requisitos-pass li.cumplido::before {
+            content: "✔ ";
+        }
 
-.mensaje-alerta.exito {
-    background: rgba(168, 221, 203, 0.2);
-    border-left-color: #a8ddcb;
-}
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: var(--accent);
+            color: var(--text-dark);
+            border: none;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
 
-.hidden {
-    display: none !important;
-}
-</style>
+        .btn-submit:hover:not(:disabled) {
+            background: var(--accent-hover);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .alert-box {
+            margin-top: 14px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alert-box.error {
+            display: block;
+            background: rgba(230, 57, 70, 0.25);
+            border: 1px solid rgba(230, 57, 70, 0.6);
+            color: #FFCCD0;
+        }
+
+        .alert-box.success {
+            display: block;
+            background: rgba(42, 157, 143, 0.25);
+            border: 1px solid rgba(42, 157, 143, 0.6);
+            color: #C7F9CC;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="tarjeta-login">
-  <div class="encabezado-marca">
-    <div class="submarca">TSR SALTILLO &bull; AFYP</div>
-    <h1>SiCoPV</h1>
-    <p>Control de Paros y Ventanillas de Mantenimiento</p>
-  </div>
+    <main class="login-card">
+        <header class="brand-header">
+            <span class="brand-badge">TSR Saltillo &bull; AFYP</span>
+            <h1>SiCoPV</h1>
+            <p>Control de Paros y Ventanillas de Mantenimiento</p>
+        </header>
 
-  <div class="tabs">
-    <button type="button" class="tab-btn activo" id="tab-login" onclick="cambiarTab('login')">Iniciar Sesión</button>
-    <button type="button" class="tab-btn" id="tab-registro" onclick="cambiarTab('registro')">Crear Cuenta</button>
-    <button type="button" class="tab-btn" id="tab-recuperar" onclick="cambiarTab('recuperar')">Actualizar Contraseña</button>
-  </div>
+        <!-- PESTAÑAS -->
+        <nav class="tabs">
+            <button type="button" class="tab-btn activo" onclick="mostrarTab('login', this)">Iniciar Sesión</button>
+            <button type="button" class="tab-btn" onclick="mostrarTab('registro', this)">Crear Cuenta</button>
+            <button type="button" class="tab-btn" onclick="mostrarTab('reset', this)">Actualizar Contraseña</button>
+        </nav>
 
-  <!-- INICIAR SESIÓN -->
-  <form id="form-login" onsubmit="iniciarSesion(event)">
-    <div class="campo">
-      <label for="loginIdentificador">Correo Electrónico o Usuario</label>
-      <input type="text" id="loginIdentificador" placeholder="usuario@tsr-saltillo.com o admin" required>
-    </div>
-    <div class="campo">
-      <label for="loginPassword">Contraseña</label>
-      <input type="password" id="loginPassword" placeholder="********" required>
-    </div>
-    <button type="submit" class="btn-principal">INICIAR SESIÓN</button>
-  </form>
+        <!-- PANEL 1: INICIAR SESIÓN -->
+        <section id="panel-login" class="tab-panel activo">
+            <form id="formLogin" novalidate>
+                <div class="form-group">
+                    <label for="correoLogin">Correo Electrónico</label>
+                    <input type="email" id="correoLogin" placeholder="usuario@tsr-saltillo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="passLogin">Contraseña</label>
+                    <input type="password" id="passLogin" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-submit" id="btnLogin">INICIAR SESIÓN</button>
+            </form>
+        </section>
 
-  <!-- CREAR CUENTA -->
-  <form id="form-registro" class="hidden" onsubmit="crearCuenta(event)" novalidate>
-    <div class="campo">
-      <label for="regUsuario">Nombre de Usuario</label>
-      <input type="text" id="regUsuario" placeholder="UsuarioPrueba1" required>
-    </div>
-    <div class="campo">
-      <label for="regEmail">Correo Electrónico</label>
-      <input
-        type="email"
-        id="regEmail"
-        placeholder="UsuarioPrueba1@gmail.com"
-        required
-      >
-    </div>
-    <div class="campo">
-      <label for="regPassword">Contraseña</label>
-      <input
-        type="password"
-        id="regPassword"
-        placeholder="Ej. Admin2026*"
-        required
-        oninput="actualizarChecklistPassword(this.value, 'reg')"
-      >
-      <ul class="requisitos-pass">
-        <li id="reg-req-len">Mínimo 8 caracteres</li>
-        <li id="reg-req-may">Al menos una letra mayúscula (A-Z)</li>
-        <li id="reg-req-min">Al menos una letra minúscula (a-z)</li>
-        <li id="reg-req-num">Al menos un número (0-9)</li>
-        <li id="reg-req-esp">Al menos un carácter especial (!@#$%*&._-)</li>
-      </ul>
-    </div>
-    <div class="campo">
-      <label for="regRol">Rol Operativo</label>
-      <select id="regRol">
-        <option value="OPERADOR">OPERADOR (Piso de planta)</option>
-        <option value="TECNICO">TECNICO (Mantenimiento)</option>
-        <option value="SUPERVISOR">SUPERVISOR (Línea)</option>
-        <option value="JEFE_MANTENIMIENTO">JEFE DE MANTENIMIENTO</option>
-        <option value="CALIDAD">CALIDAD</option>
-        <option value="ADMINISTRADOR">ADMINISTRADOR</option>
-      </select>
-    </div>
-    <button type="submit" class="btn-principal">CREAR CUENTA</button>
-  </form>
+        <!-- PANEL 2: CREAR CUENTA -->
+        <section id="panel-registro" class="tab-panel">
+            <form id="formRegistro" novalidate>
+                <div class="form-group">
+                    <label for="regUsuario">Nombre de Usuario</label>
+                    <input type="text" id="regUsuario" placeholder="Ej. rgonzalez" required>
+                </div>
+                <div class="form-group">
+                    <label for="regCorreo">Correo Electrónico</label>
+                    <input type="email" id="regCorreo" placeholder="colaborador@tsr-saltillo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Contraseña</label>
+                    <input type="password" id="regPassword" placeholder="Ej. Admin2026*" required
+                        oninput="actualizarChecklist(this.value, 'reg')">
+                    <ul class="requisitos-pass">
+                        <li id="reg-len">Mínimo 8 caracteres</li>
+                        <li id="reg-may">Al menos una letra mayúscula (A-Z)</li>
+                        <li id="reg-min">Al menos una letra minúscula (a-z)</li>
+                        <li id="reg-num">Al menos un número (0-9)</li>
+                        <li id="reg-esp">Al menos un carácter especial (!@#$%*&._-)</li>
+                    </ul>
+                </div>
+                <div class="form-group">
+                    <label for="regRol">Rol Operativo</label>
+                    <select id="regRol" required>
+                        <option value="OPERADOR">OPERADOR (Piso de planta)</option>
+                        <option value="TECNICO">TECNICO (Mantenimiento)</option>
+                        <option value="SUPERVISOR">SUPERVISOR (Línea)</option>
+                        <option value="JEFE_MANTTO">JEFE DE MANTENIMIENTO</option>
+                        <option value="CALIDAD">CALIDAD</option>
+                        <option value="ADMIN">ADMINISTRADOR</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">REGISTRAR CUENTA</button>
+            </form>
+        </section>
 
-  <!-- ACTUALIZAR CONTRASEÑA -->
-  <form id="form-recuperar" class="hidden" onsubmit="actualizarPassword(event)" novalidate>
-    <div class="campo">
-      <label for="recEmail">Correo Electrónico</label>
-      <input
-        type="email"
-        id="recEmail"
-        placeholder="usuario@correo.com"
-        required
-      >
-    </div>
-    <div class="campo">
-      <label for="recNuevaPassword">Nueva Contraseña</label>
-      <input
-        type="password"
-        id="recNuevaPassword"
-        placeholder="Ej. Admin2026*"
-        required
-        oninput="actualizarChecklistPassword(this.value, 'rec')"
-      >
-      <ul class="requisitos-pass">
-        <li id="rec-req-len">Mínimo 8 caracteres</li>
-        <li id="rec-req-may">Al menos una letra mayúscula (A-Z)</li>
-        <li id="rec-req-min">Al menos una letra minúscula (a-z)</li>
-        <li id="rec-req-num">Al menos un número (0-9)</li>
-        <li id="rec-req-esp">Al menos un carácter especial (!@#$%*&._-)</li>
-      </ul>
-    </div>
-    <button type="submit" class="btn-principal">ACTUALIZAR CONTRASEÑA</button>
-  </form>
+        <!-- PANEL 3: ACTUALIZAR CONTRASEÑA -->
+        <section id="panel-reset" class="tab-panel">
+            <form id="formReset" novalidate>
+                <div class="form-group">
+                    <label for="resetCorreo">Correo Registrado</label>
+                    <input type="email" id="resetCorreo" placeholder="correo@tsr-saltillo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="resetCodigo">Código de Verificación (Opcional)</label>
+                    <input type="text" id="resetCodigo" placeholder="TSR-XXXX">
+                </div>
+                <div class="form-group">
+                    <label for="resetPass">Nueva Contraseña</label>
+                    <input type="password" id="resetPass" placeholder="Ej. Admin2026*" required
+                        oninput="actualizarChecklist(this.value, 'reset')">
+                    <ul class="requisitos-pass">
+                        <li id="reset-len">Mínimo 8 caracteres</li>
+                        <li id="reset-may">Al menos una letra mayúscula (A-Z)</li>
+                        <li id="reset-min">Al menos una letra minúscula (a-z)</li>
+                        <li id="reset-num">Al menos un número (0-9)</li>
+                        <li id="reset-esp">Al menos un carácter especial (!@#$%*&._-)</li>
+                    </ul>
+                </div>
+                <button type="submit" class="btn-submit">ACTUALIZAR CONTRASEÑA</button>
+            </form>
+        </section>
 
-  <div id="mensajeBox" class="mensaje-alerta hidden"></div>
-</div>
+        <!-- MENSAJE DE ESTADO -->
+        <div id="alertaBox" class="alert-box" role="alert"></div>
+    </main>
 
-<script>
-const API = 'http://localhost:3000/api';
+    <script>
+        const API_URL = 'http://localhost:3000/api/auth';
+        const alertaBox = document.getElementById('alertaBox');
 
-function cambiarTab(tab) {
-  ['login', 'registro', 'recuperar'].forEach(t => {
-    document.getElementById('form-' + t).classList.add('hidden');
-    document.getElementById('tab-' + t).classList.remove('activo');
-  });
-  document.getElementById('form-' + tab).classList.remove('hidden');
-  document.getElementById('tab-' + tab).classList.add('activo');
-  ocultarMensaje();
-}
+        function mostrarTab(tab, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('activo'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('activo'));
+            document.getElementById('panel-' + tab).classList.add('activo');
+            btn.classList.add('activo');
+            alertaBox.style.display = 'none';
+        }
 
-function mostrarMensaje(texto, tipo = '') {
-  const box = document.getElementById('mensajeBox');
-  box.textContent = texto;
-  box.className = 'mensaje-alerta' + (tipo ? ' ' + tipo : '');
-  box.classList.remove('hidden');
-}
+        function setAlerta(msg, tipo = 'error') {
+            alertaBox.className = `alert-box ${tipo}`;
+            alertaBox.textContent = msg;
+            alertaBox.style.display = 'block';
+        }
 
-function ocultarMensaje() {
-  document.getElementById('mensajeBox').classList.add('hidden');
-}
+        function validarCorreo(inputEl) {
+            const valor = inputEl.value.trim();
+            const formatoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
+            if (!valor.includes('@') || !formatoValido) {
+                setAlerta('Tiene que usar un @ y un correo válido (ejemplo: usuario@tsr-saltillo.com).');
+                inputEl.focus();
+                return false;
+            }
+            return true;
+        }
 
-function validarCorreo(inputEl) {
-  const valor = inputEl.value.trim();
-  const formatoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
-  if (!valor.includes('@') || !formatoValido) {
-    mostrarMensaje('Tiene que usar un @ y un correo válido (ejemplo: usuario@correo.com).', 'error');
-    inputEl.focus();
-    return false;
-  }
-  return true;
-}
+        function evaluarPassword(pass) {
+            return {
+                len: pass.length >= 8,
+                may: /[A-Z]/.test(pass),
+                min: /[a-z]/.test(pass),
+                num: /[0-9]/.test(pass),
+                esp: /[^A-Za-z0-9\s]/.test(pass)
+            };
+        }
 
-function evaluarReglasPassword(pass) {
-  return {
-    len: pass.length >= 8,
-    may: /[A-Z]/.test(pass),
-    min: /[a-z]/.test(pass),
-    num: /[0-9]/.test(pass),
-    esp: /[^A-Za-z0-9\s]/.test(pass)
-  };
-}
+        function actualizarChecklist(pass, prefijo) {
+            const r = evaluarPassword(pass);
+            document.getElementById(`${prefijo}-len`).classList.toggle('cumplido', r.len);
+            document.getElementById(`${prefijo}-may`).classList.toggle('cumplido', r.may);
+            document.getElementById(`${prefijo}-min`).classList.toggle('cumplido', r.min);
+            document.getElementById(`${prefijo}-num`).classList.toggle('cumplido', r.num);
+            document.getElementById(`${prefijo}-esp`).classList.toggle('cumplido', r.esp);
+        }
 
-function actualizarChecklistPassword(pass, prefijo) {
-  const r = evaluarReglasPassword(pass);
-  document.getElementById(prefijo + '-req-len').classList.toggle('cumplido', r.len);
-  document.getElementById(prefijo + '-req-may').classList.toggle('cumplido', r.may);
-  document.getElementById(prefijo + '-req-min').classList.toggle('cumplido', r.min);
-  document.getElementById(prefijo + '-req-num').classList.toggle('cumplido', r.num);
-  document.getElementById(prefijo + '-req-esp').classList.toggle('cumplido', r.esp);
-}
+        function validarPasswordSegura(inputEl) {
+            const r = evaluarPassword(inputEl.value);
+            const faltantes = [];
+            if (!r.len) faltantes.push('mínimo 8 caracteres');
+            if (!r.may) faltantes.push('una mayúscula');
+            if (!r.min) faltantes.push('una minúscula');
+            if (!r.num) faltantes.push('un número');
+            if (!r.esp) faltantes.push('un carácter especial (!@#$%*&._-)');
 
-function validarPasswordSegura(inputEl) {
-  const pass = inputEl.value;
-  const r = evaluarReglasPassword(pass);
-  const faltantes = [];
+            if (faltantes.length > 0) {
+                setAlerta('La contraseña es muy débil. Debe incluir: ' + faltantes.join(', ') + '.');
+                inputEl.focus();
+                return false;
+            }
+            return true;
+        }
 
-  if (!r.len) faltantes.push('mínimo 8 caracteres');
-  if (!r.may) faltantes.push('una mayúscula');
-  if (!r.min) faltantes.push('una minúscula');
-  if (!r.num) faltantes.push('un número');
-  if (!r.esp) faltantes.push('un carácter especial (!@#$%*&._-)');
+        function redirigirSegunRol(rol) {
+            const r = (rol || '').toUpperCase();
+            if (r === 'ADMIN' || r === 'ADMINISTRADOR' || r === 'JEFE_MANTTO' || r === 'SUPERVISOR') {
+                window.location.href = '../Dashboard/dashboard.html';
+            } else if (r === 'TECNICO') {
+                window.location.href = '../BitacoraDigital/bitacora_digital.html';
+            } else {
+                window.location.href = '../FallaEquipo/fallas.html';
+            }
+        }
 
-  if (faltantes.length > 0) {
-    mostrarMensaje('La contraseña es muy débil. Debe incluir: ' + faltantes.join(', ') + '.', 'error');
-    inputEl.focus();
-    return false;
-  }
-  return true;
-}
+        // 1. INICIAR SESIÓN
+        document.getElementById('formLogin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const correoInput = document.getElementById('correoLogin');
+            const correo = correoInput.value.trim();
+            const password = document.getElementById('passLogin').value;
 
-async function iniciarSesion(e) {
-  e.preventDefault();
-  ocultarMensaje();
+            if (!validarCorreo(correoInput)) return;
+            if (!password) return setAlerta('Ingresa tu contraseña.');
 
-  const identificador = document.getElementById('loginIdentificador').value.trim();
-  const password = document.getElementById('loginPassword').value;
+            try {
+                const res = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo, password })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión.');
 
-  try {
-    const res = await fetch(`${API}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identificador, password })
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      mostrarMensaje(data.error || data.message || 'Credenciales incorrectas.', 'error');
-      return;
-    }
+                const usuarioObj = data.usuario || data.user;
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('usuario', JSON.stringify(usuarioObj));
+                localStorage.setItem('rol', usuarioObj.rol);
 
-    const usuarioObj = data.usuario || data.user || data;
-    sessionStorage.setItem('sicopv_usuario', JSON.stringify(usuarioObj));
-    if (usuarioObj.rol) sessionStorage.setItem('sicopv_rol', usuarioObj.rol);
+                setAlerta('Inicio de sesión exitoso. Redirigiendo...', 'success');
+                setTimeout(() => redirigirSegunRol(usuarioObj.rol), 600);
+            } catch (err) {
+                setAlerta(err.message);
+            }
+        });
 
-    mostrarMensaje('Inicio de sesión correcto. Redirigiendo...', 'exito');
-    setTimeout(() => {
-      window.location.href = '../FallaEquipo/seleccion.html';
-    }, 500);
-  } catch (err) {
-    mostrarMensaje('No se pudo conectar con el servidor de autenticación.', 'error');
-  }
-}
+        // 2. CREAR CUENTA
+        document.getElementById('formRegistro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const usuarioInput = document.getElementById('regUsuario');
+            const correoInput = document.getElementById('regCorreo');
+            const passInput = document.getElementById('regPassword');
 
-async function crearCuenta(e) {
-  e.preventDefault();
-  ocultarMensaje();
+            const nombre_usuario = usuarioInput.value.trim();
+            const correo = correoInput.value.trim();
+            const password = passInput.value;
+            const rol = document.getElementById('regRol').value;
 
-  const usuarioInput = document.getElementById('regUsuario');
-  const emailInput = document.getElementById('regEmail');
-  const passwordInput = document.getElementById('regPassword');
-  const rolSelect = document.getElementById('regRol');
+            if (!nombre_usuario) {
+                usuarioInput.focus();
+                return setAlerta('Ingresa un nombre de usuario.');
+            }
+            if (!validarCorreo(correoInput)) return;
+            if (!validarPasswordSegura(passInput)) return;
 
-  const usuario = usuarioInput.value.trim();
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
-  const rol = rolSelect.value;
+            try {
+                const res = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre_usuario, correo, password, rol })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error en registro.');
 
-  if (!usuario) {
-    mostrarMensaje('Ingresa un nombre de usuario.', 'error');
-    usuarioInput.focus();
-    return;
-  }
+                setAlerta('Cuenta creada con éxito. Ahora puedes iniciar sesión.', 'success');
+                document.getElementById('formRegistro').reset();
+                actualizarChecklist('', 'reg');
+            } catch (err) {
+                setAlerta(err.message);
+            }
+        });
 
-  if (!validarCorreo(emailInput)) {
-    return;
-  }
+        // 3. ACTUALIZAR CONTRASEÑA
+        document.getElementById('formReset').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const correoInput = document.getElementById('resetCorreo');
+            const passInput = document.getElementById('resetPass');
 
-  if (!validarPasswordSegura(passwordInput)) {
-    return;
-  }
+            const correo = correoInput.value.trim();
+            const codigo_verificacion = document.getElementById('resetCodigo').value.trim();
+            const nueva_contrasena = passInput.value;
 
-  try {
-    const res = await fetch(`${API}/auth/registro`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ usuario, email, password, rol })
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      mostrarMensaje(data.error || data.message || 'No se pudo crear la cuenta.', 'error');
-      return;
-    }
+            if (!validarCorreo(correoInput)) return;
+            if (!validarPasswordSegura(passInput)) return;
 
-    mostrarMensaje('Cuenta creada correctamente. Ya puedes iniciar sesión.', 'exito');
-    document.getElementById('form-registro').reset();
-    actualizarChecklistPassword('', 'reg');
-  } catch (err) {
-    mostrarMensaje('No se pudo conectar con el servidor para registrar la cuenta.', 'error');
-  }
-}
+            try {
+                const res = await fetch(`${API_URL}/reset-password`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo, codigo_verificacion, nueva_contrasena })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error al actualizar contraseña.');
 
-async function actualizarPassword(e) {
-  e.preventDefault();
-  ocultarMensaje();
-
-  const emailInput = document.getElementById('recEmail');
-  const passwordInput = document.getElementById('recNuevaPassword');
-
-  if (!validarCorreo(emailInput)) {
-    return;
-  }
-
-  if (!validarPasswordSegura(passwordInput)) {
-    return;
-  }
-
-  try {
-    const res = await fetch(`${API}/auth/password`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: emailInput.value.trim(), password: passwordInput.value })
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      mostrarMensaje(data.error || data.message || 'No se pudo actualizar la contraseña.', 'error');
-      return;
-    }
-    mostrarMensaje('Contraseña actualizada correctamente.', 'exito');
-    document.getElementById('form-recuperar').reset();
-    actualizarChecklistPassword('', 'rec');
-  } catch (err) {
-    mostrarMensaje('No se pudo conectar con el servidor.', 'error');
-  }
-}
-</script>
+                setAlerta(data.message || 'Contraseña actualizada. Ya puedes iniciar sesión.', 'success');
+                document.getElementById('formReset').reset();
+                actualizarChecklist('', 'reset');
+            } catch (err) {
+                setAlerta(err.message);
+            }
+        });
+    </script>
 </body>
+
 </html>
