@@ -268,7 +268,7 @@
                 <span id="wsText">WS Conectando...</span>
             </div>
         </div>
-        <a href="seleccion.html" class="btn-volver">&larr; Menú Principal</a>
+        <a href="../Dashboard/dashboard.html" class="btn-volver">&larr; Menú Principal</a>
     </header>
 
     <main class="contenedor">
@@ -304,7 +304,14 @@
                             </div>
                             <div class="campo">
                                 <label for="ubicacion">Ubicación / Celda</label>
-                                <input type="text" id="ubicacion" placeholder="Línea 1 - Torneado" required>
+                                <select id="ubicacion" required>
+                                    <option value="">Selecciona ubicación...</option>
+                                    <option value="Línea 1 - Torneado">Línea 1 - Torneado</option>
+                                    <option value="Línea 2 - Estampado">Línea 2 - Estampado</option>
+                                    <option value="Celda 3 - Robótica">Celda 3 - Robótica</option>
+                                    <option value="Área de Ensamble">Área de Ensamble</option>
+                                    <option value="Taller de Mantenimiento">Taller de Mantenimiento</option>
+                                </select>
                             </div>
                         </div>
                         <div class="campo">
@@ -400,7 +407,16 @@
                 document.getElementById('equipo_id').value = eq.id;
                 document.getElementById('numSerie').value = eq.numero_serie;
                 document.getElementById('nombreEquipo').value = eq.nombre;
-                document.getElementById('ubicacion').value = eq.ubicacion_area;
+
+                const selectUbic = document.getElementById('ubicacion');
+                if (eq.ubicacion_area && ![...selectUbic.options].some(opt => opt.value === eq.ubicacion_area)) {
+                    const nuevaOp = document.createElement('option');
+                    nuevaOp.value = eq.ubicacion_area;
+                    nuevaOp.textContent = eq.ubicacion_area;
+                    selectUbic.appendChild(nuevaOp);
+                }
+                selectUbic.value = eq.ubicacion_area || '';
+
                 mostrarAlerta(`Equipo "${eq.nombre}" cargado por QR con éxito.`, 'success');
             } catch (err) {
                 mostrarAlerta(err.message, 'error');
