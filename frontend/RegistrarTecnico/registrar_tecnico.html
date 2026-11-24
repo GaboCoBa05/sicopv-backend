@@ -100,13 +100,17 @@ td { padding: 10px 12px; border-bottom: 1px solid #edf1f2; }
 
 </main>
 
+<script src="../js/permisos.js"></script>
+<script src="../js/menu.js"></script>
 <script>
+SICOPV.proteger(['ADMIN']);
+
 const API = 'http://localhost:3000/api/tecnicos';
 const alerta = document.getElementById('alertaBox');
 
 async function cargarTecnicos() {
     try {
-        const res = await fetch(API);
+        const res = await SICOPV.apiFetch(API);
         const data = await res.json();
         const tbody = document.getElementById('tbodyTecnicos');
         tbody.innerHTML = '';
@@ -143,7 +147,7 @@ document.getElementById('formTecnico').addEventListener('submit', async (e) => {
     }
 
     try {
-        const res = await fetch(API, {
+        const res = await SICOPV.apiFetch(API, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ usuario, correo, password, area, especialidad })

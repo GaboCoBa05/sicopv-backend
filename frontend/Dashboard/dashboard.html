@@ -13,6 +13,7 @@ body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
 .usuario-area { display: flex; align-items: center; gap: 14px; }
 .usuario { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; white-space: nowrap; background: transparent; border: none; color: white; cursor: pointer; padding: 6px 8px; border-radius: 6px; transition: background 0.2s; }
 .usuario:hover { background: rgba(255,255,255,0.12); }
+.sicopv-user-rol { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.4); padding: 3px 10px; border-radius: 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
 .btn-cerrar-sesion { background: #a8ddcb; color: #0b4548; border: none; border-radius: 6px; padding: 7px 12px; font-size: 12px; font-weight: bold; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
 .btn-cerrar-sesion:hover { background: #8dceb8; }
 .cuerpo { display: flex; flex: 1; }
@@ -87,6 +88,7 @@ body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
       <button type="button" class="usuario" onclick="abrirPerfil()" title="Gestionar perfil">
         <svg class="icono"><use href="#usr"></use></svg>
         <span id="nombreUsuario">USUARIO</span>
+        <span id="rolUsuario" class="sicopv-user-rol"></span>
       </button>
       <button type="button" class="btn-cerrar-sesion" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
@@ -94,13 +96,14 @@ body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
   <div class="cuerpo">
     <aside class="sidebar">
       <nav class="menu">
-        <a href="../FallaEquipo/fallas.html"><svg class="icono"><use href="#doc"></use></svg><span>Reportar Falla</span></a>
-        <a href="../IngresoMaquinaria/ingreso_maquinaria.html"><svg class="icono"><use href="#gear"></use></svg><span>Ingreso Maquinaria</span></a>
-        <a href="../BitacoraDigital/bitacora_digital.html"><svg class="icono"><use href="#mon"></use></svg><span>Bitácora Digital</span></a>
-        <a href="../RegistrarTecnico/registrar_tecnico.html"><svg class="icono"><use href="#llave"></use></svg><span>Registrar Técnico</span></a>
-        <a href="../MantenimientoPreventivo/mantenimiento_preventivo.html"><svg class="icono"><use href="#cal"></use></svg><span>Mantenimiento Preventivo</span></a>
-        <a href="dashboard.html" class="activo"><svg class="icono"><use href="#grid"></use></svg><span>Dashboard</span></a>
-        <a href="../Reportes/reporte_pdf.html"><svg class="icono"><use href="#graf"></use></svg><span>Reportes</span></a>
+        <a href="../FallaEquipo/fallas.html" data-permiso="reportar-falla"><svg class="icono"><use href="#doc"></use></svg><span>Reportar Falla</span></a>
+        <a href="../IngresoMaquinaria/ingreso_maquinaria.html" data-permiso="ingreso-maquinaria"><svg class="icono"><use href="#gear"></use></svg><span>Ingreso Maquinaria</span></a>
+        <a href="../BitacoraDigital/bitacora_digital.html" data-permiso="bitacora"><svg class="icono"><use href="#mon"></use></svg><span>Bitácora Digital</span></a>
+        <a href="../RegistrarTecnico/registrar_tecnico.html" data-permiso="registrar-tecnico"><svg class="icono"><use href="#llave"></use></svg><span>Registrar Técnico</span></a>
+        <a href="../MantenimientoPreventivo/mantenimiento_preventivo.html" data-permiso="preventivo"><svg class="icono"><use href="#cal"></use></svg><span>Mantenimiento Preventivo</span></a>
+        <a href="dashboard.html" class="activo" data-permiso="dashboard"><svg class="icono"><use href="#grid"></use></svg><span>Dashboard</span></a>
+        <a href="../Reportes/reporte_pdf.html" data-permiso="reportes"><svg class="icono"><use href="#graf"></use></svg><span>Reportes</span></a>
+        <a href="../Administracion/administracion.html" data-permiso="administracion"><svg class="icono"><use href="#usr"></use></svg><span>Administración</span></a>
       </nav>
     </aside>
     <main class="principal">
@@ -193,7 +196,10 @@ body { font-family: Arial, sans-serif; background: #f5f6f4; color: #10484b; }
   </div>
 </div>
 
+<script src="../js/permisos.js"></script>
 <script>
+SICOPV.proteger(['ADMIN', 'JEFE_MANTTO']);
+
 function obtenerUsuarioActual() {
   try {
     const raw = localStorage.getItem('usuario') || sessionStorage.getItem('sicopv_usuario');
@@ -209,6 +215,8 @@ function obtenerUsuarioActual() {
   if (etiqueta) {
     document.getElementById('nombreUsuario').textContent = etiqueta.toUpperCase();
   }
+  const rolEl = document.getElementById('rolUsuario');
+  if (rolEl) rolEl.textContent = SICOPV.etiquetaRol();
 })();
 
 function abrirPerfil() {

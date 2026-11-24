@@ -260,7 +260,7 @@
         <!-- PESTAÑAS -->
         <nav class="tabs">
             <button type="button" class="tab-btn activo" onclick="mostrarTab('login', this)">Iniciar Sesión</button>
-            <button type="button" class="tab-btn" onclick="mostrarTab('registro', this)">Crear Cuenta</button>
+            <!-- El alta de cuentas la hace el ADMIN desde el menú "Administración" -->
             <button type="button" class="tab-btn" onclick="mostrarTab('reset', this)">Actualizar Contraseña</button>
         </nav>
 
@@ -415,7 +415,7 @@
 
         function redirigirSegunRol(rol) {
             const r = (rol || '').toUpperCase();
-            if (r === 'ADMIN' || r === 'ADMINISTRADOR' || r === 'JEFE_MANTTO' || r === 'SUPERVISOR') {
+            if (['ADMIN', 'JEFE_MANTTO', 'SUPERVISOR', 'CALIDAD'].includes(r)) {
                 window.location.href = '../Dashboard/dashboard.html';
             } else if (r === 'TECNICO') {
                 window.location.href = '../BitacoraDigital/bitacora_digital.html';
@@ -455,8 +455,9 @@
             }
         });
 
-        // 2. CREAR CUENTA
-        document.getElementById('formRegistro').addEventListener('submit', async (e) => {
+        // 2. CREAR CUENTA (panel desactivado: solo el ADMIN puede dar de alta usuarios)
+        const formRegistro = document.getElementById('formRegistro');
+        if (formRegistro) formRegistro.addEventListener('submit', async (e) => {
             e.preventDefault();
             const usuarioInput = document.getElementById('regUsuario');
             const correoInput = document.getElementById('regCorreo');

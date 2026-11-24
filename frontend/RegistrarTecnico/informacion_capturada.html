@@ -302,7 +302,11 @@ body {
     </div>
 </main>
 
+<script src="../js/permisos.js"></script>
+<script src="../js/menu.js"></script>
 <script>
+SICOPV.proteger(['ADMIN']);
+
 const pendiente = JSON.parse(
     sessionStorage.getItem("tecnicoPendiente") || "null"
 );

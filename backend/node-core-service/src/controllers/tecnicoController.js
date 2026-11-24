@@ -144,3 +144,63 @@ exports.listarTecnicos = async (req, res) => {
   }
 };
 
+// PUT /api/tecnicos/:id  (SOLO ADMIN)
+exports.actualizarTecnico = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { area, especialidad, nombre_usuario, correo } = req.body;
+
+    if (isPostgresConnected()) {
+      const tec = await query('SELECT usuario_id FROM tecnicos WHERE id = $1', [id]);
+      if (!tec || tec.rows.length === 0) {
+        return res.status(404).json({ error: 'Técnico no encontrado.' });
+      }
+      await query(
+        'UPDATE tecnicos SET area = COALESCE($1, area), especialidad = COALESCE($2, especialidad) WHERE id = $3',
+        [area || null, especialidad || null, id]
+      );
+      await query(
+        'UPDATE usuarios SET nombre_usuario = COALESCE($1, nombre_usuario), correo = COALESCE($2, correo) WHERE id = $3',
+        [nombre_usuario || null, correo || null, tec.rows[0].usuario_id]
+      );
+    } else {
+      const t = memoriaDB.tecnicos.find(item => item.id === Number(id));
+      if (!t) return res.status(404).json({ error: 'Técnico no encontrado.' });
+      Object.assign(t, { area, especialidad });
+      const u = memoriaDB.usuarios.find(item => item.id === t.usuario_id);
+      if (u) Object.assign(u, { nombre_usuario, correo });
+    }
+
+    return res.status(200).json({ message: 'Técnico actualizado correctamente.' });
+  } catch (error) {
+    console.error('[tecnicoController.actualizarTecnico Error]', error);
+    return res.status(500).json({ error: 'Error al actualizar el técnico.' });
+  }
+};
+
+// DELETE /api/tecnicos/:id  (SOLO ADMIN)
+exports.eliminarTecnico = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (isPostgresConnected()) {
+      const tec = await query('SELECT usuario_id FROM tecnicos WHERE id = $1', [id]);
+      if (!tec || tec.rows.length === 0) {
+        return res.status(404).json({ error: 'Técnico no encontrado.' });
+      }
+      // El esquema tiene ON DELETE CASCADE de usuarios -> tecnicos
+      await query('DELETE FROM usuarios WHERE id = $1', [tec.rows[0].usuario_id]);
+    } else {
+      const t = memoriaDB.tecnicos.find(item => item.id === Number(id));
+      if (!t) return res.status(404).json({ error: 'Técnico no encontrado.' });
+      memoriaDB.usuarios = memoriaDB.usuarios.filter(u => u.id !== t.usuario_id);
+      memoriaDB.tecnicos = memoriaDB.tecnicos.filter(item => item.id !== Number(id));
+    }
+
+    return res.status(200).json({ message: 'Técnico eliminado correctamente.' });
+  } catch (error) {
+    console.error('[tecnicoController.eliminarTecnico Error]', error);
+    return res.status(500).json({ error: 'Error al eliminar el técnico.' });
+  }
+};
+

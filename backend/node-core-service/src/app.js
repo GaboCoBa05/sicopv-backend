@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 // Importación de enrutadores por Caso de Uso
@@ -53,7 +54,10 @@ app.get('/health', (req, res) => {
 app.get('/api/health', (req, res) => res.redirect('/health'));
 
 // Servicio de archivos estáticos del frontend
-const frontendPath = path.resolve(__dirname, '../../frontend');
+// En local el frontend está en la raíz del repo; en Docker lo sirve nginx.
+const frontendRaiz = path.resolve(__dirname, '../../../frontend');
+const frontendLegacy = path.resolve(__dirname, '../../frontend');
+const frontendPath = fs.existsSync(frontendRaiz) ? frontendRaiz : frontendLegacy;
 app.use('/frontend', express.static(frontendPath));
 
 // Redirección directa al login en la raíz

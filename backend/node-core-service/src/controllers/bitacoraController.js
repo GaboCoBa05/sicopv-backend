@@ -139,3 +139,55 @@ exports.listarBitacoras = async (req, res) => {
     return res.status(500).json({ error: 'Error al consultar historial de bitácoras.' });
   }
 };
+
+// PUT /api/bitacora/:id  (SOLO ADMIN)
+exports.actualizarBitacora = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { tiempo_reparacion_min, causa_raiz, refacciones_empleadas } = req.body;
+
+    if (isPostgresConnected()) {
+      const result = await query(
+        `UPDATE reparacion_bitacora
+         SET tiempo_reparacion_min = COALESCE($1, tiempo_reparacion_min),
+             causa_raiz = COALESCE($2, causa_raiz),
+             refacciones_empleadas = COALESCE($3, refacciones_empleadas)
+         WHERE id = $4 RETURNING id`,
+        [tiempo_reparacion_min || null, causa_raiz || null, refacciones_empleadas || null, id]
+      );
+      if (result && result.rows.length === 0) {
+        return res.status(404).json({ error: 'Bitácora no encontrada.' });
+      }
+    } else {
+      const b = memoriaDB.reparacion_bitacora.find(item => item.id === Number(id));
+      if (!b) return res.status(404).json({ error: 'Bitácora no encontrada.' });
+      Object.assign(b, { tiempo_reparacion_min, causa_raiz, refacciones_empleadas });
+    }
+
+    return res.status(200).json({ message: 'Bitácora actualizada correctamente.' });
+  } catch (error) {
+    console.error('[bitacoraController.actualizarBitacora Error]', error);
+    return res.status(500).json({ error: 'Error al actualizar la bitácora.' });
+  }
+};
+
+// DELETE /api/bitacora/:id  (SOLO ADMIN)
+exports.eliminarBitacora = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (isPostgresConnected()) {
+      const result = await query('DELETE FROM reparacion_bitacora WHERE id = $1 RETURNING id', [id]);
+      if (result && result.rows.length === 0) {
+        return res.status(404).json({ error: 'Bitácora no encontrada.' });
+      }
+    } else {
+      memoriaDB.reparacion_bitacora = memoriaDB.reparacion_bitacora.filter(item => item.id !== Number(id));
+    }
+
+    return res.status(200).json({ message: 'Bitácora eliminada correctamente.' });
+  } catch (error) {
+    console.error('[bitacoraController.eliminarBitacora Error]', error);
+    return res.status(500).json({ error: 'Error al eliminar la bitácora.' });
+  }
+};

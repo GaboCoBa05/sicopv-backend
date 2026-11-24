@@ -223,7 +223,11 @@ h1 {
 
 </main>
 
+<script src="../js/permisos.js"></script>
+<script src="../js/menu.js"></script>
 <script>
+SICOPV.proteger(['ADMIN']);
+
 let equipo = null;
 
 const contenedorQR = document.getElementById("codigoQR");

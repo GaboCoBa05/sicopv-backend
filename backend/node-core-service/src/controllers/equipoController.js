@@ -114,3 +114,56 @@ exports.obtenerPorQR = async (req, res) => {
   }
 };
 
+// PUT /api/equipos/:id  (SOLO ADMIN)
+exports.actualizarEquipo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, ubicacion_area, descripcion_funcion, estado } = req.body;
+
+    if (isPostgresConnected()) {
+      const result = await query(
+        `UPDATE equipos
+         SET nombre = COALESCE($1, nombre),
+             ubicacion_area = COALESCE($2, ubicacion_area),
+             descripcion_funcion = COALESCE($3, descripcion_funcion),
+             estado = COALESCE($4, estado)
+         WHERE id = $5 RETURNING *`,
+        [nombre || null, ubicacion_area || null, descripcion_funcion || null, estado || null, id]
+      );
+      if (result && result.rows.length === 0) {
+        return res.status(404).json({ error: 'Equipo no encontrado.' });
+      }
+    } else {
+      const eq = memoriaDB.equipos.find(e => e.id === Number(id));
+      if (!eq) return res.status(404).json({ error: 'Equipo no encontrado.' });
+      Object.assign(eq, { nombre, ubicacion_area, descripcion_funcion, estado });
+    }
+
+    return res.status(200).json({ message: 'Equipo actualizado correctamente.' });
+  } catch (error) {
+    console.error('[equipoController.actualizarEquipo Error]', error);
+    return res.status(500).json({ error: 'Error al actualizar el equipo.' });
+  }
+};
+
+// DELETE /api/equipos/:id  (SOLO ADMIN)
+exports.eliminarEquipo = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (isPostgresConnected()) {
+      const result = await query('DELETE FROM equipos WHERE id = $1 RETURNING id', [id]);
+      if (result && result.rows.length === 0) {
+        return res.status(404).json({ error: 'Equipo no encontrado.' });
+      }
+    } else {
+      memoriaDB.equipos = memoriaDB.equipos.filter(e => e.id !== Number(id));
+    }
+
+    return res.status(200).json({ message: 'Equipo eliminado correctamente.' });
+  } catch (error) {
+    console.error('[equipoController.eliminarEquipo Error]', error);
+    return res.status(500).json({ error: 'Error al eliminar el equipo.' });
+  }
+};
+

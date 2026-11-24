@@ -125,3 +125,58 @@ exports.listarFallas = async (req, res) => {
     return res.status(500).json({ error: 'Error al consultar las fallas.' });
   }
 };
+
+// PUT /api/fallas/:id  (SOLO ADMIN)
+exports.actualizarFalla = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { tipo_falla, descripcion, descripcion_adicional, prioridad, estado } = req.body;
+
+    if (isPostgresConnected()) {
+      const result = await query(
+        `UPDATE fallas
+         SET tipo_falla = COALESCE($1, tipo_falla),
+             descripcion = COALESCE($2, descripcion),
+             descripcion_adicional = COALESCE($3, descripcion_adicional),
+             prioridad = COALESCE($4, prioridad),
+             estado = COALESCE($5, estado)
+         WHERE id = $6 RETURNING id`,
+        [tipo_falla || null, descripcion || null, descripcion_adicional || null,
+         prioridad || null, estado || null, id]
+      );
+      if (result && result.rows.length === 0) {
+        return res.status(404).json({ error: 'Falla no encontrada.' });
+      }
+    } else {
+      const f = memoriaDB.fallas.find(item => item.id === Number(id));
+      if (!f) return res.status(404).json({ error: 'Falla no encontrada.' });
+      Object.assign(f, { tipo_falla, descripcion, descripcion_adicional, prioridad, estado });
+    }
+
+    return res.status(200).json({ message: 'Falla actualizada correctamente.' });
+  } catch (error) {
+    console.error('[fallaController.actualizarFalla Error]', error);
+    return res.status(500).json({ error: 'Error al actualizar la falla.' });
+  }
+};
+
+// DELETE /api/fallas/:id  (SOLO ADMIN)
+exports.eliminarFalla = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (isPostgresConnected()) {
+      const result = await query('DELETE FROM fallas WHERE id = $1 RETURNING id', [id]);
+      if (result && result.rows.length === 0) {
+        return res.status(404).json({ error: 'Falla no encontrada.' });
+      }
+    } else {
+      memoriaDB.fallas = memoriaDB.fallas.filter(item => item.id !== Number(id));
+    }
+
+    return res.status(200).json({ message: 'Falla eliminada correctamente.' });
+  } catch (error) {
+    console.error('[fallaController.eliminarFalla Error]', error);
+    return res.status(500).json({ error: 'Error al eliminar la falla.' });
+  }
+};

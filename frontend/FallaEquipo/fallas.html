@@ -268,7 +268,7 @@
                 <span id="wsText">WS Conectando...</span>
             </div>
         </div>
-        <a href="../Dashboard/dashboard.html" class="btn-volver">&larr; Menú Principal</a>
+        <a href="../FallaEquipo/seleccion.html" class="btn-volver">&larr; Menú Principal</a>
     </header>
 
     <main class="contenedor">
@@ -370,7 +370,11 @@
         </form>
     </main>
 
+    <script src="../js/permisos.js"></script>
+<script src="../js/menu.js"></script>
     <script>
+        SICOPV.proteger(['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'OPERADOR']);
+
         const API_BASE = 'http://localhost:3000/api';
         const WS_URL = 'http://localhost:8081/ws-sicopv';
         let stompClient = null;
@@ -400,7 +404,7 @@
             if (!codigo) return;
 
             try {
-                const res = await fetch(`${API_BASE}/equipos/qr/${encodeURIComponent(codigo)}`);
+                const res = await SICOPV.apiFetch(`${API_BASE}/equipos/qr/${encodeURIComponent(codigo)}`);
                 const eq = await res.json();
                 if (!res.ok) throw new Error(eq.error || 'Equipo no encontrado');
 
@@ -446,7 +450,7 @@
 
             try {
                 // 1. POST /api/fallas
-                const res = await fetch(`${API_BASE}/fallas`, {
+                const res = await SICOPV.apiFetch(`${API_BASE}/fallas`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)

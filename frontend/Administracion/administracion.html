@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración &bull; SiCoPV</title>
+  <style>
+    :root { --verde:#0B3B36; --verde2:#135D54; --claro:#eef5f3; --borde:#c8dcd8; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Segoe UI,Arial,sans-serif; background:var(--claro); color:#173b37; }
+    header { background:var(--verde); color:#fff; padding:16px 28px; display:flex; justify-content:space-between; align-items:center; }
+    header a { color:#bfe3d9; text-decoration:none; }
+    h1 { font-size:20px; margin:0; }
+    .wrap { max-width:1180px; margin:24px auto; padding:0 20px; }
+    .barra { display:flex; gap:12px; align-items:center; margin-bottom:18px; flex-wrap:wrap; }
+    select, input, button { padding:9px 11px; border:1px solid var(--borde); border-radius:6px; font-size:14px; }
+    button { background:var(--verde2); color:#fff; border-color:var(--verde2); cursor:pointer; }
+    button.sec { background:#fff; color:var(--verde2); }
+    button.peligro { background:#a33; border-color:#a33; }
+    .panel { background:#fff; border:1px solid var(--borde); border-radius:10px; padding:18px; margin-bottom:20px; }
+    .campos { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; }
+    .campos label { display:flex; flex-direction:column; gap:4px; font-size:12px; text-transform:uppercase; color:#4d7771; }
+    table { width:100%; border-collapse:collapse; background:#fff; font-size:13px; }
+    th, td { padding:9px 10px; border-bottom:1px solid #e2ece9; text-align:left; }
+    th { background:var(--verde2); color:#fff; }
+    tr:hover td { background:#f5faf8; }
+    .acciones { white-space:nowrap; }
+    .acciones button { padding:5px 9px; margin-right:5px; font-size:12px; }
+    #mensaje { min-height:22px; color:#a33; font-weight:600; }
+    #mensaje.ok { color:var(--verde2); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ADMINISTRACIÓN &bull; SiCoPV</h1>
+    <a href="../Dashboard/dashboard.html">&larr; Volver al dashboard</a>
+  </header>
+
+  <div class="wrap">
+    <div class="barra">
+      <label for="entidad">Entidad:</label>
+      <select id="entidad">
+        <option value="usuarios">Usuarios</option>
+        <option value="tecnicos">Técnicos</option>
+        <option value="equipos">Equipos / Maquinaria</option>
+        <option value="fallas">Fallas</option>
+        <option value="bitacora">Bitácoras</option>
+        <option value="preventivos">Preventivos</option>
+      </select>
+      <button type="button" id="btnNuevo">+ Nuevo registro</button>
+      <button type="button" class="sec" id="btnRecargar">Recargar</button>
+      <span id="mensaje"></span>
+    </div>
+
+    <section class="panel">
+      <h2 id="tituloForm">Editar registro</h2>
+      <form id="formAdmin">
+        <div class="campos" id="campos"></div>
+        <div class="barra" style="margin-top:14px;">
+          <button type="submit" id="btnGuardar">Guardar</button>
+          <button type="button" class="sec" id="btnCancelar">Cancelar</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Registros</h2>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr id="cabecera"></tr></thead>
+          <tbody id="cuerpo"><tr><td colspan="8">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="../js/permisos.js"></script>
+<script src="../js/menu.js"></script>
+  <script>
+    SICOPV.proteger(['ADMIN']);
+
+    const API = 'http://localhost:3000/api';
+
+    const CONFIG = {
+      usuarios: {
+        base: '/auth',
+        columnas: ['id', 'nombre_usuario', 'correo', 'rol'],
+        crear: ['nombre_usuario', 'correo', 'password', 'telefono', 'rol'],
+        editar: ['nombre_usuario', 'correo', 'telefono', 'rol']
+      },
+      tecnicos: {
+        base: '/tecnicos',
+        columnas: ['id', 'nombre_usuario', 'area', 'especialidad', 'correo'],
+        crear: ['usuario', 'correo', 'password', 'area', 'especialidad'],
+        editar: ['area', 'especialidad', 'nombre_usuario', 'correo']
+      },
+      equipos: {
+        base: '/equipos',
+        columnas: ['id', 'numero_serie', 'nombre', 'ubicacion_area', 'estado'],
+        crear: ['numero_serie', 'nombre', 'ubicacion_area', 'descripcion_funcion'],
+        editar: ['nombre', 'ubicacion_area', 'descripcion_funcion', 'estado']
+      },
+      fallas: {
+        base: '/fallas',
+        columnas: ['id', 'folio', 'tipo_falla', 'prioridad', 'estado'],
+        crear: ['equipo_id', 'tipo_falla', 'descripcion', 'descripcion_adicional', 'prioridad'],
+        editar: ['tipo_falla', 'descripcion', 'descripcion_adicional', 'prioridad', 'estado']
+      },
+      bitacora: {
+        base: '/bitacora',
+        columnas: ['id', 'folio', 'tiempo_reparacion_min', 'causa_raiz'],
+        crear: ['falla_id', 'tecnico_id', 'tiempo_reparacion_min', 'causa_raiz', 'refacciones_empleadas'],
+        editar: ['tiempo_reparacion_min', 'causa_raiz', 'refacciones_empleadas']
+      },
+      preventivos: {
+        base: '/preventivos',
+        columnas: ['id', 'equipo_nombre', 'periodo_uso', 'fecha_programada', 'estado'],
+        crear: ['equipo_id', 'tecnico_id', 'periodo_uso', 'piezas_cambiar', 'descripcion_tarea', 'fecha_programada'],
+        editar: ['periodo_uso', 'piezas_cambiar', 'descripcion_tarea', 'fecha_programada', 'estado']
+      }
+    };
+
+    let entidad = 'usuarios';
+    let filas = [];
+    let editandoId = null;
+    let modo = 'editar';
+
+    const $ = id => document.getElementById(id);
+    const cfg = () => CONFIG[entidad];
+
+    function mensaje(texto, ok) {
+      const el = $('mensaje');
+      el.textContent = texto || '';
+      el.className = ok ? 'ok' : '';
+    }
+
+    async function listar() {
+      try {
+        const res = await SICOPV.apiFetch(API + cfg().base);
+        filas = await res.json();
+        pintarTabla();
+      } catch (e) {
+        mensaje('No se pudo cargar el listado.');
+      }
+    }
+
+    function pintarTabla() {
+      const columnas = cfg().columnas;
+      $('cabecera').innerHTML = columnas.map(c => `<th>${c}</th>`).join('') + '<th>Acciones</th>';
+      $('cuerpo').innerHTML = filas.length
+        ? filas.map(f => `<tr>
+            ${columnas.map(c => `<td>${f[c] !== undefined && f[c] !== null ? String(f[c]).slice(0, 60) : '-'}</td>`).join('')}
+            <td class="acciones">
+              <button type="button" onclick="editarFila(${f.id})">Editar</button>
+              <button type="button" class="peligro" onclick="borrarFila(${f.id})">Eliminar</button>
+            </td>
+          </tr>`).join('')
+        : '<tr><td colspan="8">Sin registros</td></tr>';
+    }
+
+    function dibujarForm(campos, fila) {
+      $('campos').innerHTML = campos.map(c => `
+        <label>${c}
+          <input name="${c}" type="${c.toLowerCase().includes('password') ? 'password' : 'text'}"
+                 value="${fila && fila[c] !== undefined && fila[c] !== null ? String(fila[c]).replace(/"/g, '&quot;') : ''}"
+                 ${c === 'rol' ? 'placeholder="ADMIN, JEFE_MANTTO, TECNICO, OPERADOR"' : ''}>
+        </label>`).join('');
+    }
+
+    function editarFila(id) {
+      const fila = filas.find(f => Number(f.id) === Number(id));
+      if (!fila) return;
+      modo = 'editar';
+      editandoId = id;
+      $('tituloForm').textContent = `Editar ${entidad} #${id}`;
+      $('btnGuardar').textContent = 'Guardar cambios';
+      dibujarForm(cfg().editar, fila);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function borrarFila(id) {
+      if (!confirm(`¿Eliminar ${entidad} #${id}?`)) return;
+      SICOPV.apiFetch(API + cfg().base + '/' + id, { method: 'DELETE' })
+        .then(() => { mensaje('Registro eliminado.', true); listar(); })
+        .catch(err => mensaje(err.message || 'No se pudo eliminar el registro.'));
+    }
+
+    function nuevo() {
+      modo = 'crear';
+      editandoId = null;
+      $('tituloForm').textContent = `Nuevo ${entidad}`;
+      $('btnGuardar').textContent = 'Crear registro';
+      dibujarForm(cfg().crear, null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelar() {
+      modo = 'editar';
+      editandoId = null;
+      $('tituloForm').textContent = 'Editar registro (selecciona una fila)';
+      $('btnGuardar').textContent = 'Guardar cambios';
+      $('campos').innerHTML = '';
+    }
+
+    $('entidad').addEventListener('change', e => { entidad = e.target.value; cancelar(); listar(); });
+    $('btnRecargar').addEventListener('click', listar);
+    $('btnNuevo').addEventListener('click', nuevo);
+    $('btnCancelar').addEventListener('click', cancelar);
+
+    $('formAdmin').addEventListener('submit', async e => {
+      e.preventDefault();
+      const datos = {};
+      $('campos').querySelectorAll('input').forEach(i => { datos[i.name] = i.value.trim(); });
+
+      if (modo === 'crear' && !editandoId) {
+        const url = entidad === 'usuarios' ? API + '/auth/register' : API + cfg().base;
+        try {
+          const res = await SICOPV.apiFetch(url, { method: 'POST', body: JSON.stringify(datos) });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || 'Error al crear');
+          }
+          mensaje('Registro creado correctamente.', true);
+          cancelar();
+          listar();
+        } catch (err) {
+          mensaje(err.message);
+        }
+        return;
+      }
+
+      if (!editandoId) { mensaje('Selecciona un registro para editar.'); return; }
+
+      try {
+        const res = await SICOPV.apiFetch(API + cfg().base + '/' + editandoId, {
+          method: 'PUT',
+          body: JSON.stringify(datos)
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || 'Error al actualizar');
+        }
+        mensaje('Registro actualizado correctamente.', true);
+        cancelar();
+        listar();
+      } catch (err) {
+        mensaje(err.message);
+      }
+    });
+
+    listar();
+  </script>
+</body>
+</html>

@@ -288,21 +288,21 @@ body {
 
             <nav class="menu">
 
-                <a href="fallas.html" class="activo">
+                <a href="fallas.html" class="activo" data-permiso="reportar-falla">
                     <svg class="icono">
                         <use href="#documento"></use>
                     </svg>
                     <span>Reportar Falla</span>
                 </a>
 
-                <a href="../IngresoMaquinaria/ingreso_maquinaria.html">
+                <a href="../IngresoMaquinaria/ingreso_maquinaria.html" data-permiso="ingreso-maquinaria">
                     <svg class="icono">
                         <use href="#engranaje"></use>
                     </svg>
                     <span>Ingreso Maquinaria</span>
                 </a>
 
-                <a href="../BitacoraDigital/bitacora_digital.html">
+                <a href="../BitacoraDigital/bitacora_digital.html" data-permiso="bitacora">
                     <svg class="icono">
                         <use href="#monitor"></use>
                     </svg>
@@ -310,32 +310,39 @@ body {
                 </a>
 
                 <!-- REGISTRAR TÉCNICO CORREGIDO -->
-                <a href="../RegistrarTecnico/registrar_tecnico.html">
+                <a href="../RegistrarTecnico/registrar_tecnico.html" data-permiso="registrar-tecnico">
                     <svg class="icono">
                         <use href="#llave"></use>
                     </svg>
                     <span>Registrar Técnico</span>
                 </a>
 
-                <a href="../MantenimientoPreventivo/mantenimiento_preventivo.html">
+                <a href="../MantenimientoPreventivo/mantenimiento_preventivo.html" data-permiso="preventivo">
                     <svg class="icono">
                         <use href="#calendario"></use>
                     </svg>
                     <span>Mantenimiento Preventivo</span>
                 </a>
 
-                <a href="../Dashboard/dashboard.html">
+                <a href="../Dashboard/dashboard.html" data-permiso="dashboard">
                     <svg class="icono">
                         <use href="#cuadricula"></use>
                     </svg>
                     <span>Dashboard</span>
                 </a>
 
-                <a href="../Reportes/reporte_pdf.html">
+                <a href="../Reportes/reporte_pdf.html" data-permiso="reportes">
                     <svg class="icono">
                         <use href="#grafica"></use>
                     </svg>
                     <span>Reportes</span>
+                </a>
+
+                <a href="../Administracion/administracion.html" data-permiso="administracion">
+                    <svg class="icono">
+                        <use href="#usuario"></use>
+                    </svg>
+                    <span>Administración</span>
                 </a>
 
             </nav>
@@ -349,7 +356,7 @@ body {
             <div class="opciones">
 
                 <!-- REPORTAR FALLA -->
-                <button class="opcion"
+                <button class="opcion" data-permiso="reportar-falla"
                         onclick="abrir('fallas.html')">
 
                     <div class="cuadro-icono">
@@ -363,7 +370,7 @@ body {
                 </button>
 
                 <!-- INGRESO MAQUINARIA -->
-                <button class="opcion"
+                <button class="opcion" data-permiso="ingreso-maquinaria"
                         onclick="window.location.href='../IngresoMaquinaria/ingreso_maquinaria.html'">
                     
 
@@ -378,7 +385,7 @@ body {
                 </button>
 
                 <!-- BITÁCORA DIGITAL -->
-                <button class="opcion"
+                <button class="opcion" data-permiso="bitacora"
                         onclick="window.location.href='../BitacoraDigital/bitacora_digital.html'">
 
                     <div class="cuadro-icono">
@@ -392,7 +399,7 @@ body {
                 </button>
 
                 <!-- REGISTRAR TÉCNICO CORREGIDO -->
-                <button class="opcion"
+                <button class="opcion" data-permiso="registrar-tecnico"
                         onclick="abrir('../RegistrarTecnico/registrar_tecnico.html')">
 
                     <div class="cuadro-icono">
@@ -406,7 +413,7 @@ body {
                 </button>
 
                 <!-- MANTENIMIENTO PREVENTIVO -->
-                <button class="opcion"
+                <button class="opcion" data-permiso="preventivo"
                         onclick="window.location.href='../MantenimientoPreventivo/mantenimiento_preventivo.html'">
 
                     <div class="cuadro-icono">
@@ -420,7 +427,7 @@ body {
                 </button>
 
                 <!-- DASHBOARD -->
-                <button class="opcion"
+                <button class="opcion" data-permiso="dashboard"
                         onclick="window.location.href='../Dashboard/dashboard.html'">
 
                     <div class="cuadro-icono">
@@ -434,7 +441,7 @@ body {
                 </button>
 
                 <!-- REPORTES -->
-                <button class="opcion"
+                <button class="opcion" data-permiso="reportes"
                         onclick="window.location.href='../Reportes/reporte_pdf.html'">
 
                     <div class="cuadro-icono">
@@ -447,6 +454,20 @@ body {
                     <span class="flecha">›</span>
                 </button>
 
+                <!-- ADMINISTRACIÓN -->
+                <button class="opcion" data-permiso="administracion"
+                        onclick="window.location.href='../Administracion/administracion.html'">
+
+                    <div class="cuadro-icono">
+                        <svg class="icono">
+                            <use href="#usuario"></use>
+                        </svg>
+                    </div>
+
+                    <span class="nombre">Administración</span>
+                    <span class="flecha">›</span>
+                </button>
+
             </div>
 
             <p id="mensaje" class="mensaje" role="status"></p>
@@ -456,7 +477,11 @@ body {
     </div>
 </div>
 
+<script src="../js/permisos.js"></script>
+<script src="../js/menu.js"></script>
 <script>
+SICOPV.proteger(['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'OPERADOR']);
+
 // ABRIR OTRA INTERFAZ
 function abrir(ruta) {
     window.location.href = ruta;

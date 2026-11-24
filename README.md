@@ -79,6 +79,36 @@ El repositorio sigue la convención de ramas para desarrollo modular en equipo:
 
 ---
 
+## 5.1 Roles y Permisos (control de acceso)
+
+El acceso se controla en **dos capas**:
+
+1. **Backend (seguridad real):** `backend/node-core-service/src/middlewares/authMiddleware.js`
+   - `verificarToken` valida el JWT `Authorization: Bearer <token>`.
+   - `autorizar(...roles)` restringe cada endpoint por rol (401 sin sesión, 403 sin permiso).
+2. **Frontend (UX):** `frontend/js/permisos.js`
+   - `SICOPV.proteger([...])` redirige a usuarios no autorizados.
+   - Los elementos con `data-permiso` se ocultan según el rol.
+
+| Módulo | ADMIN | JEFE_MANTTO | TECNICO | OPERADOR |
+| :--- | :---: | :---: | :---: | :---: |
+| Reportar / consultar fallas | ✅ | ✅ | ✅ | ✅ |
+| Ver maquinaria y QR | ✅ | ✅ | ✅ | ✅ |
+| Alta / edición / baja de maquinaria | ✅ | — | — | — |
+| Bitácora Digital | ✅ | ✅ | ✅ | — |
+| Mantenimiento Preventivo | ✅ | ✅ | ✅ | — |
+| Dashboard MTBF/MTTR | ✅ | ✅ | — | — |
+| Reportes PDF | ✅ | ✅ | ✅ | — |
+| Ver técnicos | ✅ | ✅ | — | — |
+| **Registrar técnicos** | ✅ | **—** | — | — |
+| **Administración (CRUD de usuarios y entidades)** | ✅ | — | — | — |
+
+Los roles `SUPERVISOR` y `CALIDAD` siguen existiendo en el `CHECK` de la base de datos y se redirigen al dashboard, pero no tienen permisos operativos asignados en la matriz anterior.
+
+> El alta de cuentas ya **no es pública**: `POST /api/auth/register` exige token de `ADMIN`. El administrador puede crear, editar y eliminar usuarios desde el menú **Administración** (`frontend/Administracion/administracion.html`).
+
+---
+
 ## 6. Ejecución y Despliegue con Docker
 
 Levantar el entorno completo e integrado:

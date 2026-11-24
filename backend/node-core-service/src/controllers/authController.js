@@ -160,3 +160,83 @@ exports.resetPassword = async (req, res) => {
     return res.status(500).json({ error: 'Error al restablecer la contraseña.' });
   }
 };
+
+// GET /api/usuarios  (SOLO ADMIN)
+exports.listarUsuarios = async (req, res) => {
+  try {
+    if (isPostgresConnected()) {
+      const result = await query(
+        'SELECT id, nombre_usuario, correo, telefono, rol, created_at FROM usuarios ORDER BY id ASC'
+      );
+      if (result && result.rows) return res.status(200).json(result.rows);
+    }
+    return res.status(200).json(memoriaDB.usuarios.map(u => ({
+      id: u.id,
+      nombre_usuario: u.nombre_usuario,
+      correo: u.correo,
+      telefono: u.telefono,
+      rol: u.rol
+    })));
+  } catch (error) {
+    console.error('[authController.listarUsuarios Error]', error);
+    return res.status(500).json({ error: 'Error al consultar usuarios.' });
+  }
+};
+
+// PUT /api/usuarios/:id  (SOLO ADMIN)
+exports.actualizarUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre_usuario, correo, telefono, rol } = req.body;
+
+    const rolesValidos = ['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'OPERADOR', 'SUPERVISOR', 'CALIDAD'];
+    if (rol && !rolesValidos.includes(String(rol).toUpperCase())) {
+      return res.status(400).json({ error: `Rol no válido. Permitidos: ${rolesValidos.join(', ')}` });
+    }
+
+    if (isPostgresConnected()) {
+      const result = await query(
+        `UPDATE usuarios
+         SET nombre_usuario = COALESCE($1, nombre_usuario),
+             correo = COALESCE($2, correo),
+             telefono = COALESCE($3, telefono),
+             rol = COALESCE($4, rol)
+         WHERE id = $5 RETURNING id, nombre_usuario, correo, telefono, rol`,
+        [nombre_usuario || null, correo || null, telefono || null, rol ? String(rol).toUpperCase() : null, id]
+      );
+      if (result && result.rows.length === 0) {
+        return res.status(404).json({ error: 'Usuario no encontrado.' });
+      }
+    } else {
+      const u = memoriaDB.usuarios.find(item => item.id === Number(id));
+      if (!u) return res.status(404).json({ error: 'Usuario no encontrado.' });
+      Object.assign(u, { nombre_usuario, correo, telefono, rol: rol ? String(rol).toUpperCase() : u.rol });
+    }
+
+    return res.status(200).json({ message: 'Usuario actualizado correctamente.' });
+  } catch (error) {
+    console.error('[authController.actualizarUsuario Error]', error);
+    return res.status(500).json({ error: 'Error al actualizar el usuario.' });
+  }
+};
+
+// DELETE /api/usuarios/:id  (SOLO ADMIN)
+exports.eliminarUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (isPostgresConnected()) {
+      const result = await query('DELETE FROM usuarios WHERE id = $1 RETURNING id', [id]);
+      if (result && result.rows.length === 0) {
+        return res.status(404).json({ error: 'Usuario no encontrado.' });
+      }
+    } else {
+      memoriaDB.usuarios = memoriaDB.usuarios.filter(item => item.id !== Number(id));
+    }
+
+    return res.status(200).json({ message: 'Usuario eliminado correctamente.' });
+  } catch (error) {
+    console.error('[authController.eliminarUsuario Error]', error);
+    return res.status(500).json({ error: 'Error al eliminar el usuario.' });
+  }
+};

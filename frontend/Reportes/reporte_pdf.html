@@ -48,13 +48,14 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f6f4; color: #
   <aside class="sidebar">
     <nav class="menu">
       <a href="../FallaEquipo/seleccion.html">Menú Principal</a>
-      <a href="../FallaEquipo/fallas.html">Reportar Falla</a>
-      <a href="../IngresoMaquinaria/ingreso_maquinaria.html">Ingreso Maquinaria</a>
-      <a href="../BitacoraDigital/bitacora_digital.html">Bitácora Digital</a>
-      <a href="../RegistrarTecnico/registrar_tecnico.html">Registrar Técnico</a>
-      <a href="../MantenimientoPreventivo/mantenimiento_preventivo.html">Mantenimiento Preventivo</a>
-      <a href="../Dashboard/dashboard.html">Dashboard</a>
-      <a href="reporte_pdf.html" class="activo">Reportes</a>
+      <a href="../FallaEquipo/fallas.html" data-permiso="reportar-falla">Reportar Falla</a>
+      <a href="../IngresoMaquinaria/ingreso_maquinaria.html" data-permiso="ingreso-maquinaria">Ingreso Maquinaria</a>
+      <a href="../BitacoraDigital/bitacora_digital.html" data-permiso="bitacora">Bitácora Digital</a>
+      <a href="../RegistrarTecnico/registrar_tecnico.html" data-permiso="registrar-tecnico">Registrar Técnico</a>
+      <a href="../MantenimientoPreventivo/mantenimiento_preventivo.html" data-permiso="preventivo">Mantenimiento Preventivo</a>
+      <a href="../Dashboard/dashboard.html" data-permiso="dashboard">Dashboard</a>
+      <a href="reporte_pdf.html" class="activo" data-permiso="reportes">Reportes</a>
+      <a href="../Administracion/administracion.html" data-permiso="administracion">Administración</a>
     </nav>
   </aside>
 
@@ -81,13 +82,17 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f6f4; color: #
   </main>
 </div>
 
+<script src="../js/permisos.js"></script>
+<script src="../js/menu.js"></script>
 <script>
+SICOPV.proteger(['ADMIN', 'JEFE_MANTTO', 'TECNICO']);
+
 const API_BITACORA = 'http://localhost:3000/api/bitacora';
 const API_REPORTE_PDF = 'http://localhost:3000/api/reportes/pdf';
 
 async function cargarReparaciones() {
   try {
-    const res = await fetch(API_BITACORA);
+    const res = await SICOPV.apiFetch(API_BITACORA);
     const data = await res.json();
     const cont = document.getElementById('listaRep');
     cont.innerHTML = '';

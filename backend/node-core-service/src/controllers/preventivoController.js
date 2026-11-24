@@ -128,3 +128,58 @@ exports.listarPreventivos = async (req, res) => {
   }
 };
 
+// PUT /api/preventivos/:id  (SOLO ADMIN)
+exports.actualizarPreventivo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { periodo_uso, piezas_cambiar, descripcion_tarea, fecha_programada, estado } = req.body;
+
+    if (isPostgresConnected()) {
+      const result = await query(
+        `UPDATE mantenimiento_preventivo
+         SET periodo_uso = COALESCE($1, periodo_uso),
+             piezas_cambiar = COALESCE($2, piezas_cambiar),
+             descripcion_tarea = COALESCE($3, descripcion_tarea),
+             fecha_programada = COALESCE($4, fecha_programada),
+             estado = COALESCE($5, estado)
+         WHERE id = $6 RETURNING id`,
+        [periodo_uso || null, piezas_cambiar || null, descripcion_tarea || null,
+         fecha_programada || null, estado || null, id]
+      );
+      if (result && result.rows.length === 0) {
+        return res.status(404).json({ error: 'Preventivo no encontrado.' });
+      }
+    } else {
+      const m = memoriaDB.mantenimiento_preventivo.find(item => item.id === Number(id));
+      if (!m) return res.status(404).json({ error: 'Preventivo no encontrado.' });
+      Object.assign(m, { periodo_uso, piezas_cambiar, descripcion_tarea, fecha_programada, estado });
+    }
+
+    return res.status(200).json({ message: 'Preventivo actualizado correctamente.' });
+  } catch (error) {
+    console.error('[preventivoController.actualizarPreventivo Error]', error);
+    return res.status(500).json({ error: 'Error al actualizar el preventivo.' });
+  }
+};
+
+// DELETE /api/preventivos/:id  (SOLO ADMIN)
+exports.eliminarPreventivo = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (isPostgresConnected()) {
+      const result = await query('DELETE FROM mantenimiento_preventivo WHERE id = $1 RETURNING id', [id]);
+      if (result && result.rows.length === 0) {
+        return res.status(404).json({ error: 'Preventivo no encontrado.' });
+      }
+    } else {
+      memoriaDB.mantenimiento_preventivo = memoriaDB.mantenimiento_preventivo.filter(item => item.id !== Number(id));
+    }
+
+    return res.status(200).json({ message: 'Preventivo eliminado correctamente.' });
+  } catch (error) {
+    console.error('[preventivoController.eliminarPreventivo Error]', error);
+    return res.status(500).json({ error: 'Error al eliminar el preventivo.' });
+  }
+};
+

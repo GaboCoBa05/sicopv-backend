@@ -54,13 +54,14 @@ textarea { resize: vertical; min-height: 80px; }
   <aside class="sidebar">
     <nav class="menu">
       <a href="../FallaEquipo/seleccion.html">Menú Principal</a>
-      <a href="../FallaEquipo/fallas.html">Reportar Falla</a>
-      <a href="../IngresoMaquinaria/ingreso_maquinaria.html">Ingreso Maquinaria</a>
-      <a href="../BitacoraDigital/bitacora_digital.html">Bitácora Digital</a>
-      <a href="../RegistrarTecnico/registrar_tecnico.html">Registrar Técnico</a>
-      <a href="mantenimiento_preventivo.html" class="activo">Mantenimiento Preventivo</a>
-      <a href="../Dashboard/dashboard.html">Dashboard</a>
-      <a href="../Reportes/reporte_pdf.html">Reportes</a>
+      <a href="../FallaEquipo/fallas.html" data-permiso="reportar-falla">Reportar Falla</a>
+      <a href="../IngresoMaquinaria/ingreso_maquinaria.html" data-permiso="ingreso-maquinaria">Ingreso Maquinaria</a>
+      <a href="../BitacoraDigital/bitacora_digital.html" data-permiso="bitacora">Bitácora Digital</a>
+      <a href="../RegistrarTecnico/registrar_tecnico.html" data-permiso="registrar-tecnico">Registrar Técnico</a>
+      <a href="mantenimiento_preventivo.html" class="activo" data-permiso="preventivo">Mantenimiento Preventivo</a>
+      <a href="../Dashboard/dashboard.html" data-permiso="dashboard">Dashboard</a>
+      <a href="../Reportes/reporte_pdf.html" data-permiso="reportes">Reportes</a>
+      <a href="../Administracion/administracion.html" data-permiso="administracion">Administración</a>
     </nav>
   </aside>
 
@@ -141,7 +142,11 @@ textarea { resize: vertical; min-height: 80px; }
   </main>
 </div>
 
+<script src="../js/permisos.js"></script>
+<script src="../js/menu.js"></script>
 <script>
+SICOPV.proteger(['ADMIN', 'JEFE_MANTTO', 'TECNICO']);
+
 const API_EQUIPOS = 'http://localhost:3000/api/equipos';
 const API_PREVENTIVOS = 'http://localhost:3000/api/preventivos';
 
@@ -149,7 +154,7 @@ let equipos = [];
 
 async function cargarActivos() {
   try {
-    const res = await fetch(API_EQUIPOS);
+    const res = await SICOPV.apiFetch(API_EQUIPOS);
     equipos = await res.json();
     const cont = document.getElementById('listaActivos');
     cont.innerHTML = '';
@@ -191,7 +196,7 @@ function selActivo(eq, btn) {
 
 async function cargarTablaProg() {
   try {
-    const res = await fetch(API_PREVENTIVOS);
+    const res = await SICOPV.apiFetch(API_PREVENTIVOS);
     const data = await res.json();
     const tbody = document.getElementById('tbodyProg');
     tbody.innerHTML = '';
@@ -221,7 +226,7 @@ document.getElementById('formPreventivo').addEventListener('submit', async (e) =
   };
 
   try {
-    const res = await fetch(API_PREVENTIVOS, {
+    const res = await SICOPV.apiFetch(API_PREVENTIVOS, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
