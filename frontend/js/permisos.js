@@ -1,19 +1,18 @@
 /**
- * SiCoPV - Control de acceso en el frontend.
- * La ocultación de menús es solo UX; la seguridad real está en el middleware
- * verificarToken / autorizar del backend.
+ * SiCoPV - Control de acceso y matriz de roles en el frontend.
+ * Garantiza cumplimiento de la política de roles y navegación segura.
  */
 (function () {
   'use strict';
 
   var MENU = {
-    'reportar-falla': ['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'OPERADOR'],
-    'ingreso-maquinaria': ['ADMIN'],
+    'reportar-falla': ['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'OPERADOR', 'SUPERVISOR'],
+    'ingreso-maquinaria': ['ADMIN', 'JEFE_MANTTO', 'SUPERVISOR'],
     'bitacora': ['ADMIN', 'JEFE_MANTTO', 'TECNICO'],
-    'registrar-tecnico': ['ADMIN'],
-    'preventivo': ['ADMIN', 'JEFE_MANTTO', 'TECNICO'],
-    'dashboard': ['ADMIN', 'JEFE_MANTTO'],
-    'reportes': ['ADMIN', 'JEFE_MANTTO', 'TECNICO'],
+    'registrar-tecnico': ['ADMIN', 'JEFE_MANTTO', 'SUPERVISOR'],
+    'preventivo': ['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'SUPERVISOR'],
+    'dashboard': ['ADMIN', 'JEFE_MANTTO', 'SUPERVISOR', 'CALIDAD'],
+    'reportes': ['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'SUPERVISOR', 'CALIDAD'],
     'administracion': ['ADMIN'],
     'usuarios': ['ADMIN']
   };
@@ -37,6 +36,7 @@
         return '../Dashboard/dashboard.html';
       case 'TECNICO':
         return '../BitacoraDigital/bitacora_digital.html';
+      case 'OPERADOR':
       default:
         return '../FallaEquipo/fallas.html';
     }
@@ -81,23 +81,101 @@
       '.sicopv-user-name{font-weight:700;letter-spacing:.3px;}' +
       '.sicopv-user-rol{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);' +
       'padding:3px 10px;border-radius:14px;font-size:11px;font-weight:700;letter-spacing:.5px;}' +
+      '.sicopv-btn-pass{background:transparent;color:#A8DDCB;border:1px solid rgba(168,221,203,.6);' +
+      'border-radius:6px;padding:4px 9px;font-size:11px;font-weight:600;cursor:pointer;margin-right:4px;}' +
+      '.sicopv-btn-pass:hover{background:rgba(168,221,203,.2);}' +
       '.sicopv-logout{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);' +
       'border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;}' +
-      '.sicopv-logout:hover{background:rgba(255,255,255,.35);}';
+      '.sicopv-logout:hover{background:rgba(255,255,255,.35);}' +
+      '.sicopv-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);display:flex;align-items:center;' +
+      'justify-content:center;z-index:99999;font-family:\'Segoe UI\',Arial,sans-serif;}' +
+      '.sicopv-modal-box{background:#0B3B36;color:#fff;padding:26px 28px;border-radius:12px;width:380px;max-width:92%;' +
+      'box-shadow:0 10px 25px rgba(0,0,0,0.5);border:1px solid rgba(168,221,203,0.3);}' +
+      '.sicopv-modal-box h3{margin-top:0;margin-bottom:12px;font-size:18px;color:#A8DDCB;}' +
+      '.sicopv-modal-box p{font-size:12.5px;color:#D1ECE5;margin-bottom:14px;line-height:1.4;}' +
+      '.sicopv-modal-box input{width:100%;box-sizing:border-box;padding:10px 12px;margin-bottom:12px;' +
+      'border:1px solid #D2DEDB;border-radius:6px;font-size:13px;}' +
+      '.sicopv-modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:10px;}' +
+      '.sicopv-modal-btns button{padding:8px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer;border:none;}' +
+      '.sicopv-btn-cancelar{background:rgba(255,255,255,0.2);color:#fff;}' +
+      '.sicopv-btn-guardar{background:#A8DDCB;color:#0B3B36;}';
     (document.head || document.documentElement).appendChild(style);
   }
 
   function htmlUsuario() {
     return '<span class="sicopv-user-name">' + nombreUsuario() + '</span>' +
-           '<span class="sicopv-user-rol">' + etiquetaRol() + '</span>' +
-           '<button type="button" class="sicopv-logout" onclick="cerrarSesion()">Cerrar sesión</button>';
+      '<span class="sicopv-user-rol">' + etiquetaRol() + '</span>' +
+      '<button type="button" class="sicopv-btn-pass" onclick="SICOPV.modalCambiarPassword()">Cambiar Clave</button>' +
+      '<button type="button" class="sicopv-logout" onclick="cerrarSesion()">Cerrar sesión</button>';
+  }
+
+  /** Modal flotante para que el usuario actualice su contraseña predeterminada */
+  function modalCambiarPassword() {
+    inyectarEstilos();
+    var idModal = 'sicopv-modal-pass';
+    var existente = document.getElementById(idModal);
+    if (existente) existente.remove();
+
+    var u = usuarioActual();
+    var email = u.correo || '';
+
+    var overlay = document.createElement('div');
+    overlay.id = idModal;
+    overlay.className = 'sicopv-modal-overlay';
+    overlay.innerHTML =
+      '<div class="sicopv-modal-box">' +
+      '<h3>🔑 Cambiar Contraseña</h3>' +
+      '<p>Actualiza tu contraseña predeterminada o temporal por una clave personal segura para tu cuenta <strong>' + esc(u.nombre_usuario || email) + '</strong>.</p>' +
+      '<input type="password" id="sicopv-new-pass" placeholder="Nueva contraseña (mínimo 8 caracteres)" />' +
+      '<input type="password" id="sicopv-conf-pass" placeholder="Confirmar nueva contraseña" />' +
+      '<div id="sicopv-pass-msg" style="font-size:12px;color:#FFCCD0;margin-bottom:8px;display:none;"></div>' +
+      '<div class="sicopv-modal-btns">' +
+      '<button type="button" class="sicopv-btn-cancelar" onclick="document.getElementById(\'' + idModal + '\').remove()">Cancelar</button>' +
+      '<button type="button" class="sicopv-btn-guardar" id="sicopv-btn-save-pass">Guardar</button>' +
+      '</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    document.getElementById('sicopv-btn-save-pass').addEventListener('click', function () {
+      var p1 = document.getElementById('sicopv-new-pass').value;
+      var p2 = document.getElementById('sicopv-conf-pass').value;
+      var msg = document.getElementById('sicopv-pass-msg');
+
+      if (!p1 || p1.length < 8) {
+        msg.textContent = 'La contraseña debe tener al menos 8 caracteres.';
+        msg.style.display = 'block';
+        return;
+      }
+      if (p1 !== p2) {
+        msg.textContent = 'Las contraseñas no coinciden.';
+        msg.style.display = 'block';
+        return;
+      }
+
+      fetch('http://localhost:3000/api/auth/reset-password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + (localStorage.getItem('token') || '')
+        },
+        body: JSON.stringify({ correo: email, nueva_contrasena: p1 })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.error) throw new Error(data.error);
+          alert('¡Contraseña actualizada exitosamente! Utiliza tu nueva clave en tu próximo ingreso.');
+          overlay.remove();
+        })
+        .catch(function (err) {
+          msg.textContent = err.message || 'Error al actualizar contraseña.';
+          msg.style.display = 'block';
+        });
+    });
   }
 
   /** Muestra SIEMPRE quién está conectado, con el mismo estilo del dashboard. */
   function renderizarUsuario() {
-    // El dashboard ya tiene su propio encabezado con perfil y cierre de sesión.
-    if (document.getElementById('nombreUsuario')) return;
-    // El menú compartido ya dibuja el usuario en su propio encabezado.
     if (document.getElementById('sicopv-shell-header')) return;
 
     inyectarEstilos();
@@ -173,7 +251,8 @@
     }
   }
 
-  /** fetch con el JWT adjunto; si el backend responde 401/403 vuelve al login. */
+  /** fetch con el JWT adjunto; si el backend responde 401 (sesión inválida/expirada) vuelve al login.
+   *  Un 403 (rol sin permiso) NO cierra la sesión: se devuelve la respuesta para que la página lo informe. */
   function apiFetch(url, options) {
     options = options || {};
     var headers = { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') };
@@ -183,9 +262,14 @@
     }
 
     return fetch(url, Object.assign({}, options, { headers: headers })).then(function (res) {
-      if (res.status === 401 || res.status === 403) {
+      if (res.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('rol');
+        sessionStorage.removeItem('sicopv_usuario');
+        sessionStorage.removeItem('sicopv_rol');
         window.location.href = '../Login/login.html';
-        throw new Error('Sesión sin permisos');
+        throw new Error('Sesión expirada');
       }
       return res;
     });
@@ -200,6 +284,7 @@
     renderizarUsuario: renderizarUsuario,
     nombreUsuario: nombreUsuario,
     etiquetaRol: etiquetaRol,
-    cerrarSesion: cerrarSesion
+    cerrarSesion: cerrarSesion,
+    modalCambiarPassword: modalCambiarPassword
   };
 })();

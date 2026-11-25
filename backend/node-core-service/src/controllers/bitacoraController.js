@@ -1,8 +1,17 @@
-const { query, memoriaDB, isPostgresConnected } = require('../config/db');
+const { pool, query } = require('../config/db');
+
+// Resuelve el técnico asociado al usuario autenticado (si existe).
+async function resolverTecnicoId(usuarioId) {
+  if (!usuarioId) return null;
+  const res = await query('SELECT id FROM tecnicos WHERE usuario_id = $1 LIMIT 1', [usuarioId]);
+  return res && res.rows.length > 0 ? res.rows[0].id : null;
+}
 
 // POST /api/bitacora
 exports.registrarBitacora = async (req, res) => {
+  let client = null;
   try {
+    client = await pool.connect();
     const {
       falla_id,
       tecnico_id,
@@ -11,7 +20,6 @@ exports.registrarBitacora = async (req, res) => {
       refacciones_empleadas
     } = req.body;
 
-    // Regla de validación: RELLENAR TODOS LOS CAMPOS
     if (!falla_id || !causa_raiz || !refacciones_empleadas) {
       return res.status(400).json({
         error: 'RELLENAR TODOS LOS CAMPOS: Falla, Causa raíz y Refacciones empleadas son obligatorios.'
@@ -25,67 +33,37 @@ exports.registrarBitacora = async (req, res) => {
       });
     }
 
-    let registro = null;
+    const resF = await client.query('SELECT id, equipo_id, folio FROM fallas WHERE id = $1', [parseInt(falla_id, 10)]);
+    if (resF.rows.length === 0) {
+      return res.status(404).json({ error: 'La falla especificada no existe.' });
+    }
+    const falla = resF.rows[0];
 
-    if (isPostgresConnected()) {
-      // 1. Obtener la falla para identificar el equipo
-      const resF = await query('SELECT id, equipo_id, folio FROM fallas WHERE id = $1', [parseInt(falla_id, 10)]);
-      if (!resF || resF.rows.length === 0) {
-        return res.status(404).json({ error: 'La falla especificada no existe.' });
-      }
-      const falla = resF.rows[0];
-
-      // 2. Insertar en reparacion_bitacora
-      const sqlBit = `
-        INSERT INTO reparacion_bitacora (falla_id, tecnico_id, fecha_inicio, fecha_fin, tiempo_reparacion_min, causa_raiz, refacciones_empleadas)
-        VALUES ($1, $2, NOW() - ($3 || ' minutes')::INTERVAL, NOW(), $3, $4, $5)
-        RETURNING *
-      `;
-      const resBit = await query(sqlBit, [
-        falla.id,
-        tecnico_id ? parseInt(tecnico_id, 10) : null,
-        tiempoMin,
-        causa_raiz.trim(),
-        refacciones_empleadas.trim()
-      ]);
-
-      if (resBit && resBit.rows.length > 0) {
-        registro = resBit.rows[0];
-      }
-
-      // 3. Cerrar la falla
-      await query("UPDATE fallas SET estado = 'CERRADA' WHERE id = $1", [falla.id]);
-
-      // 4. Regresar el equipo a OPERATIVO
-      await query("UPDATE equipos SET estado = 'OPERATIVO' WHERE id = $1", [falla.equipo_id]);
+    const yaCerrada = await client.query('SELECT id FROM reparacion_bitacora WHERE falla_id = $1', [falla.id]);
+    if (yaCerrada.rows.length > 0) {
+      return res.status(409).json({ error: 'Esta falla ya cuenta con una bitácora de cierre registrada.' });
     }
 
-    if (!registro) {
-      const f = memoriaDB.fallas.find(item => item.id === parseInt(falla_id, 10));
-      if (!f) {
-        return res.status(404).json({ error: 'La falla especificada no existe.' });
-      }
+    const tecnicoFinal = tecnico_id
+      ? parseInt(tecnico_id, 10)
+      : await resolverTecnicoId(req.usuario && req.usuario.id);
 
-      registro = {
-        id: memoriaDB.reparacion_bitacora.length + 1,
-        falla_id: f.id,
-        tecnico_id: tecnico_id || 1,
-        fecha_inicio: new Date(Date.now() - (tiempoMin * 60000)).toISOString(),
-        fecha_fin: new Date().toISOString(),
-        tiempo_reparacion_min: tiempoMin,
-        causa_raiz: causa_raiz.trim(),
-        refacciones_empleadas: refacciones_empleadas.trim()
-      };
-      memoriaDB.reparacion_bitacora.unshift(registro);
+    await client.query('BEGIN');
 
-      f.estado = 'CERRADA';
-      const eq = memoriaDB.equipos.find(e => e.id === f.equipo_id);
-      if (eq) {
-        eq.estado = 'OPERATIVO';
-      }
-    }
+    const resBit = await client.query(
+      `INSERT INTO reparacion_bitacora (falla_id, tecnico_id, fecha_inicio, fecha_fin, tiempo_reparacion_min, causa_raiz, refacciones_empleadas)
+       VALUES ($1, $2, NOW() - ($3 * INTERVAL '1 minute'), NOW(), $3, $4, $5)
+       RETURNING *`,
+      [falla.id, tecnicoFinal, tiempoMin, causa_raiz.trim(), refacciones_empleadas.trim()]
+    );
 
-    console.log(`[bitacoraController] Bitácora guardada para falla ${falla_id}. Equipo restablecido a OPERATIVO.`);
+    await client.query("UPDATE fallas SET estado = 'CERRADA' WHERE id = $1", [falla.id]);
+    await client.query("UPDATE equipos SET estado = 'OPERATIVO' WHERE id = $1", [falla.equipo_id]);
+
+    await client.query('COMMIT');
+
+    const registro = resBit.rows[0];
+    console.log(`[bitacoraController] Bitácora guardada para falla ${falla.folio}. Equipo restablecido a OPERATIVO.`);
 
     return res.status(201).json({
       message: 'Reparación finalizada. Bitácora actualizada y equipo restaurado a OPERATIVO.',
@@ -93,46 +71,31 @@ exports.registrarBitacora = async (req, res) => {
     });
 
   } catch (error) {
+    if (client) {
+      try { await client.query('ROLLBACK'); } catch (e) { /* sin transacción activa */ }
+    }
     console.error('[bitacoraController.registrarBitacora Error]', error);
     return res.status(500).json({ error: 'Error al registrar la bitácora de reparación.' });
+  } finally {
+    if (client) client.release();
   }
 };
 
 // GET /api/bitacora
 exports.listarBitacoras = async (req, res) => {
   try {
-    if (isPostgresConnected()) {
-      const sql = `
-        SELECT rb.*, f.folio, f.tipo_falla, f.descripcion AS falla_descripcion,
-               e.nombre AS equipo_nombre, e.numero_serie, u.nombre_usuario AS tecnico_nombre
-        FROM reparacion_bitacora rb
-        LEFT JOIN fallas f ON rb.falla_id = f.id
-        LEFT JOIN equipos e ON f.equipo_id = e.id
-        LEFT JOIN tecnicos t ON rb.tecnico_id = t.id
-        LEFT JOIN usuarios u ON t.usuario_id = u.id
-        ORDER BY rb.fecha_fin DESC
-      `;
-      const result = await query(sql);
-      if (result && result.rows) {
-        return res.status(200).json(result.rows);
-      }
-    }
-
-    const listado = memoriaDB.reparacion_bitacora.map(rb => {
-      const f = memoriaDB.fallas.find(item => item.id === rb.falla_id) || {};
-      const eq = memoriaDB.equipos.find(item => item.id === f.equipo_id) || {};
-      const tec = memoriaDB.tecnicos.find(item => item.id === rb.tecnico_id) || {};
-      return {
-        ...rb,
-        folio: f.folio || 'FOL-GENERAL',
-        tipo_falla: f.tipo_falla || 'General',
-        equipo_nombre: eq.nombre || 'Equipo Industrial',
-        numero_serie: eq.numero_serie || 'N/A',
-        tecnico_nombre: tec.nombre || 'Técnico Especialista'
-      };
-    });
-
-    return res.status(200).json(listado);
+    const sql = `
+      SELECT rb.*, f.folio, f.tipo_falla, f.descripcion AS falla_descripcion, f.estado AS falla_estado,
+             e.nombre AS equipo_nombre, e.numero_serie, u.nombre_usuario AS tecnico_nombre
+      FROM reparacion_bitacora rb
+      JOIN fallas f ON rb.falla_id = f.id
+      LEFT JOIN equipos e ON f.equipo_id = e.id
+      LEFT JOIN tecnicos t ON rb.tecnico_id = t.id
+      LEFT JOIN usuarios u ON t.usuario_id = u.id
+      ORDER BY rb.fecha_fin DESC
+    `;
+    const result = await query(sql);
+    return res.status(200).json(result.rows);
 
   } catch (error) {
     console.error('[bitacoraController.listarBitacoras Error]', error);
@@ -146,22 +109,17 @@ exports.actualizarBitacora = async (req, res) => {
     const { id } = req.params;
     const { tiempo_reparacion_min, causa_raiz, refacciones_empleadas } = req.body;
 
-    if (isPostgresConnected()) {
-      const result = await query(
-        `UPDATE reparacion_bitacora
-         SET tiempo_reparacion_min = COALESCE($1, tiempo_reparacion_min),
-             causa_raiz = COALESCE($2, causa_raiz),
-             refacciones_empleadas = COALESCE($3, refacciones_empleadas)
-         WHERE id = $4 RETURNING id`,
-        [tiempo_reparacion_min || null, causa_raiz || null, refacciones_empleadas || null, id]
-      );
-      if (result && result.rows.length === 0) {
-        return res.status(404).json({ error: 'Bitácora no encontrada.' });
-      }
-    } else {
-      const b = memoriaDB.reparacion_bitacora.find(item => item.id === Number(id));
-      if (!b) return res.status(404).json({ error: 'Bitácora no encontrada.' });
-      Object.assign(b, { tiempo_reparacion_min, causa_raiz, refacciones_empleadas });
+    const result = await query(
+      `UPDATE reparacion_bitacora
+       SET tiempo_reparacion_min = COALESCE($1, tiempo_reparacion_min),
+           causa_raiz = COALESCE($2, causa_raiz),
+           refacciones_empleadas = COALESCE($3, refacciones_empleadas)
+       WHERE id = $4 RETURNING id`,
+      [tiempo_reparacion_min || null, causa_raiz || null, refacciones_empleadas || null, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Bitácora no encontrada.' });
     }
 
     return res.status(200).json({ message: 'Bitácora actualizada correctamente.' });
@@ -176,13 +134,9 @@ exports.eliminarBitacora = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (isPostgresConnected()) {
-      const result = await query('DELETE FROM reparacion_bitacora WHERE id = $1 RETURNING id', [id]);
-      if (result && result.rows.length === 0) {
-        return res.status(404).json({ error: 'Bitácora no encontrada.' });
-      }
-    } else {
-      memoriaDB.reparacion_bitacora = memoriaDB.reparacion_bitacora.filter(item => item.id !== Number(id));
+    const result = await query('DELETE FROM reparacion_bitacora WHERE id = $1 RETURNING id', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Bitácora no encontrada.' });
     }
 
     return res.status(200).json({ message: 'Bitácora eliminada correctamente.' });

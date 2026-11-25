@@ -5,6 +5,7 @@ const { verificarToken, autorizar } = require('../middlewares/authMiddleware');
 
 router.use(verificarToken);
 
-router.get('/eficiencia', autorizar('ADMIN', 'JEFE_MANTTO'), dashboardController.obtenerEficiencia);
+// Métricas visibles para los roles que tienen acceso al Dashboard
+router.get('/eficiencia', autorizar('ADMIN', 'JEFE_MANTTO', 'SUPERVISOR', 'CALIDAD'), dashboardController.obtenerEficiencia);
 
 module.exports = router;

@@ -296,7 +296,7 @@
 
                     <!-- DATOS DE EQUIPO -->
                     <div class="panel">
-                        <input type="hidden" id="equipo_id" value="1">
+                        <input type="hidden" id="equipo_id" value="">
                         <div class="grid-2">
                             <div class="campo">
                                 <label for="numSerie">Número de Serie</label>
@@ -373,7 +373,7 @@
     <script src="../js/permisos.js"></script>
 <script src="../js/menu.js"></script>
     <script>
-        SICOPV.proteger(['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'OPERADOR']);
+        SICOPV.proteger(['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'OPERADOR', 'SUPERVISOR']);
 
         const API_BASE = 'http://localhost:3000/api';
         const WS_URL = 'http://localhost:8081/ws-sicopv';
@@ -440,8 +440,15 @@
             const btn = document.getElementById('btnEnviar');
             btn.disabled = true;
 
+            const equipoId = document.getElementById('equipo_id').value;
+            if (!equipoId) {
+                mostrarAlerta('Primero escanea o ingresa el código QR / número de serie del equipo.', 'error');
+                btn.disabled = false;
+                return;
+            }
+
             const payload = {
-                equipo_id: document.getElementById('equipo_id').value,
+                equipo_id: equipoId,
                 tipo_falla: document.getElementById('tipoFalla').value,
                 descripcion: document.getElementById('descripcion').value.trim(),
                 descripcion_adicional: document.getElementById('descAdicional').value.trim(),

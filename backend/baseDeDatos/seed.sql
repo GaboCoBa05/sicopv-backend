@@ -2,24 +2,39 @@
 -- SiCoPV / AFYP - Datos Semilla Iniciales (TSR Saltillo)
 -- ===================================================================
 
--- 1. Usuarios del Sistema (Contraseña por defecto: admin123)
--- Hash bcrypt para 'admin123' o compatibilidad directa
+-- 1. Usuarios del Sistema
+-- Credenciales predeterminadas para pruebas funcionales por rol:
+-- ADMIN: admin_tsr / admin@tsrsaltillo.com (Clave: AdminTSR2026!)
+-- JEFE_MANTTO: cmendoza / cmendoza@tsr-saltillo.com (Clave: admin123)
+-- TECNICO: rgonzalez / rgonzalez@tsr-saltillo.com (Clave: admin123)
+-- TECNICO: lmartinez / lmartinez@tsr-saltillo.com (Clave: admin123)
+-- OPERADOR: esanchez / esanchez@tsr-saltillo.com (Clave: admin123)
+-- OPERADOR: mrivas / mrivas@tsr-saltillo.com (Clave: admin123)
+-- SUPERVISOR: supervisor_tsr / supervisor@tsrsaltillo.com (Clave: admin123)
+-- CALIDAD: calidad_tsr / calidad@tsrsaltillo.com (Clave: admin123)
+
 INSERT INTO usuarios (id, nombre_usuario, correo, password_hash, telefono, rol)
 VALUES
-    (1, 'admin', 'admin@tsr-saltillo.com', '$2a$10$wT3WfE2g1J7j6x0e3q2tCe6.qj0B2J6P3eY4k5Q6W7E8R9T0Y1U2I', '8441112233', 'ADMIN'),
-    (2, 'cmendoza', 'cmendoza@tsr-saltillo.com', '$2a$10$wT3WfE2g1J7j6x0e3q2tCe6.qj0B2J6P3eY4k5Q6W7E8R9T0Y1U2I', '8442223344', 'JEFE_MANTTO'),
-    (3, 'rgonzalez', 'rgonzalez@tsr-saltillo.com', '$2a$10$wT3WfE2g1J7j6x0e3q2tCe6.qj0B2J6P3eY4k5Q6W7E8R9T0Y1U2I', '8443334455', 'TECNICO'),
-    (4, 'lmartinez', 'lmartinez@tsr-saltillo.com', '$2a$10$wT3WfE2g1J7j6x0e3q2tCe6.qj0B2J6P3eY4k5Q6W7E8R9T0Y1U2I', '8444445566', 'TECNICO'),
-    (5, 'esanchez', 'esanchez@tsr-saltillo.com', '$2a$10$wT3WfE2g1J7j6x0e3q2tCe6.qj0B2J6P3eY4k5Q6W7E8R9T0Y1U2I', '8445556677', 'OPERADOR'),
-    (6, 'mrivas', 'mrivas@tsr-saltillo.com', '$2a$10$wT3WfE2g1J7j6x0e3q2tCe6.qj0B2J6P3eY4k5Q6W7E8R9T0Y1U2I', '8446667788', 'OPERADOR')
-ON CONFLICT (nombre_usuario) DO NOTHING;
+    (1, 'admin_tsr', 'admin@tsrsaltillo.com', '$2a$10$CRdBxf2.fUeuadmZe8zsDeJ8nykUs.hefXoodCfCSV60nxUWGvF/y', '8441112233', 'ADMIN'),
+    (2, 'admin', 'admin@tsr-saltillo.com', '$2a$10$CRdBxf2.fUeuadmZe8zsDeJ8nykUs.hefXoodCfCSV60nxUWGvF/y', '8441112233', 'ADMIN'),
+    (3, 'cmendoza', 'cmendoza@tsr-saltillo.com', '$2a$10$cZUAVdeHryKBvx7vk1k3keiX1XuSeGvtq9bOHzaeoHh6x1ZO0C22G', '8442223344', 'JEFE_MANTTO'),
+    (4, 'rgonzalez', 'rgonzalez@tsr-saltillo.com', '$2a$10$cZUAVdeHryKBvx7vk1k3keiX1XuSeGvtq9bOHzaeoHh6x1ZO0C22G', '8443334455', 'TECNICO'),
+    (5, 'lmartinez', 'lmartinez@tsr-saltillo.com', '$2a$10$cZUAVdeHryKBvx7vk1k3keiX1XuSeGvtq9bOHzaeoHh6x1ZO0C22G', '8444445566', 'TECNICO'),
+    (6, 'esanchez', 'esanchez@tsr-saltillo.com', '$2a$10$cZUAVdeHryKBvx7vk1k3keiX1XuSeGvtq9bOHzaeoHh6x1ZO0C22G', '8445556677', 'OPERADOR'),
+    (7, 'mrivas', 'mrivas@tsr-saltillo.com', '$2a$10$cZUAVdeHryKBvx7vk1k3keiX1XuSeGvtq9bOHzaeoHh6x1ZO0C22G', '8446667788', 'OPERADOR'),
+    (8, 'supervisor_tsr', 'supervisor@tsrsaltillo.com', '$2a$10$cZUAVdeHryKBvx7vk1k3keiX1XuSeGvtq9bOHzaeoHh6x1ZO0C22G', '8447778899', 'SUPERVISOR'),
+    (9, 'calidad_tsr', 'calidad@tsrsaltillo.com', '$2a$10$cZUAVdeHryKBvx7vk1k3keiX1XuSeGvtq9bOHzaeoHh6x1ZO0C22G', '8448889900', 'CALIDAD')
+ON CONFLICT (nombre_usuario) DO UPDATE
+SET correo = EXCLUDED.correo,
+    password_hash = EXCLUDED.password_hash,
+    rol = EXCLUDED.rol;
 
--- 2. Personal Técnico
+-- 2. Personal Técnico (usuario_id referencia usuarios)
 INSERT INTO tecnicos (id, usuario_id, area, especialidad)
 VALUES
-    (1, 3, 'Mecánica', 'Ajuste de Husillos y Rodamientos'),
-    (2, 4, 'Eléctrica', 'Automatización PLC y Robótica Industrial'),
-    (3, 2, 'Mantenimiento', 'Diagnóstico General y Confiabilidad')
+    (1, 4, 'Mecánica', 'Ajuste de Husillos y Rodamientos'),
+    (2, 5, 'Eléctrica', 'Automatización PLC y Robótica Industrial'),
+    (3, 3, 'Mantenimiento', 'Diagnóstico General y Confiabilidad')
 ON CONFLICT (id) DO NOTHING;
 
 -- 3. Equipos y Maquinaria de Planta
@@ -36,10 +51,10 @@ ON CONFLICT (numero_serie) DO NOTHING;
 -- 4. Registro de Fallas Históricas
 INSERT INTO fallas (id, folio, equipo_id, usuario_reporta_id, tipo_falla, descripcion, descripcion_adicional, prioridad, estado, fecha_reporte)
 VALUES
-    (1, 'FOL-100201', 1, 5, 'Mecánica', 'Vibración excesiva en el cabezal principal.', 'Ocurrió durante el ciclo de corte a 2500 RPM.', 'MEDIA', 'CERRADA', NOW() - INTERVAL '6 days'),
-    (2, 'FOL-100202', 3, 6, 'Hidráulica', 'Fuga de aceite en manguera de alta presión del pistón auxiliar.', 'Pérdida de presión en el manómetro.', 'ALTA', 'CERRADA', NOW() - INTERVAL '3 days'),
-    (3, 'FOL-100203', 2, 5, 'Eléctrica', 'Paro de emergencia activado por falla en servo drive del eje Z.', 'Código de alarma E-402 en panel Fanuc.', 'CRITICA', 'ABIERTA', NOW() - INTERVAL '2 hours'),
-    (4, 'FOL-100204', 5, 5, 'Neumática', 'Baja presión en mordaza neumática del herramental.', 'Fuga audible en conector rápido.', 'BAJA', 'EN_PROCESO', NOW() - INTERVAL '1 day')
+    (1, 'FOL-100201', 1, 6, 'Mecánica', 'Vibración excesiva en el cabezal principal.', 'Ocurrió durante el ciclo de corte a 2500 RPM.', 'MEDIA', 'CERRADA', NOW() - INTERVAL '6 days'),
+    (2, 'FOL-100202', 3, 7, 'Hidráulica', 'Fuga de aceite en manguera de alta presión del pistón auxiliar.', 'Pérdida de presión en el manómetro.', 'ALTA', 'CERRADA', NOW() - INTERVAL '3 days'),
+    (3, 'FOL-100203', 2, 6, 'Eléctrica', 'Paro de emergencia activado por falla en servo drive del eje Z.', 'Código de alarma E-402 en panel Fanuc.', 'CRITICA', 'ABIERTA', NOW() - INTERVAL '2 hours'),
+    (4, 'FOL-100204', 5, 6, 'Neumática', 'Baja presión en mordaza neumática del herramental.', 'Fuga audible en conector rápido.', 'BAJA', 'EN_PROCESO', NOW() - INTERVAL '1 day')
 ON CONFLICT (folio) DO NOTHING;
 
 -- 5. Bitácoras de Reparación (Cierre de Tickets)

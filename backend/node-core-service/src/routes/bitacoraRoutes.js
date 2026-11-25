@@ -5,9 +5,9 @@ const { verificarToken, autorizar } = require('../middlewares/authMiddleware');
 
 router.use(verificarToken);
 
-// Bitácoras: admin, jefe de mantenimiento y técnico. El operador NO tiene acceso.
+// Bitácoras: consultar reparaciones para reportes y bitácora (ADMIN, JEFE_MANTTO, TECNICO, SUPERVISOR, CALIDAD)
+router.get('/', autorizar('ADMIN', 'JEFE_MANTTO', 'TECNICO', 'SUPERVISOR', 'CALIDAD'), bitacoraController.listarBitacoras);
 router.post('/', autorizar('ADMIN', 'JEFE_MANTTO', 'TECNICO'), bitacoraController.registrarBitacora);
-router.get('/', autorizar('ADMIN', 'JEFE_MANTTO', 'TECNICO'), bitacoraController.listarBitacoras);
 
 // Editar / eliminar bitácoras: SOLO admin
 router.put('/:id', autorizar('ADMIN'), bitacoraController.actualizarBitacora);

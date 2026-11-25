@@ -9,8 +9,8 @@ router.use(verificarToken);
 router.get('/', autorizar(...TODOS), equipoController.listarEquipos);
 router.get('/qr/:codigo_qr', autorizar(...TODOS), equipoController.obtenerPorQR);
 
-// Alta, edición y baja de maquinaria: SOLO admin
-router.post('/', autorizar('ADMIN'), equipoController.registrarEquipo);
+// Alta de maquinaria: ADMIN, JEFE_MANTTO, SUPERVISOR; edición y baja: SOLO admin
+router.post('/', autorizar('ADMIN', 'JEFE_MANTTO', 'SUPERVISOR'), equipoController.registrarEquipo);
 router.put('/:id', autorizar('ADMIN'), equipoController.actualizarEquipo);
 router.delete('/:id', autorizar('ADMIN'), equipoController.eliminarEquipo);
 

@@ -5,11 +5,11 @@ const { verificarToken, autorizar } = require('../middlewares/authMiddleware');
 
 router.use(verificarToken);
 
-// Ver personal: admin y jefe de mantenimiento
-router.get('/', autorizar('ADMIN', 'JEFE_MANTTO'), tecnicoController.listarTecnicos);
+// Ver personal: admin, jefe de mantenimiento y supervisor
+router.get('/', autorizar('ADMIN', 'JEFE_MANTTO', 'SUPERVISOR'), tecnicoController.listarTecnicos);
 
-// Alta de personal de mantenimiento: SOLO admin
-router.post('/', autorizar('ADMIN'), tecnicoController.registrarTecnico);
+// Alta de personal de mantenimiento: admin, jefe de mantenimiento y supervisor
+router.post('/', autorizar('ADMIN', 'JEFE_MANTTO', 'SUPERVISOR'), tecnicoController.registrarTecnico);
 
 // Actualizar / eliminar técnico: SOLO admin (CRUD completo)
 router.put('/:id', autorizar('ADMIN'), tecnicoController.actualizarTecnico);

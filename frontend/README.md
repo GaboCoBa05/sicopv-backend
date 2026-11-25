@@ -29,9 +29,7 @@ frontend/
 │   ├── mantenimiento_preventivo.html
 │   └── preventivo.html
 ├── RegistrarTecnico/           # Alta de personal técnico por área/especialidad y validación de datos
-│   ├── registrar_tecnico.html
-│   ├── informacion_capturada.html
-│   └── error_registro.html
+│   └── registrar_tecnico.html
 └── Reportes/                   # Vista previa de bitácoras cerradas y descarga de certificados PDF
     ├── reporte_pdf.html
     └── reportes.html

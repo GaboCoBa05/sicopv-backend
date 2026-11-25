@@ -5,6 +5,6 @@ const { verificarToken, autorizar } = require('../middlewares/authMiddleware');
 
 router.use(verificarToken);
 
-router.get('/pdf/:folio', autorizar('ADMIN', 'JEFE_MANTTO', 'TECNICO'), reporteController.generarReportePDF);
+router.get('/pdf/:folio', autorizar('ADMIN', 'JEFE_MANTTO', 'TECNICO', 'SUPERVISOR', 'CALIDAD'), reporteController.generarReportePDF);
 
 module.exports = router;

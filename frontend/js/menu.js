@@ -17,7 +17,7 @@
     { clave: 'reportar-falla', texto: 'Reportar Falla', href: '../FallaEquipo/fallas.html', icono: 'doc', archivos: ['fallas.html', 'seleccion.html'] },
     { clave: 'ingreso-maquinaria', texto: 'Ingreso Maquinaria', href: '../IngresoMaquinaria/ingreso_maquinaria.html', icono: 'gear', archivos: ['ingreso_maquinaria.html', 'codigo_qr.html'] },
     { clave: 'bitacora', texto: 'Bitácora Digital', href: '../BitacoraDigital/bitacora_digital.html', icono: 'mon', archivos: ['bitacora_digital.html', 'bitacora.html'] },
-    { clave: 'registrar-tecnico', texto: 'Registrar Técnico', href: '../RegistrarTecnico/registrar_tecnico.html', icono: 'llave', archivos: ['registrar_tecnico.html', 'informacion_capturada.html', 'error_registro.html'] },
+    { clave: 'registrar-tecnico', texto: 'Registrar Técnico', href: '../RegistrarTecnico/registrar_tecnico.html', icono: 'llave', archivos: ['registrar_tecnico.html'] },
     { clave: 'preventivo', texto: 'Mantenimiento Preventivo', href: '../MantenimientoPreventivo/mantenimiento_preventivo.html', icono: 'cal', archivos: ['mantenimiento_preventivo.html', 'preventivo.html'] },
     { clave: 'dashboard', texto: 'Dashboard', href: '../Dashboard/dashboard.html', icono: 'grid', archivos: ['dashboard.html'] },
     { clave: 'reportes', texto: 'Reportes', href: '../Reportes/reporte_pdf.html', icono: 'graf', archivos: ['reporte_pdf.html', 'reportes.html'] },
@@ -56,13 +56,16 @@
       '#sicopv-shell-header{position:fixed;top:0;left:0;right:0;height:62px;background:#0b4548;color:#fff;' +
       'display:flex;align-items:center;justify-content:space-between;padding:0 25px;gap:12px;z-index:100;' +
       'font-family:Arial,sans-serif;}' +
-      '#sicopv-shell-titulo{display:flex;align-items:center;gap:15px;font-size:22px;font-weight:bold;letter-spacing:2px;}' +
-      '#sicopv-shell-usuario{display:flex;align-items:center;gap:14px;}' +
-      '.sm-user{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:bold;white-space:nowrap;color:#fff;}' +
-      '.sm-user-rol{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);padding:3px 10px;' +
+      '#sicopv-shell-titulo{display:flex;align-items:center;gap:15px;font-size:20px;font-weight:bold;letter-spacing:2px;}' +
+      '#sicopv-shell-usuario{display:flex;align-items:center;gap:10px;}' +
+      '.sm-user{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:bold;white-space:nowrap;color:#fff;}' +
+      '.sm-user-rol{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);padding:3px 9px;' +
       'border-radius:14px;font-size:11px;font-weight:700;letter-spacing:.5px;}' +
-      '.sm-logout{background:#a8ddcb;color:#0b4548;border:none;border-radius:6px;padding:7px 12px;' +
-      'font-size:12px;font-weight:bold;cursor:pointer;transition:background .2s;white-space:nowrap;}' +
+      '.sm-btn-pass{background:transparent;color:#A8DDCB;border:1px solid rgba(168,221,203,.6);border-radius:6px;padding:6px 10px;' +
+      'font-size:11.5px;font-weight:bold;cursor:pointer;transition:all .2s;white-space:nowrap;}' +
+      '.sm-btn-pass:hover{background:rgba(168,221,203,.2);}' +
+      '.sm-logout{background:#a8ddcb;color:#0b4548;border:none;border-radius:6px;padding:6px 11px;' +
+      'font-size:11.5px;font-weight:bold;cursor:pointer;transition:background .2s;white-space:nowrap;}' +
       '.sm-logout:hover{background:#8dceb8;}' +
 
       /* Barra lateral (idéntica al dashboard) */
@@ -106,8 +109,6 @@
     var enlaces = '';
 
     ITEMS.forEach(function (item) {
-      // El filtro se aplica aquí también para no depender del orden de carga
-      // respecto a SICOPV.proteger().
       if (!SICOPV.tiene(item.clave)) return;
       var esActivo = item.archivos.indexOf(archivo) !== -1;
       if (esActivo) activo = item;
@@ -124,16 +125,17 @@
     header.id = 'sicopv-shell-header';
     header.innerHTML =
       '<div id="sicopv-shell-titulo">' +
-        '<svg class="sm-icono"><use href="#sm-grid"></use></svg>' +
-        '<span>' + titulo + '</span>' +
+      '<svg class="sm-icono"><use href="#sm-grid"></use></svg>' +
+      '<span>' + titulo + '</span>' +
       '</div>' +
       '<div id="sicopv-shell-usuario">' +
-        '<div class="sm-user">' +
-          '<svg class="sm-icono"><use href="#sm-usr"></use></svg>' +
-          '<span>' + SICOPV.nombreUsuario() + '</span>' +
-          '<span class="sm-user-rol">' + SICOPV.etiquetaRol() + '</span>' +
-        '</div>' +
-        '<button type="button" class="sm-logout" onclick="cerrarSesion()">Cerrar Sesión</button>' +
+      '<div class="sm-user">' +
+      '<svg class="sm-icono"><use href="#sm-usr"></use></svg>' +
+      '<span>' + SICOPV.nombreUsuario() + '</span>' +
+      '<span class="sm-user-rol">' + SICOPV.etiquetaRol() + '</span>' +
+      '</div>' +
+      '<button type="button" class="sm-btn-pass" onclick="SICOPV.modalCambiarPassword()">Cambiar Clave</button>' +
+      '<button type="button" class="sm-logout" onclick="cerrarSesion()">Cerrar Sesión</button>' +
       '</div>';
 
     var aside = document.createElement('aside');

@@ -62,14 +62,14 @@ app.use('/frontend', express.static(frontendPath));
 
 // Redirección directa al login en la raíz
 app.get('/', (req, res) => {
-  res.redirect('/frontend/login/login.html');
+  res.redirect('/frontend/Login/login.html');
 });
 
 // Inicio del servidor
 app.listen(PORT, '0.0.0.0', () => {
   console.log('===========================================================');
   console.log(`[SiCoPV Node Core] API REST activa en http://localhost:${PORT}`);
-  console.log(`[Frontend] Acceso web en http://localhost:${PORT}/frontend/login/login.html`);
+  console.log(`[Frontend] Acceso web en http://localhost:${PORT}/frontend/Login/login.html`);
   console.log('===========================================================');
 });
 

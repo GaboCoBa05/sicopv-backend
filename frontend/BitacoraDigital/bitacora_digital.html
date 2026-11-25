@@ -247,7 +247,6 @@ async function finalizarReparacion() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         falla_id: parseInt(falla_id, 10),
-        tecnico_id: 1,
         tiempo_reparacion_min: tiempoMin,
         causa_raiz: causa_raiz,
         refacciones_empleadas: refacciones

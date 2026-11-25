@@ -19,6 +19,23 @@ exports.verificarToken = (req, res, next) => {
   }
 };
 
+// Verifica el JWT si viene presente, pero no bloquea la petición cuando no hay
+// token o es inválido. Se usa en rutas que funcionan tanto para sesión activa
+// como para recuperación pública (p. ej. reset-password).
+exports.verificarTokenOpcional = (req, res, next) => {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+
+  if (!token) return next();
+
+  try {
+    req.usuario = jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    req.usuario = null;
+  }
+  next();
+};
+
 // autorizar('ADMIN', 'JEFE_MANTTO') -> solo esos roles pasan
 exports.autorizar = (...roles) => (req, res, next) => {
   if (!req.usuario) {

@@ -145,7 +145,7 @@ textarea { resize: vertical; min-height: 80px; }
 <script src="../js/permisos.js"></script>
 <script src="../js/menu.js"></script>
 <script>
-SICOPV.proteger(['ADMIN', 'JEFE_MANTTO', 'TECNICO']);
+SICOPV.proteger(['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'SUPERVISOR']);
 
 const API_EQUIPOS = 'http://localhost:3000/api/equipos';
 const API_PREVENTIVOS = 'http://localhost:3000/api/preventivos';
@@ -218,7 +218,6 @@ document.getElementById('formPreventivo').addEventListener('submit', async (e) =
   e.preventDefault();
   const payload = {
     equipo_id: document.getElementById('equipo_id_prev').value,
-    tecnico_id: 1,
     periodo_uso: document.getElementById('periodo').value,
     fecha_programada: document.getElementById('fechaProg').value,
     piezas_cambiar: document.getElementById('piezas').value.trim(),

@@ -85,19 +85,32 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f6f4; color: #
 <script src="../js/permisos.js"></script>
 <script src="../js/menu.js"></script>
 <script>
-SICOPV.proteger(['ADMIN', 'JEFE_MANTTO', 'TECNICO']);
+SICOPV.proteger(['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'SUPERVISOR', 'CALIDAD']);
 
 const API_BITACORA = 'http://localhost:3000/api/bitacora';
 const API_REPORTE_PDF = 'http://localhost:3000/api/reportes/pdf';
+let reparacionActual = null;
+
+function esc(texto) {
+  return String(texto == null ? '' : texto)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 async function cargarReparaciones() {
+  const cont = document.getElementById('listaRep');
   try {
     const res = await SICOPV.apiFetch(API_BITACORA);
     const data = await res.json();
-    const cont = document.getElementById('listaRep');
+
+    if (!res.ok) {
+      cont.innerHTML = '<p style="color:#a22;">' + esc(data.error || 'No se pudo cargar el historial.') + '</p>';
+      return;
+    }
+
     cont.innerHTML = '';
 
-    if (data.length === 0) {
+    if (!Array.isArray(data) || data.length === 0) {
       cont.innerHTML = '<p style="color:#5a8a87;">No hay reparaciones cerradas disponibles.</p>';
       return;
     }
@@ -107,38 +120,74 @@ async function cargarReparaciones() {
       btn.type = 'button';
       btn.className = 'rep-btn';
       btn.onclick = () => seleccionarReparacion(r, btn);
+      const causa = r.causa_raiz ? String(r.causa_raiz) : 'Sin causa registrada';
       btn.innerHTML = `
         <div>
-          <div class="rep-nombre">${r.equipo_nombre || 'Equipo'}</div>
-          <div class="rep-sub">${r.causa_raiz.substring(0, 32)}...</div>
+          <div class="rep-nombre">${esc(r.equipo_nombre || 'Equipo')}</div>
+          <div class="rep-sub">${esc(causa.substring(0, 32))}...</div>
         </div>
-        <div class="rep-folio">${r.folio}</div>
+        <div class="rep-folio">${esc(r.folio || 'S/F')}</div>
       `;
       cont.appendChild(btn);
 
       if (idx === 0) seleccionarReparacion(r, btn);
     });
   } catch (e) {
-    document.getElementById('listaRep').innerHTML = '<p style="color:#a22;">Error al cargar bitácoras.</p>';
+    cont.innerHTML = '<p style="color:#a22;">Error al cargar bitácoras: ' + esc(e.message) + '</p>';
   }
 }
 
 function seleccionarReparacion(r, btn) {
   document.querySelectorAll('.rep-btn').forEach(b => b.classList.remove('sel'));
   if (btn) btn.classList.add('sel');
+  reparacionActual = r;
 
-  document.getElementById('pdfTitulo').textContent = `REPORTE: ${r.folio}`;
+  document.getElementById('pdfTitulo').textContent = `REPORTE: ${r.folio || 'S/F'}`;
   document.getElementById('pdfDetalles').innerHTML = `
-    <strong>Máquina:</strong> ${r.equipo_nombre}<br>
-    <strong>Técnico Responsable:</strong> ${r.tecnico_nombre}<br>
+    <strong>Máquina:</strong> ${esc(r.equipo_nombre || 'No registrada')}<br>
+    <strong>Técnico Responsable:</strong> ${esc(r.tecnico_nombre || 'No asignado')}<br>
     <strong>Tiempo de Intervención:</strong> ${r.tiempo_reparacion_min} minutos<br>
-    <strong>Refacciones:</strong> ${r.refacciones_empleadas}
+    <strong>Refacciones:</strong> ${esc(r.refacciones_empleadas || 'No registradas')}
   `;
 
   const link = document.getElementById('btnDescargaPdf');
-  link.href = `${API_REPORTE_PDF}/${encodeURIComponent(r.folio)}`;
   link.style.display = 'inline-flex';
+  link.textContent = 'DESCARGAR REPORTE EN PDF';
 }
+
+async function descargarPdf(e) {
+  e.preventDefault();
+  if (!reparacionActual || !reparacionActual.folio) return;
+
+  const link = document.getElementById('btnDescargaPdf');
+  const textoOriginal = link.textContent;
+  link.textContent = 'GENERANDO PDF...';
+
+  try {
+    const res = await SICOPV.apiFetch(`${API_REPORTE_PDF}/${encodeURIComponent(reparacionActual.folio)}`);
+    if (!res.ok) {
+      let mensaje = 'No se pudo generar el PDF.';
+      try { const err = await res.json(); mensaje = err.error || mensaje; } catch (_) {}
+      throw new Error(mensaje);
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Reporte_${reparacionActual.folio}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    link.textContent = textoOriginal;
+  }
+}
+
+document.getElementById('btnDescargaPdf').addEventListener('click', descargarPdf);
 
 window.addEventListener('DOMContentLoaded', cargarReparaciones);
 </script>

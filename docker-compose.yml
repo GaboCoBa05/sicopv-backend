@@ -22,6 +22,8 @@ services:
     restart: always
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/frontend:ro
     environment:
       - PORT=3000
       - DB_HOST=db
