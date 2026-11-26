@@ -6,13 +6,13 @@
   'use strict';
 
   var MENU = {
-    'reportar-falla': ['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'OPERADOR', 'SUPERVISOR'],
-    'ingreso-maquinaria': ['ADMIN', 'JEFE_MANTTO', 'SUPERVISOR'],
+    'reportar-falla': ['ADMIN', 'OPERADOR', 'SUPERVISOR'],
+    'ingreso-maquinaria': ['ADMIN', 'JEFE_MANTTO'],
     'bitacora': ['ADMIN', 'JEFE_MANTTO', 'TECNICO'],
-    'registrar-tecnico': ['ADMIN', 'JEFE_MANTTO', 'SUPERVISOR'],
-    'preventivo': ['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'SUPERVISOR'],
-    'dashboard': ['ADMIN', 'JEFE_MANTTO', 'SUPERVISOR', 'CALIDAD'],
-    'reportes': ['ADMIN', 'JEFE_MANTTO', 'TECNICO', 'SUPERVISOR', 'CALIDAD'],
+    'registrar-tecnico': ['ADMIN', 'JEFE_MANTTO'],
+    'preventivo': ['ADMIN', 'JEFE_MANTTO', 'TECNICO'],
+    'dashboard': ['ADMIN', 'JEFE_MANTTO', 'CALIDAD'],
+    'reportes': ['ADMIN', 'JEFE_MANTTO', 'SUPERVISOR'],
     'administracion': ['ADMIN'],
     'usuarios': ['ADMIN']
   };

@@ -440,13 +440,13 @@
         }
 
         function redirigirSegunRol(rol) {
-            const r = (rol || '').toUpperCase();
-            if (['ADMIN', 'JEFE_MANTTO', 'SUPERVISOR', 'CALIDAD'].includes(r)) {
-                window.location.href = '../Dashboard/dashboard.html';
+                const r = (rol || '').toUpperCase();
+            if (['ADMIN', 'JEFE_MANTTO', 'CALIDAD'].includes(r)) {
+                    window.location.href = '../Dashboard/dashboard.html';
             } else if (r === 'TECNICO') {
-                window.location.href = '../BitacoraDigital/bitacora_digital.html';
-            } else {
-                window.location.href = '../FallaEquipo/fallas.html';
+                        window.location.href = '../BitacoraDigital/bitacora_digital.html';
+                } else {
+                    window.location.href = '../FallaEquipo/fallas.html';
             }
         }
 
